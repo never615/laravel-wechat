@@ -14,7 +14,7 @@ return [
     'use_laravel_cache' => true,
 
     /*
-     * 账号基本信息，请从微信公众平台/开放平台获取
+     * 账号基本信息，请从微信公众平台获取
      */
     'app_id'  => env('WECHAT_APPID', 'your-app-id'),         // AppID
     'secret'  => env('WECHAT_SECRET', 'your-app-secret'),     // AppSecret
@@ -26,11 +26,16 @@ return [
      */
     //'open_platform' => [
         /**
-         * 事件推送URL
+         * 事件推送URL,不可用
          */
         //'serve_url' => env('WECHAT_OPEN_PLATFORM_SERVE_URL', 'serve'),
+        // 账号基本信息，请从开放平台获取
+        //'app_id'  => env('WECHAT_APPID', 'your-app-id'),         // AppID
+        //'secret'  => env('WECHAT_SECRET', 'your-app-secret'),     // AppSecret
+        //'token'   => env('WECHAT_TOKEN', 'your-token'),          // Token
+        //'aes_key' => env('WECHAT_AES_KEY', ''),                    // EncodingAESKey
     //],
-    
+
     /*
      * 日志配置
      *
