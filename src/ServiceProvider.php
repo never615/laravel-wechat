@@ -4,6 +4,7 @@ namespace Overtrue\LaravelWechat;
 
 use EasyWeChat\Foundation\Application as EasyWeChatApplication;
 use Illuminate\Foundation\Application as LaravelApplication;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider as LaravelServiceProvider;
 use Laravel\Lumen\Application as LumenApplication;
 use Overtrue\LaravelWechat\ServiceProviders\RouteServiceProvider;
@@ -18,6 +19,7 @@ class ServiceProvider extends LaravelServiceProvider
      */
     protected $defer = true;
 
+
     /**
      * Boot the provider.
      *
@@ -26,6 +28,7 @@ class ServiceProvider extends LaravelServiceProvider
     public function boot()
     {
         $this->setupConfig();
+        $this->loadMigrationsFrom(__DIR__.'/../migrations/');
 
         if ($this->isEnableOpenPlatform()) {
             $this->app->register(RouteServiceProvider::class);
