@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 /**
  * 记录微信用户信息
@@ -17,7 +17,8 @@ class CreateWechatPlatformConfigsTable extends Migration
      */
     public function up()
     {
-        Schema::create('wechat_platform_configs', function (Blueprint $table) {
+        $connection = config('wechat.connection_name') ?: config('database.default');
+        Schema::connection($connection)->create('wechat_platform_configs', function (Blueprint $table) {
             $table->increments('id');
             $table->string("component_verify_ticket");
             $table->timestamps();
@@ -31,6 +32,9 @@ class CreateWechatPlatformConfigsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('wechat_platform_configs');
+
+        $connection = config('wechat.connection_name') ?: config('database.default');
+
+        Schema::connection($connection)->dropIfExists('wechat_platform_configs');
     }
 }

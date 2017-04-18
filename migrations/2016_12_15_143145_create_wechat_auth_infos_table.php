@@ -13,7 +13,8 @@ class CreateWechatAuthInfosTable extends Migration
      */
     public function up()
     {
-        Schema::create('wechat_auth_infos', function (Blueprint $table) {
+        $connection = config('wechat.connection_name') ?: config('database.default');
+        Schema::connection($connection)->create('wechat_auth_infos', function (Blueprint $table) {
             $table->increments('id');
 
             $table->string('authorizer_appid')->commment('授权方appid');
@@ -59,6 +60,9 @@ class CreateWechatAuthInfosTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('wechat_auth_infos');
+
+        $connection = config('wechat.connection_name') ?: config('database.default');
+
+        Schema::connection($connection)->dropIfExists('wechat_auth_infos');
     }
 }

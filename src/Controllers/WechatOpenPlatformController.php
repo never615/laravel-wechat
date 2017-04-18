@@ -68,11 +68,15 @@ class WechatOpenPlatformController extends \App\Http\Controllers\Controller
         $wechat = app('wechat');
         $openPlatform = $wechat->open_platform;
 
-        $authLink = $openPlatform->pre_auth
-            ->setRedirectUri(Request::root().'/wechat/platform/auth/callback')
-            ->getAuthLink();
+        $response = $openPlatform->pre_auth->redirect(Request::root().'/wechat/platform/auth/callback');
 
-        echo "<a href='$authLink' style='font-size: 30px'>墨兔微信开放平台授权地址,请点击进行授权</a>";
+        return $response;
+
+//        $authLink = $openPlatform->pre_auth
+//            ->setRedirectUri(Request::root().'/wechat/platform/auth/callback')
+//            ->getAuthLink();
+//
+//        echo "<a href='$authLink' style='font-size: 30px'>墨兔微信开放平台授权地址,请点击进行授权</a>";
     }
 
     /**
@@ -82,17 +86,16 @@ class WechatOpenPlatformController extends \App\Http\Controllers\Controller
     {
         $wechat = app('wechat');
         $openPlatform = $wechat->open_platform;
-        //使用授权码换取公众号的接口调用凭据和授权信息
-        $authorizer = $openPlatform->authorizer;
         // 使用授权码换取公众号的接口调用凭据和授权信息
         // Optional: $authorizationCode 不传值时会自动获取 URL 中 auth_code 值
-        $authorizationInfo = $authorizer->getAuthorizationInfo();
+        $authorizationInfo = $openPlatform->getAuthorizationInfo();
         //获取授权方的公众号帐号基本信息
-        $authorizerInfo = $authorizer->getAuthorizerInfo($authorizationInfo["authorization_info"]["authorizer_appid"]);
+        $authorizerInfo = $openPlatform->getAuthorizerInfo($authorizationInfo["authorization_info"]["authorizer_appid"]);
 
         $authorization_appid = $authorizationInfo['authorization_info']['authorizer_appid'];
         $authorization_access_token = $authorizationInfo['authorization_info']['authorizer_access_token'];
         $authorization_refresh_token = $authorizationInfo['authorization_info']['authorizer_refresh_token'];
+
         $wechatAuthInfo = WechatAuthInfo::where('authorizer_appid', $authorization_appid)->first();
 
         $data = [
@@ -113,7 +116,7 @@ class WechatOpenPlatformController extends \App\Http\Controllers\Controller
         if ($wechatAuthInfo) {
             call_user_func([$wechatAuthInfo, "update"], $data);
         } else {
-            call_user_func([$wechatAuthInfo, "create"], $data);
+            WechatAuthInfo::create($data);
         }
         echo $authorizerInfo["authorizer_info"]["nick_name"]."授权给微信开放平台服务商墨兔科技成功";
     }
