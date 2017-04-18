@@ -19,7 +19,22 @@ class CacheBridge implements CacheInterface
      */
     public function fetch($id)
     {
-        return Cache::get($id);
+        $data = Cache::get($id);
+        if ($data) {
+            return $data;
+        } else {
+            $prefix = 'easywechat.open_platform.component_verify_ticket.';
+            if (strpos($id, $prefix) === 0) {
+                $config = WechatPlatformConfig::find(1);
+                if ($config) {
+                    return $config->component_verify_ticket;
+                } else {
+                    return $data;
+                }
+            } else {
+                return $data;
+            }
+        }
     }
 
     /**
@@ -49,10 +64,24 @@ class CacheBridge implements CacheInterface
      */
     public function save($id, $data, $lifeTime = 0)
     {
+        $prefix = 'easywechat.open_platform.component_verify_ticket.';
+
+        if (strpos($id, $prefix) === 0) {
+            //在保存ticket,为了保证安全,在数据库在保存一份
+            $platformConfig = WechatPlatformConfig::find(1);
+            if ($platformConfig) {
+                $platformConfig->component_verify_ticket = $data;
+            } else {
+                WechatPlatformConfig::create([
+                    "component_verify_ticket" => $data,
+                ]);
+            }
+        }
+
         if ($lifeTime == 0) {
             return Cache::forever($id, $data);
         }
-        
+
         return Cache::put($id, $data, $lifeTime / 60);
     }
 

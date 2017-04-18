@@ -2,7 +2,6 @@
 namespace Overtrue\LaravelWechat\Controllers;
 
 
-use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Overtrue\LaravelWechat\WechatAuthInfo;
@@ -34,6 +33,7 @@ class WechatOpenPlatformController extends \App\Http\Controllers\Controller
             switch ($event->InfoType) {
                 case 'authorized':
                 case 'updateauthorized':
+                    Log::info("authorized和updateauthorized");
                     // 授权信息，主要是 token 和授权域
                     $info1 = $event->authorization_info;
                     // 授权方信息，就是授权方公众号的信息了
@@ -48,7 +48,7 @@ class WechatOpenPlatformController extends \App\Http\Controllers\Controller
                     break;
                 case 'component_verify_ticket':
                     // ...
-//                    Log::info("component_verify_ticket");
+                    Log::info("component_verify_ticket");
                     break;
                 default:
                     Log::info("其他事件");
@@ -117,8 +117,6 @@ class WechatOpenPlatformController extends \App\Http\Controllers\Controller
         }
         echo $authorizerInfo["authorizer_info"]["nick_name"]."授权给微信开放平台服务商墨兔科技成功";
     }
-
-
 
 
     /**
