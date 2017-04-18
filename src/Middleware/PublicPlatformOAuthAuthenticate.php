@@ -7,9 +7,10 @@ use Cache;
 use Closure;
 use EasyWeChat\Foundation\Application;
 use Event;
+use Illuminate\Support\Facades\Request;
 use Log;
 use Overtrue\LaravelWechat\Events\WeChatUserAuthorized;
-use Overtrue\LaravelWechat\WechatAuthInfo;
+use WechatUtils;
 
 /**
  * 微信开放平台替公众号获取用户授权中间件
@@ -47,11 +48,9 @@ class PublicPlatformOAuthAuthenticate
      */
     public function handle($request, Closure $next, $scopes = null)
     {
-
-        $appId = $this->getAppid($request);
-        $wechatAuthInfo = WechatAuthInfo::where("authorizer_appid", $appId)->firstOrFail();
+        list($appId, $refreshToken) = WechatUtils::createAuthorizerApplicationParams($request);
         $openPlatform = $this->wechat->open_platform;
-        $app = $openPlatform->createAuthorizerApplication($appId, $wechatAuthInfo->authorizer_refresh_token);
+        $app = $openPlatform->createAuthorizerApplication($appId, $refreshToken);
 
         $isNewSession = false;
         $onlyRedirectInWeChatBrowser = config('wechat.oauth.only_wechat_browser', false);
@@ -128,24 +127,4 @@ class PublicPlatformOAuthAuthenticate
         return strpos($request->header('user_agent'), 'MicroMessenger') !== false;
     }
 
-    /**
-     * get appid from url.  [appid].xxx.com
-     *
-     * @param $request
-     * @return mixed
-     */
-    private function getAppid($request)
-    {
-
-        $appId = $request->app_id;
-        if ($appId) {
-            return $appId;
-        }
-
-        $url = $request->url();
-        //获取第一段域名
-        $urlArr = explode(".", explode("//", $url)[1]);
-
-        return $urlArr[0];
-    }
 }

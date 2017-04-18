@@ -2,9 +2,11 @@
 namespace Overtrue\LaravelWechat\Controllers;
 
 
+use EasyWeChat\Foundation\Application;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Overtrue\LaravelWechat\WechatAuthInfo;
+use WechatUtils;
 
 /**
  * Created by PhpStorm.
@@ -14,6 +16,20 @@ use Overtrue\LaravelWechat\WechatAuthInfo;
  */
 class WechatOpenPlatformController extends \App\Http\Controllers\Controller
 {
+
+    private $wechat;
+    private $openPlatform;
+
+    /**
+     * WechatOpenPlatformController constructor.
+     */
+    public function __construct(Application $wecaht)
+    {
+        $this->wechat = $wecaht;
+        $this->openPlatform = $wecaht->open_platform;
+    }
+
+
     /**
      * 处理微信的请求消息
      *
@@ -24,11 +40,8 @@ class WechatOpenPlatformController extends \App\Http\Controllers\Controller
 //        Log::info('request arrived.'); # 注意：Log 为 Laravel 组件，所以它记的日志去 Laravel 日志看，而不是 EasyWeChat 日志
 //        Log::info(Input::all());
 //
-        $wechat = app('wechat');
-        $openPlatform = $wechat->open_platform;
-
         // 自定义处理
-        $openPlatform->server->setMessageHandler(function ($event) {
+        $this->openPlatform->server->setMessageHandler(function ($event) {
             // 事件类型常量定义在 \EasyWeChat\OpenPlatform\Guard 类里
             switch ($event->InfoType) {
                 case 'authorized':
@@ -48,7 +61,7 @@ class WechatOpenPlatformController extends \App\Http\Controllers\Controller
                     break;
                 case 'component_verify_ticket':
                     // ...
-                    Log::info("component_verify_ticket");
+//                    Log::info("component_verify_ticket");
                     break;
                 default:
                     Log::info("其他事件");
@@ -57,7 +70,7 @@ class WechatOpenPlatformController extends \App\Http\Controllers\Controller
         });
 
 
-        return $openPlatform->server->serve();
+        return $this->openPlatform->server->serve();
     }
 
     /**
@@ -65,18 +78,7 @@ class WechatOpenPlatformController extends \App\Http\Controllers\Controller
      */
     public function auth()
     {
-        $wechat = app('wechat');
-        $openPlatform = $wechat->open_platform;
-
-        $response = $openPlatform->pre_auth->redirect(Request::root().'/wechat/platform/auth/callback');
-
-        return $response;
-
-//        $authLink = $openPlatform->pre_auth
-//            ->setRedirectUri(Request::root().'/wechat/platform/auth/callback')
-//            ->getAuthLink();
-//
-//        echo "<a href='$authLink' style='font-size: 30px'>墨兔微信开放平台授权地址,请点击进行授权</a>";
+        return $this->openPlatform->pre_auth->redirect(Request::root().'/wechat/platform/auth/callback');
     }
 
     /**
@@ -84,13 +86,11 @@ class WechatOpenPlatformController extends \App\Http\Controllers\Controller
      */
     public function authCallback()
     {
-        $wechat = app('wechat');
-        $openPlatform = $wechat->open_platform;
         // 使用授权码换取公众号的接口调用凭据和授权信息
         // Optional: $authorizationCode 不传值时会自动获取 URL 中 auth_code 值
-        $authorizationInfo = $openPlatform->getAuthorizationInfo();
+        $authorizationInfo = $this->wechat->open_platform->getAuthorizationInfo();
         //获取授权方的公众号帐号基本信息
-        $authorizerInfo = $openPlatform->getAuthorizerInfo($authorizationInfo["authorization_info"]["authorizer_appid"]);
+        $authorizerInfo = $this->wechat->open_platform->getAuthorizerInfo($authorizationInfo["authorization_info"]["authorizer_appid"]);
 
         $authorization_appid = $authorizationInfo['authorization_info']['authorizer_appid'];
         $authorization_access_token = $authorizationInfo['authorization_info']['authorizer_access_token'];
@@ -124,10 +124,33 @@ class WechatOpenPlatformController extends \App\Http\Controllers\Controller
 
     /**
      * js签名
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @return
      */
-    public function jsConfig()
+    public function jsConfig(\Symfony\Component\HttpFoundation\Request $request)
     {
-        //todo js签名
+        list($appId, $refreshToken) = WechatUtils::createAuthorizerApplicationParams($request);
+        // 传递 AuthorizerAppId 和 AuthorizerRefreshToken（注意不是 AuthorizerAccessToken）即可。
+        $app = $this->wechat->open_platform->createAuthorizerApplication($appId, $refreshToken);
+        // 调用方式与普通调用一致。
+        $js = $app->js;
+        $result = $js->config([
+            'menuItem:copyUr',
+            'hideOptionMenu',
+            'hideAllNonBaseMenuItem',
+            'hideMenuItems',
+            'showMenuItems',
+            'showAllNonBaseMenuItem',
+            'onMenuShareTimeline',
+            'onMenuShareAppMessage',
+            'onMenuShareQQ',
+            'onMenuShareWeibo',
+            'onMenuShareQZone',
+        ], $debug = false, $beta = false, $json = true);
+//        $url=Input::get("redirect_url");
+//        $js->setUrl($url);
+        return response($result);
     }
 
 
