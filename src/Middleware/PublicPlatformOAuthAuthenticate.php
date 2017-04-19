@@ -10,7 +10,7 @@ use Event;
 use Illuminate\Support\Facades\Request;
 use Log;
 use Overtrue\LaravelWechat\Events\WeChatUserAuthorized;
-use WechatUtils;
+use Overtrue\LaravelWechat\WechatUtils;
 
 /**
  * 微信开放平台替公众号获取用户授权中间件

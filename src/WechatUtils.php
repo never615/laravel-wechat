@@ -1,7 +1,8 @@
 <?php
+namespace Overtrue\LaravelWechat;
+
 use App\Exceptions\PermissionDeniedException;
 use Illuminate\Support\Facades\Request;
-use Overtrue\LaravelWechat\WechatAuthInfo;
 
 /**
  * Created by PhpStorm.
