@@ -70,22 +70,22 @@ class PublicPlatformOAuthAuthenticate
             $scopes = array_map('trim', explode(',', $scopes));
         }
 
-        if (!session('wechatpublic.oauth_user') || $this->needReauth($scopes)) {
+        if (!session('wechat.oauth_user') || $this->needReauth($scopes)) {
             if ($request->has('code')) {
-                session(['wechatpublic.oauth_user' => $app->oauth->user()]);
+                session(['wechat.oauth_user' => $app->oauth->user()]);
                 $isNewSession = true;
 
-                Event::fire(new WeChatUserAuthorized(session('wechatpublic.oauth_user'), $isNewSession));
+                Event::fire(new WeChatUserAuthorized(session('wechat.oauth_user'), $isNewSession));
 
                 return redirect()->to($this->getTargetUrl($request));
             }
 
-            session()->forget('wechatpublic.oauth_user');
+            session()->forget('wechat.oauth_user');
 
             return $app->oauth->scopes($scopes)->redirect($request->fullUrl());
         }
 
-        Event::fire(new WeChatUserAuthorized(session('wechatpublic.oauth_user'), $isNewSession));
+        Event::fire(new WeChatUserAuthorized(session('wechat.oauth_user'), $isNewSession));
 
         return $next($request);
     }

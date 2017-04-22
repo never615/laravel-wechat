@@ -3,10 +3,11 @@ namespace Overtrue\LaravelWechat\Controllers;
 
 
 use EasyWeChat\Foundation\Application;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Overtrue\LaravelWechat\WechatAuthInfo;
-use WechatUtils;
+use Overtrue\LaravelWechat\WechatUtils;
 
 /**
  * Created by PhpStorm.
@@ -14,7 +15,7 @@ use WechatUtils;
  * Date: 11/04/2017
  * Time: 7:15 PM
  */
-class WechatOpenPlatformController extends \App\Http\Controllers\Controller
+class WechatOpenPlatformController extends Controller
 {
 
     private $wechat;
@@ -61,7 +62,7 @@ class WechatOpenPlatformController extends \App\Http\Controllers\Controller
                     break;
                 case 'component_verify_ticket':
                     // ...
-//                    Log::info("component_verify_ticket");
+                    Log::info("component_verify_ticket");
                     break;
                 default:
                     Log::info("其他事件");

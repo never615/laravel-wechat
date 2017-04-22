@@ -25,7 +25,7 @@ class CacheBridge implements CacheInterface
         } else {
             $prefix = 'easywechat.open_platform.component_verify_ticket.';
             if (strpos($id, $prefix) === 0) {
-                $config = WechatPlatformConfig::find(1);
+                $config = WechatPlatformConfig::first();
                 if ($config) {
                     return $config->component_verify_ticket;
                 } else {
@@ -68,7 +68,7 @@ class CacheBridge implements CacheInterface
 
         if (strpos($id, $prefix) === 0) {
             //在保存ticket,为了保证安全,在数据库在保存一份
-            $platformConfig = WechatPlatformConfig::find(1);
+            $platformConfig = WechatPlatformConfig::first();
             if ($platformConfig) {
                 $platformConfig->component_verify_ticket = $data;
             } else {
