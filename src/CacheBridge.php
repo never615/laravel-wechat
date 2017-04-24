@@ -71,6 +71,7 @@ class CacheBridge implements CacheInterface
             $platformConfig = WechatPlatformConfig::first();
             if ($platformConfig) {
                 $platformConfig->component_verify_ticket = $data;
+                $platformConfig->save();
             } else {
                 WechatPlatformConfig::create([
                     "component_verify_ticket" => $data,
