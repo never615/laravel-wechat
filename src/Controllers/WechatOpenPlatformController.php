@@ -62,7 +62,7 @@ class WechatOpenPlatformController extends Controller
                     break;
                 case 'component_verify_ticket':
                     // ...
-                    Log::info("component_verify_ticket");
+//                    Log::info("component_verify_ticket");
                     break;
                 default:
                     Log::info("其他事件");
