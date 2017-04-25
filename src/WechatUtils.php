@@ -45,17 +45,17 @@ class WechatUtils
     }
 
 
-    public static function getSubjectId($request)
+    public static function getUUID($request)
     {
 
-        $subjectId = Request::header("Subject_Id");
-        if ($subjectId) {
-            return $subjectId;
+        $uuid = Request::header("UUID");
+        if ($uuid) {
+            return $uuid;
         }
 
-        $subjectId = $request->app_id;
-        if ($subjectId) {
-            return $subjectId;
+        $uuid = $request->app_id;
+        if ($uuid) {
+            return $uuid;
         }
 
         return null;
@@ -90,10 +90,10 @@ class WechatUtils
             ];
         }
 
-        $subjectId = self::getSubjectId($reuqest);
-        if ($subjectId) {
+        $uuid = self::getUUID($reuqest);
+        if ($uuid) {
             //根据subjectId查询appId
-            $wechatAuthInfo = WechatAuthInfo::where("subject_id", $subjectId)->first();
+            $wechatAuthInfo = WechatAuthInfo::where("uuid", $uuid)->first();
             if ($wechatAuthInfo) {
                 $appId = $wechatAuthInfo->authorizer_appid;
 

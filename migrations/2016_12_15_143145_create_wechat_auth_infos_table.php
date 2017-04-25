@@ -16,8 +16,7 @@ class CreateWechatAuthInfosTable extends Migration
         $connection = config('wechat.connection_name') ?: config('database.default');
         Schema::connection($connection)->create('wechat_auth_infos', function (Blueprint $table) {
             $table->increments('id');
-
-            $table->unsignedInteger("subject_id")->nullable();
+            $table->unsignedInteger("uuid")->unique()->nullable()->comment("分配的商城id");
             $table->string('authorizer_appid')->commment('授权方appid');
             $table->string('authorizer_access_token')->commment('授权方接口调用凭据（在授权的公众号具备API权限时，才有此返回值），也简称为令牌');
             $table->string('authorizer_refresh_token')->commment('接口调用凭据刷新令牌（在授权的公众号具备API权限时，才有此返回值），刷新令牌主要用于公众号第三方平台获取和刷新已授权用户的access_token，只会在授权时刻提供，请妥善保存。 一旦丢失，只能让用户重新授权，才能再次拿到新的刷新令牌');
@@ -49,6 +48,8 @@ class CreateWechatAuthInfosTable extends Migration
 //自定义菜单权限
 
             $table->unique("authorizer_appid");
+            $table->unique("uuid");
+
 
             $table->timestamps();
         });
