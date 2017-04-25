@@ -42,13 +42,23 @@ class AuthInfoController extends \Encore\Admin\Controllers\Base\AdminCommonContr
         $grid->alias("公众号");
     }
 
+    protected function defaultFormOption(Form $form)
+    {
+        $form->display('id', 'ID');
+        $this->formOption($form);
+//
+
+        $form->display('created_at', trans('admin::lang.created_at'));
+        $form->display('updated_at', trans('admin::lang.updated_at'));
+    }
+
     protected function formOption(Form $form)
     {
         $form->display("nick_name", "公众号名");
         $form->display("authorizer_appid", "AppId");
         $form->display("principal_name", "公司");
         $form->display("alias", "公众号");
-        $form->text("subject_id")->rules("integer");
+        $form->text("subject_id", "主体id")->rules("integer");
 
     }
 }
