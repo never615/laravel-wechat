@@ -58,7 +58,7 @@ class AuthInfoController extends \Encore\Admin\Controllers\Base\AdminCommonContr
         $form->display("authorizer_appid", "AppId");
         $form->display("principal_name", "公司");
         $form->display("alias", "公众号");
-        $form->text("subject_id", "主体id")->rules("integer");
+        $form->text("uuid");
 
     }
 }
