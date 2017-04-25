@@ -7,9 +7,11 @@ use Cache;
 use Closure;
 use EasyWeChat\Foundation\Application;
 use Event;
-use Illuminate\Support\Facades\Request;
 use Log;
+use Illuminate\Support\Facades\Request;
 use Overtrue\LaravelWechat\Events\WeChatUserAuthorized;
+use Overtrue\LaravelWechat\WechatUserInfo;
+use Overtrue\LaravelWechat\WechatUserInfoRepository;
 use Overtrue\LaravelWechat\WechatUtils;
 
 /**
@@ -28,13 +30,19 @@ class PublicPlatformOAuthAuthenticate
      */
     private $wechat;
 
+    private $userInfoRepository;
+
 
     /**
      * Inject the wechat service.
+     *
+     * @param Application              $wechat
+     * @param WechatUserInfoRepository $userInfoRepository
      */
-    public function __construct(Application $wechat)
+    public function __construct(Application $wechat, WechatUserInfoRepository $userInfoRepository)
     {
         $this->wechat = $wechat;
+        $this->userInfoRepository = $userInfoRepository;
     }
 
     /**
@@ -71,6 +79,7 @@ class PublicPlatformOAuthAuthenticate
         }
 
         if (!session('wechat.oauth_user') || $this->needReauth($scopes)) {
+            $this->userInfoRepository->createOrUpdate($app->oauth->user(), $appId);
             if ($request->has('code')) {
                 session(['wechat.oauth_user' => $app->oauth->user()]);
                 $isNewSession = true;
@@ -86,7 +95,6 @@ class PublicPlatformOAuthAuthenticate
         }
 
         Event::fire(new WeChatUserAuthorized(session('wechat.oauth_user'), $isNewSession));
-
         return $next($request);
     }
 
@@ -126,5 +134,6 @@ class PublicPlatformOAuthAuthenticate
     {
         return strpos($request->header('user_agent'), 'MicroMessenger') !== false;
     }
+
 
 }
