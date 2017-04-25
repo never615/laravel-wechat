@@ -11,7 +11,7 @@
         Route::get('/platform/auth/callback',
             '\Overtrue\LaravelWechat\Controllers\WechatOpenPlatformController@authCallback');
 
-        Route::group(['middleware' => ['mall.wechat.public_oauth']], function ($route) {
+        Route::group(['middleware' => ['wechat.public_oauth']], function ($route) {
 
             //微信登录
             Route::get("login", 'Auth\WechatLoginController@wechatLogin');
