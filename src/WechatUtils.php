@@ -1,6 +1,7 @@
 <?php
 namespace Overtrue\LaravelWechat;
 
+use App\Exceptions\InvalidParamException;
 use App\Exceptions\PermissionDeniedException;
 use Illuminate\Support\Facades\Request;
 
@@ -31,12 +32,36 @@ class WechatUtils
             return $appId;
         }
 
+
+        return null;
+
+
+        //下面的方式暂时不用,应为一个域名要使用一个https证书,太麻烦.
         $url = $request->url();
         //获取第一段域名
         $urlArr = explode(".", explode("//", $url)[1]);
 
         return $urlArr[0];
     }
+
+
+    public static function getSubjectId($request)
+    {
+
+        $subjectId = Request::header("Subject_Id");
+        if ($subjectId) {
+            return $subjectId;
+        }
+
+        $subjectId = $request->app_id;
+        if ($subjectId) {
+            return $subjectId;
+        }
+
+        return null;
+
+    }
+
 
     public static function getRefreshToken($appId)
     {
@@ -58,11 +83,28 @@ class WechatUtils
     public static function createAuthorizerApplicationParams($reuqest)
     {
         $appId = self::getAppid($reuqest);
+        if ($appId) {
+            return [
+                $appId,
+                self::getRefreshToken($appId),
+            ];
+        }
 
-        return [
-            $appId,
-            self::getRefreshToken($appId),
-        ];
+        $subjectId = self::getSubjectId($reuqest);
+        if ($subjectId) {
+            //根据subjectId查询appId
+            $wechatAuthInfo = WechatAuthInfo::where("subject_id", $subjectId)->first();
+            if ($wechatAuthInfo) {
+                $appId = $wechatAuthInfo->authorizer_appid;
+
+                return [
+                    $appId,
+                    self::getRefreshToken($appId),
+                ];
+            }
+        }
+
+        throw new InvalidParamException("无效的参数,无法得知微信主体");
     }
 
     public static function jsConfig($appId)
