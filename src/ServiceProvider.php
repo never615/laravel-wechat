@@ -4,7 +4,6 @@ namespace Overtrue\LaravelWechat;
 
 use EasyWeChat\Foundation\Application as EasyWeChatApplication;
 use Illuminate\Foundation\Application as LaravelApplication;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider as LaravelServiceProvider;
 use Laravel\Lumen\Application as LumenApplication;
 use Overtrue\LaravelWechat\Middleware\PublicPlatformOAuthAuthenticate;
@@ -58,7 +57,7 @@ class ServiceProvider extends LaravelServiceProvider
             $this->app->register(RouteServiceProvider::class);
         }
 
-        $this->loadRoutesFrom(__DIR__.'/../../routes/wechat.php');
+        $this->loadRoutesFrom(__DIR__.'/../routes/wechat.php');
     }
 
     /**

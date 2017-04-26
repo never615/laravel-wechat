@@ -3,6 +3,7 @@ namespace Overtrue\LaravelWechat;
 
 use App\Exceptions\InvalidParamException;
 use App\Exceptions\PermissionDeniedException;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 
 /**
@@ -99,7 +100,7 @@ class WechatUtils
 
                 return [
                     $appId,
-                    self::getRefreshToken($appId),
+                    $wechatAuthInfo->authorizer_refresh_token,
                 ];
             }
         }

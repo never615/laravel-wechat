@@ -39,22 +39,11 @@ Route::group($attributes, function ($router) {
 
             //微信授权中心,获取微信用户授权的信息
             Route::get("oauth","WechatOAuthController@oauth");
-            
-            
             //微信登录
 //            Route::get("login", 'Auth\WechatLoginController@wechatLogin');
 //            Route::get("login_with_mobile", 'Auth\WechatLoginController@wechatLoginWithMobile');
 //            Route::get("login_with_email", 'Auth\WechatLoginController@wechatLoginWithEmail');
-
-            //test
-            Route::get('/user1', function () {
-                $user = session('wechat.oauth_user'); // 拿到授权用户资料
-                dd($user);
-            });
-
         });
-
-
     });
 
 
