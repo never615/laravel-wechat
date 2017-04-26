@@ -13,6 +13,11 @@ return [
      */
     'use_laravel_cache' => true,
 
+    /**
+     * 数据库连接
+     */
+    "connection_name"   => "wechat_public",
+    
     /*
      * 账号基本信息，请从微信公众平台获取
      */

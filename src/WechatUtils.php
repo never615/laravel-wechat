@@ -37,11 +37,11 @@ class WechatUtils
 
 
         //下面的方式暂时不用,应为一个域名要使用一个https证书,太麻烦.
-        $url = $request->url();
-        //获取第一段域名
-        $urlArr = explode(".", explode("//", $url)[1]);
-
-        return $urlArr[0];
+//        $url = $request->url();
+//        //获取第一段域名
+//        $urlArr = explode(".", explode("//", $url)[1]);
+//
+//        return $urlArr[0];
     }
 
 
@@ -53,7 +53,7 @@ class WechatUtils
             return $uuid;
         }
 
-        $uuid = $request->app_id;
+        $uuid = $request->uuid;
         if ($uuid) {
             return $uuid;
         }
@@ -90,10 +90,10 @@ class WechatUtils
             ];
         }
 
-        $uuid = self::getUUID($reuqest);
-        if ($uuid) {
+        $UUID = self::getUUID($reuqest);
+        if ($UUID) {
             //根据subjectId查询appId
-            $wechatAuthInfo = WechatAuthInfo::where("uuid", $uuid)->first();
+            $wechatAuthInfo = WechatAuthInfo::where("uuid", $UUID)->first();
             if ($wechatAuthInfo) {
                 $appId = $wechatAuthInfo->authorizer_appid;
 
