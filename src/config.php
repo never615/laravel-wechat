@@ -6,7 +6,7 @@ return [
      *
      * 当值为 false 时，所有的日志都不会记录
      */
-    'debug'  => true,
+    'debug'             => true,
 
     /*
      * 使用 Laravel 的缓存系统
@@ -17,28 +17,37 @@ return [
      * 数据库连接
      */
     "connection_name"   => "wechat_public",
-    
+
+    /**
+     * 授权中心地址
+     */
+    "oauth_url"         => "https://wechat.mall-to.com/wechat/oauth",
+
     /*
      * 账号基本信息，请从微信公众平台获取
      */
-    'app_id'  => env('WECHAT_APPID', 'your-app-id'),         // AppID
-    'secret'  => env('WECHAT_SECRET', 'your-app-secret'),     // AppSecret
-    'token'   => env('WECHAT_TOKEN', 'your-token'),          // Token
-    'aes_key' => env('WECHAT_AES_KEY', ''),                    // EncodingAESKey
+    'app_id'            => env('WECHAT_APPID', 'your-app-id'),
+    // AppID
+    'secret'            => env('WECHAT_SECRET', 'your-app-secret'),
+    // AppSecret
+    'token'             => env('WECHAT_TOKEN', 'your-token'),
+    // Token
+    'aes_key'           => env('WECHAT_AES_KEY', ''),
+    // EncodingAESKey
 
     /**
      * 开放平台第三方平台配置信息
      */
     //'open_platform' => [
-        /**
-         * 事件推送URL,不可用
-         */
-        //'serve_url' => env('WECHAT_OPEN_PLATFORM_SERVE_URL', 'serve'),
-        // 账号基本信息，请从开放平台获取
-        //'app_id'  => env('WECHAT_APPID', 'your-app-id'),         // AppID
-        //'secret'  => env('WECHAT_SECRET', 'your-app-secret'),     // AppSecret
-        //'token'   => env('WECHAT_TOKEN', 'your-token'),          // Token
-        //'aes_key' => env('WECHAT_AES_KEY', ''),                    // EncodingAESKey
+    /**
+     * 事件推送URL,不可用
+     */
+    //'serve_url' => env('WECHAT_OPEN_PLATFORM_SERVE_URL', 'serve'),
+    // 账号基本信息，请从开放平台获取
+    //'app_id'  => env('WECHAT_APPID', 'your-app-id'),         // AppID
+    //'secret'  => env('WECHAT_SECRET', 'your-app-secret'),     // AppSecret
+    //'token'   => env('WECHAT_TOKEN', 'your-token'),          // Token
+    //'aes_key' => env('WECHAT_AES_KEY', ''),                    // EncodingAESKey
     //],
 
     /*
@@ -48,7 +57,7 @@ return [
      *                 debug/info/notice/warning/error/critical/alert/emergency
      * file：日志文件位置(绝对路径!!!)，要求可写权限
      */
-    'log' => [
+    'log'               => [
         'level' => env('WECHAT_LOG_LEVEL', 'debug'),
         'file'  => env('WECHAT_LOG_FILE', storage_path('logs/wechat.log')),
     ],

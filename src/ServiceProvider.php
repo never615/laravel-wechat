@@ -6,7 +6,6 @@ use EasyWeChat\Foundation\Application as EasyWeChatApplication;
 use Illuminate\Foundation\Application as LaravelApplication;
 use Illuminate\Support\ServiceProvider as LaravelServiceProvider;
 use Laravel\Lumen\Application as LumenApplication;
-use Overtrue\LaravelWechat\Middleware\PublicPlatformOAuthAuthenticate;
 use Overtrue\LaravelWechat\ServiceProviders\RouteServiceProvider;
 use Overtrue\Socialite\User as SocialiteUser;
 
@@ -17,30 +16,13 @@ class ServiceProvider extends LaravelServiceProvider
      *
      * @var bool
      */
-//    protected $defer = true;
+    protected $defer = true;
 
     /**
      * @var array
      */
     protected $commands = [
         'Overtrue\LaravelWechat\Commands\InstallCommand',
-    ];
-
-    /**
-     * The application's route middleware.
-     *
-     * @var array
-     */
-    protected $routeMiddleware = [
-        "wechat.public_oauth" => PublicPlatformOAuthAuthenticate::class,
-    ];
-
-    /**
-     * The application's route middleware groups.
-     *
-     * @var array
-     */
-    protected $middlewareGroups = [
     ];
 
     /**
@@ -56,8 +38,6 @@ class ServiceProvider extends LaravelServiceProvider
         if ($this->isEnableOpenPlatform()) {
             $this->app->register(RouteServiceProvider::class);
         }
-
-        $this->loadRoutesFrom(__DIR__.'/../routes/wechat.php');
     }
 
     /**
@@ -104,19 +84,18 @@ class ServiceProvider extends LaravelServiceProvider
 
         $this->app->alias(EasyWeChatApplication::class, 'wechat');
         $this->app->alias(EasyWeChatApplication::class, 'easywechat');
-        $this->registerRouteMiddleware();
 
     }
 
-//    /**
-//     * 提供的服务
-//     *
-//     * @return array
-//     */
-//    public function provides()
-//    {
-//        return ['wechat', EasyWeChatApplication::class];
-//    }
+    /**
+     * 提供的服务
+     *
+     * @return array
+     */
+    public function provides()
+    {
+        return ['wechat', EasyWeChatApplication::class];
+    }
 
     /**
      * 创建模拟登录.
@@ -160,23 +139,5 @@ class ServiceProvider extends LaravelServiceProvider
     }
 
 
-    /**
-     * Register the route middleware.
-     *
-     * @return void
-     */
-    protected function registerRouteMiddleware()
-    {
-        // register route middleware.
-        foreach ($this->routeMiddleware as $key => $middleware) {
-            app('router')->aliasMiddleware($key, $middleware);
-        }
 
-        // register middleware group.
-        foreach ($this->middlewareGroups as $key => $middleware) {
-            app('router')->middlewareGroup($key, $middleware);
-
-        }
-
-    }
 }

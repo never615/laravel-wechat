@@ -24,7 +24,10 @@ class WechatOAuthController extends \Illuminate\Routing\Controller
         Log::info($wechatUser);
 
         return redirect($redirectUrl, 302,
-            ["wechat_user" => \GuzzleHttp\json_encode($wechatUser)]);
+            ["wechat_user" => \GuzzleHttp\json_encode($wechatUser->id)]);
+        
+//        return redirect($redirectUrl, 302,
+//            ["wechat_user" => \GuzzleHttp\json_encode($wechatUser)]);
     }
     
 }
