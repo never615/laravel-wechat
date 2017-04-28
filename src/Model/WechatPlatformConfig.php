@@ -1,6 +1,7 @@
 <?php
 
-namespace Overtrue\LaravelWechat;
+namespace Overtrue\LaravelWechat\Model;
+
 
 use Encore\Admin\Auth\Database\Traits\DynamicData;
 use Illuminate\Database\Eloquent\Model;

@@ -1,5 +1,5 @@
 <?php
-namespace Overtrue\LaravelWechat;
+namespace Overtrue\LaravelWechat\Model;
 
 
 /**

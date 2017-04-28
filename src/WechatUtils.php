@@ -3,8 +3,8 @@ namespace Overtrue\LaravelWechat;
 
 use App\Exceptions\InvalidParamException;
 use App\Exceptions\PermissionDeniedException;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
+use Overtrue\LaravelWechat\Model\WechatAuthInfo;
 
 /**
  * Created by PhpStorm.

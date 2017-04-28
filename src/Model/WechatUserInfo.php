@@ -1,6 +1,7 @@
 <?php
 
-namespace Overtrue\LaravelWechat;
+namespace Overtrue\LaravelWechat\Model;
+
 
 use Illuminate\Database\Eloquent\Model;
 

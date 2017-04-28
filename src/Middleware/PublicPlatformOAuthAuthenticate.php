@@ -10,7 +10,7 @@ use Event;
 use Illuminate\Support\Facades\Request;
 use Log;
 use Overtrue\LaravelWechat\Events\WeChatUserAuthorized;
-use Overtrue\LaravelWechat\WechatUserInfoRepository;
+use Overtrue\LaravelWechat\Model\WechatUserInfoRepository;
 use Overtrue\LaravelWechat\WechatUtils;
 
 /**

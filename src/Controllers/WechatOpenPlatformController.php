@@ -6,7 +6,7 @@ use EasyWeChat\Foundation\Application;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
-use Overtrue\LaravelWechat\WechatAuthInfo;
+use Overtrue\LaravelWechat\Model\WechatAuthInfo;
 use Overtrue\LaravelWechat\WechatUtils;
 
 /**
