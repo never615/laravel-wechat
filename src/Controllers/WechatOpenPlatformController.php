@@ -2,8 +2,10 @@
 namespace Overtrue\LaravelWechat\Controllers;
 
 
+use App\Exceptions\ResourceException;
 use EasyWeChat\Foundation\Application;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Overtrue\LaravelWechat\Model\WechatAuthInfo;
@@ -136,6 +138,11 @@ class WechatOpenPlatformController extends Controller
         $app = $this->wechat->open_platform->createAuthorizerApplication($appId, $refreshToken);
         // 调用方式与普通调用一致。
         $js = $app->js;
+        $url=Input::get("url");
+        if(is_null($url)){
+            throw new ResourceException("url is null");
+        }
+        $js->setUrl($url);
         $result = $js->config([
             'menuItem:copyUr',
             'hideOptionMenu',
@@ -149,8 +156,7 @@ class WechatOpenPlatformController extends Controller
             'onMenuShareWeibo',
             'onMenuShareQZone',
         ], $debug = false, $beta = false, $json = true);
-//        $url=Input::get("redirect_url");
-//        $js->setUrl($url);
+
         return response($result);
     }
 

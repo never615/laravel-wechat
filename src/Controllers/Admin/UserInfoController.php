@@ -3,6 +3,7 @@ namespace Overtrue\LaravelWechat\Controllers\Admin;
 
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
+use Overtrue\LaravelWechat\Model\WechatAuthInfo;
 use Overtrue\LaravelWechat\Model\WechatUserInfo;
 
 /**
@@ -44,6 +45,16 @@ class UserInfoController extends \Encore\Admin\Controllers\Base\AdminCommonContr
         $grid->province();
         $grid->country();
         $grid->app_id();
+        $grid->wechat_name("公众号")->display(function(){
+            $appId=$this->app_id;
+            $info=WechatAuthInfo::where("authorizer_appid",$appId)->first();
+            return $info->nick_name;
+        });
+
+        $grid->filter(function($filter){
+            $filter->like("app_id","app_id");
+        });
+
     }
 
     protected function formOption(Form $form)
