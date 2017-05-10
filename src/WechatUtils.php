@@ -3,6 +3,8 @@ namespace Overtrue\LaravelWechat;
 
 use App\Exceptions\InvalidParamException;
 use App\Exceptions\PermissionDeniedException;
+use App\Exceptions\ResourceException;
+use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Request;
 use Overtrue\LaravelWechat\Model\WechatAuthInfo;
 
@@ -116,6 +118,11 @@ class WechatUtils
         $app = $wechat->open_platform->createAuthorizerApplication($appId, $refreshToken);
         // 调用方式与普通调用一致。
         $js = $app->js;
+        $url = Input::get("url");
+        if (is_null($url)) {
+            throw new ResourceException("url is null");
+        }
+        $js->setUrl($url);
         $result = $js->config([
             'menuItem:copyUr',
             'hideOptionMenu',

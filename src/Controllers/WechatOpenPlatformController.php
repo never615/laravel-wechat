@@ -26,10 +26,10 @@ class WechatOpenPlatformController extends Controller
     /**
      * WechatOpenPlatformController constructor.
      */
-    public function __construct(Application $wecaht)
+    public function __construct(Application $wechat)
     {
-        $this->wechat = $wecaht;
-        $this->openPlatform = $wecaht->open_platform;
+        $this->wechat = $wechat;
+        $this->openPlatform = $wechat->open_platform;
     }
 
 
@@ -135,11 +135,11 @@ class WechatOpenPlatformController extends Controller
     {
         list($appId, $refreshToken) = WechatUtils::createAuthorizerApplicationParams($request);
         // 传递 AuthorizerAppId 和 AuthorizerRefreshToken（注意不是 AuthorizerAccessToken）即可。
-        $app = $this->wechat->open_platform->createAuthorizerApplication($appId, $refreshToken);
+        $app = $this->openPlatform->createAuthorizerApplication($appId, $refreshToken);
         // 调用方式与普通调用一致。
         $js = $app->js;
-        $url=Input::get("url");
-        if(is_null($url)){
+        $url = Input::get("url");
+        if (is_null($url)) {
             throw new ResourceException("url is null");
         }
         $js->setUrl($url);
