@@ -1,6 +1,8 @@
 <?php
 namespace Overtrue\LaravelWechat\Model;
 
+use App\Exceptions\PermissionDeniedException;
+
 
 /**
  * Created by PhpStorm.
@@ -19,14 +21,19 @@ class WechatUserInfoRepository
      */
     public function createOrUpdate($wechatUser, $app_id)
     {
-        $wechatUser=$wechatUser["original"];
+        $wechatAuthInfo = WechatAuthInfo::where("authorizer_appid", $app_id)->first();
+        if (!$wechatAuthInfo) {
+            throw new PermissionDeniedException("公众号未授权");
+        }
+
+        $wechatUser = $wechatUser["original"];
         if (isset($wechatUser['openid'])) {
 
             $user = WechatUserInfo::where('openid', $wechatUser['openid'])->first();
             if ($user) {
-                $this->updateUser($user, $wechatUser, $app_id);
+                $this->updateUser($user, $wechatUser, $app_id, $wechatAuthInfo->id);
             } else {
-                $this->createUser($wechatUser, $app_id);
+                $this->createUser($wechatUser, $app_id, $wechatAuthInfo->id);
             }
         }
     }
@@ -37,12 +44,13 @@ class WechatUserInfoRepository
      * @param $user
      * @param $wechatInfoArr
      * @param $app_id
+     * @param $authId
      * @return mixed
      * @internal param array $weChatUser
      */
-    private function updateUser($user, $wechatInfoArr, $app_id)
+    private function updateUser($user, $wechatInfoArr, $app_id, $authId)
     {
-        return $user->update($this->makeUserArr($wechatInfoArr, $app_id));
+        return $user->update($this->makeUserArr($wechatInfoArr, $app_id, $authId));
     }
 
     /**
@@ -50,28 +58,31 @@ class WechatUserInfoRepository
      *
      * @param $wechatInfoArr
      * @param $app_id
+     * @param $authId
      * @return static
      * @internal param $weChatUser
      */
-    private function createUser($wechatInfoArr, $app_id)
+    private function createUser($wechatInfoArr, $app_id, $authId)
     {
-        return WechatUserInfo::create($this->makeUserArr($wechatInfoArr, $app_id));
+        return WechatUserInfo::create($this->makeUserArr($wechatInfoArr, $app_id, $authId));
     }
 
 
-    private function makeUserArr($wechatInfoArr, $app_id)
+    private function makeUserArr($wechatInfoArr, $app_id, $authId)
     {
         $data = [
-            'openid'   => $wechatInfoArr['openid'],
-            'nickname' => $wechatInfoArr['nickname'],
-            'avatar'   => $wechatInfoArr['headimgurl'],
-            'sex'      => $wechatInfoArr['sex'],
-            'language' => $wechatInfoArr['language'],
-            'city'     => $wechatInfoArr['city'],
-            'province' => $wechatInfoArr['province'],
-            'country'  => $wechatInfoArr['country'],
-            'app_id'   => $app_id,
+            'openid'              => $wechatInfoArr['openid'],
+            'nickname'            => $wechatInfoArr['nickname'],
+            'avatar'              => $wechatInfoArr['headimgurl'],
+            'sex'                 => $wechatInfoArr['sex'],
+            'language'            => $wechatInfoArr['language'],
+            'city'                => $wechatInfoArr['city'],
+            'province'            => $wechatInfoArr['province'],
+            'country'             => $wechatInfoArr['country'],
+            'app_id'              => $app_id,
+            "wechat_auth_info_id" => $authId,
         ];
+
         return $data;
     }
 

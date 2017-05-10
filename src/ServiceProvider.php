@@ -33,6 +33,8 @@ class ServiceProvider extends LaravelServiceProvider
     public function boot()
     {
         $this->setupConfig();
+
+
 //        $this->loadMigrationsFrom(__DIR__.'/../migrations/');
 
         if ($this->isEnableOpenPlatform()) {
@@ -81,6 +83,8 @@ class ServiceProvider extends LaravelServiceProvider
 
             return $app;
         });
+        $this->commands($this->commands);
+
 
         $this->app->alias(EasyWeChatApplication::class, 'wechat');
         $this->app->alias(EasyWeChatApplication::class, 'easywechat');

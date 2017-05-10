@@ -44,5 +44,9 @@ class WechatAuthInfo extends Model
         $this->setConnection($connection);
         parent::__construct($attributes);
     }
+    
+    public function users(){
+        return $this->hasMany(WechatUserInfo::class);
+    }
 
 }
