@@ -25,7 +25,7 @@ class WechatOAuthController extends \Illuminate\Routing\Controller
         $redirectUrl = $request->redirect_url;
         $wechatUser = session('wechat.oauth_user');
 
-        return ResponseUtils::responseBasicByRedirect2($redirectUrl,["openid"=> $wechatUser->id])
+        return ResponseUtils::responseBasicByRedirect2($redirectUrl,["openid"=> encrypt($wechatUser->id)])
             ->cookie('openid', $wechatUser->id, 1000, null, null, false, false);
 
 //        return redirect($redirectUrl)
