@@ -79,6 +79,7 @@ class PublicPlatformOAuthAuthenticate
 
         if (!session('wechat.oauth_user') || $this->needReauth($scopes)) {
             if ($request->has('code')) {
+                //todo 处理code已经被使用的情况
                 $user = $app->oauth->user();
 
                 session(['wechat.oauth_user' => $user]);
