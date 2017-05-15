@@ -56,6 +56,8 @@ class WechatOAuthController extends \Illuminate\Routing\Controller
     public function userTest($request){
         $uuid = WechatUtils::getUUID($request);
         $user = session('wechat.oauth_user'.$uuid); // 拿到授权用户资料
+        Log::info($uuid);
+        Log::info($user);
         dd($user);
     }
 

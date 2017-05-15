@@ -57,6 +57,8 @@ class PublicPlatformOAuthAuthenticate
     {
 
         $uuid=WechatUtils::getUUID($request);
+        Log::info("中间件");
+        Log::info($uuid);
         list($appId, $refreshToken) = WechatUtils::createAuthorizerApplicationParams($request);
         $openPlatform = $this->wechat->open_platform;
         $app = $openPlatform->createAuthorizerApplication($appId, $refreshToken);
