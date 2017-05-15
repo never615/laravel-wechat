@@ -3,6 +3,7 @@ namespace Overtrue\LaravelWechat\Controllers;
 
 use App\Lib\ResponseUtils;
 use Illuminate\Support\Facades\Log;
+use Overtrue\LaravelWechat\WechatUtils;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -21,10 +22,9 @@ class WechatOAuthController extends \Illuminate\Routing\Controller
      */
     public function oauth(Request $request)
     {
-//        $all=Input::all();
-//        Log::info($all);
+        $uuid = WechatUtils::getUUID($request);
         $redirectUrl = $request->redirect_url;
-        $wechatUser = session('wechat.oauth_user');
+        $wechatUser = session('wechat.oauth_user'.$uuid);
 
         $cryptOpenId=encrypt($wechatUser->id);
         Log::info($cryptOpenId);
@@ -36,25 +36,26 @@ class WechatOAuthController extends \Illuminate\Routing\Controller
 //            ->cookie('openid', $wechatUser->id, 1000, null, null, false, false);
     }
 
-    /**
-     * 重定向携带微信用户信息
-     *
-     * @param Request $request
-     * @return \App\Lib\Redirect
-     */
-    public function oauthInfo(Request $request)
-    {
-        $redirectUrl = $request->redirect_url;
-        $wechatUser = session('wechat.oauth_user');
-
-        return ResponseUtils::responseBasicByRedirect2($redirectUrl, $wechatUser);
-    }
+//    /**
+//     * 重定向携带微信用户信息
+//     *
+//     * @param Request $request
+//     * @return \App\Lib\Redirect
+//     */
+//    public function oauthInfo(Request $request)
+//    {
+//        $redirectUrl = $request->redirect_url;
+//        $wechatUser = session('wechat.oauth_user');
+//
+//        return ResponseUtils::responseBasicByRedirect2($redirectUrl, $wechatUser);
+//    }
 
     /**
      * 测试
      */
-    public function userTest(){
-        $user = session('wechat.oauth_user'); // 拿到授权用户资料
+    public function userTest($request){
+        $uuid = WechatUtils::getUUID($request);
+        $user = session('wechat.oauth_user'.$uuid); // 拿到授权用户资料
         dd($user);
     }
 

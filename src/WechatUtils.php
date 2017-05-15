@@ -61,7 +61,7 @@ class WechatUtils
             return $uuid;
         }
 
-        return null;
+        throw new InvalidParamException("无效的参数,无法得知微信主体");
 
     }
 
@@ -80,12 +80,12 @@ class WechatUtils
     /**
      * 获取createAuthorizerApplication的参数
      *
-     * @param $reuqest
+     * @param $request
      * @return array
      */
-    public static function createAuthorizerApplicationParams($reuqest)
+    public static function createAuthorizerApplicationParams($request)
     {
-        $appId = self::getAppid($reuqest);
+        $appId = self::getAppid($request);
         if ($appId) {
             return [
                 $appId,
@@ -93,7 +93,7 @@ class WechatUtils
             ];
         }
 
-        $UUID = self::getUUID($reuqest);
+        $UUID = self::getUUID($request);
         if ($UUID) {
             //根据subjectId查询appId
             $wechatAuthInfo = WechatAuthInfo::where("uuid", $UUID)->first();

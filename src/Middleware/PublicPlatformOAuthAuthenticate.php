@@ -55,6 +55,8 @@ class PublicPlatformOAuthAuthenticate
      */
     public function handle($request, Closure $next, $scopes = null)
     {
+
+        $uuid=WechatUtils::getUUID($request);
         list($appId, $refreshToken) = WechatUtils::createAuthorizerApplicationParams($request);
         $openPlatform = $this->wechat->open_platform;
         $app = $openPlatform->createAuthorizerApplication($appId, $refreshToken);
@@ -77,26 +79,26 @@ class PublicPlatformOAuthAuthenticate
             $scopes = array_map('trim', explode(',', $scopes));
         }
 
-        if (!session('wechat.oauth_user') || $this->needReauth($scopes)) {
+        if (!session('wechat.oauth_user'.$uuid) || $this->needReauth($scopes)) {
             if ($request->has('code')) {
                 //todo 处理code已经被使用的情况
                 $user = $app->oauth->user();
 
-                session(['wechat.oauth_user' => $user]);
+                session(['wechat.oauth_user'.$uuid => $user]);
                 $isNewSession = true;
                 $this->userInfoRepository->createOrUpdate($user, $appId);
-                Event::fire(new WeChatUserAuthorized(session('wechat.oauth_user'), $isNewSession));
+                Event::fire(new WeChatUserAuthorized(session('wechat.oauth_user'.$uuid), $isNewSession));
 
                 return redirect()->to($this->getTargetUrl($request));
             }
 
-            session()->forget('wechat.oauth_user');
+            session()->forget('wechat.oauth_user'.$uuid);
 
             return $app->oauth->scopes($scopes)->redirect($request->fullUrl());
         }
 
-        $this->userInfoRepository->createOrUpdate(session('wechat.oauth_user'), $appId);
-        Event::fire(new WeChatUserAuthorized(session('wechat.oauth_user'), $isNewSession));
+        $this->userInfoRepository->createOrUpdate(session('wechat.oauth_user'.$uuid), $appId);
+        Event::fire(new WeChatUserAuthorized(session('wechat.oauth_user'.$uuid), $isNewSession));
 
         return $next($request);
     }

@@ -18,15 +18,6 @@
             Route::get("login_with_mobile", 'Auth\WechatLoginController@wechatLoginWithMobile');
             Route::get("login_with_email", 'Auth\WechatLoginController@wechatLoginWithEmail');
 
-            //test
-            Route::get('/user1', function () {
-                $user = session('wechat.oauth_user'); // 拿到授权用户资料
-                dd($user);
-            });
-
-
-
-
         });
 
 
