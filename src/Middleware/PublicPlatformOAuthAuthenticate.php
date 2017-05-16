@@ -81,7 +81,17 @@ class PublicPlatformOAuthAuthenticate
 
         if (!session('wechat.oauth_user'.$uuid) || $this->needReauth($scopes)) {
             if ($request->has('code')) {
-                //todo 处理code已经被使用的情况
+                if(Cache::has("wechat.oauth_code".$request->code)){
+                    //code已经被用过了
+                    Cache::forget("wechat.oauth_code".$request->code);
+
+                    session()->forget('wechat.oauth_user'.$uuid);
+
+                    return $app->oauth->scopes($scopes)->redirect($request->fullUrl());
+                }else{
+                    Cache::put("wechat.oauth_code".$request->code,$request->code,5);
+                }
+
                 $user = $app->oauth->user();
 
                 session(['wechat.oauth_user'.$uuid => $user]);
