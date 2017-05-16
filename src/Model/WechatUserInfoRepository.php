@@ -70,6 +70,11 @@ class WechatUserInfoRepository
 
     private function makeUserArr($wechatInfoArr, $app_id, $authId)
     {
+        $unionid = "";
+        if (isset($wechatInfoArr["unionid"])) {
+            $unionid = $wechatInfoArr["unionid"];
+        }
+
         $data = [
             'openid'              => $wechatInfoArr['openid'],
             'nickname'            => $wechatInfoArr['nickname'],
@@ -81,6 +86,7 @@ class WechatUserInfoRepository
             'country'             => $wechatInfoArr['country'],
             'app_id'              => $app_id,
             "wechat_auth_info_id" => $authId,
+//            "unionid"             => $unionid,
         ];
 
         return $data;
