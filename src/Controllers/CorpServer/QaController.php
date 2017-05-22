@@ -6,6 +6,7 @@ use EasyWeChat\Foundation\Application;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Log;
+use Overtrue\LaravelWechat\Model\WechatCorpAuth;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -26,7 +27,6 @@ class QaController extends Controller
     public function __construct(Application $wechat)
     {
         $this->wechat = $wechat;
-//        Log::info($wechat->keys());
         $this->corp_server_qa = $wechat->corp_server_qa;
     }
 
@@ -88,47 +88,39 @@ class QaController extends Controller
     public function authCallback()
     {
 
-        $state = Input::get("state");
-        $info=json_decode(urldecode($state));
-
         Log::info("----------- 授权回调 ------");
-        Log::info($info);
+
+
+//        $this->corp_server_qa->getAuthorizerInfo();
 
 //        // 使用授权码换取公众号的接口调用凭据和授权信息
 //        // Optional: $authorizationCode 不传值时会自动获取 URL 中 auth_code 值
-//        $authorizationInfo = $this->corp_server_qa->getAuthorizationInfo();
-//        //获取授权方的公众号帐号基本信息
-//        $authorizerInfo = $this->corp_server_qa->getAuthorizerInfo($authorizationInfo["authorization_info"]["authorizer_appid"]);
-//
-//        $authorization_appid = $authorizationInfo['authorization_info']['authorizer_appid'];
-//        $authorization_access_token = $authorizationInfo['authorization_info']['authorizer_access_token'];
-//        $authorization_refresh_token = $authorizationInfo['authorization_info']['authorizer_refresh_token'];
-//
-//        $wechatAuthInfo = WechatAuthInfo::where('authorizer_appid', $authorization_appid)->first();
-//
-//        $data = [
-//            'authorizer_appid'         => $authorization_appid,
-//            'authorizer_access_token'  => $authorization_access_token,
-//            'authorizer_refresh_token' => $authorization_refresh_token,
-//            'nick_name'                => $authorizerInfo['authorizer_info']['nick_name'],
-//            'service_type_info'        => json_encode($authorizerInfo['authorizer_info']['service_type_info']),
-//            'verify_type_info'         => json_encode($authorizerInfo['authorizer_info']['verify_type_info']),
-//            'user_name'                => $authorizerInfo['authorizer_info']['user_name'],
-//            'principal_name'           => $authorizerInfo['authorizer_info']['principal_name'],
-//            'business_info'            => json_encode($authorizerInfo['authorizer_info']['business_info']),
-//            'alias'                    => $authorizerInfo['authorizer_info']['alias'],
-//            'qrcode_url'               => $authorizerInfo['authorizer_info']['qrcode_url'],
-//            'func_info'                => json_encode($authorizerInfo['authorization_info']['func_info']),
-//        ];
-//
-//        if ($wechatAuthInfo) {
-//            call_user_func([$wechatAuthInfo, "update"], $data);
-//        } else {
-//            WechatAuthInfo::create($data);
-//        }
-//        echo $authorizerInfo["authorizer_info"]["nick_name"]."授权给微信开放平台服务商墨兔科技成功";
+        $authorizationInfo = $this->corp_server_qa->getAuthorizationInfo();
+        Log::info($authorizationInfo);
 
-        echo "授权成功";
+//        //获取授权方的公众号帐号基本信息
+        $authorizerInfo = $this->corp_server_qa->getAuthorizerInfo($authorizationInfo["auth_corp_info"]["corpid"],$authorizationInfo['permanent_code']);
+        Log::info($authorizerInfo);
+
+
+        $corpId=$authorizationInfo['auth_corp_info']['corpid'];
+
+        $wechatCorpAuth=WechatCorpAuth::where("corp_id",$corpId)->first();
+
+
+        $data=[
+            'corp_id'=>$corpId,
+            'permanent_code'=>$authorizationInfo['permanent_code'],
+            'corp_name'=>$authorizationInfo['auth_corp_info']['corp_name'],
+            'auth_info'=>$authorizationInfo
+        ];
+        if ($wechatCorpAuth) {
+            call_user_func([$wechatCorpAuth, "update"], $data);
+        } else {
+            WechatCorpAuth::create($data);
+        }
+
+        echo $authorizationInfo['auth_corp_info']['corp_name']."申请使用墨兔科技企业号应用(问答系统)成功";
 
         //todo 进入应用管理页面
     }
