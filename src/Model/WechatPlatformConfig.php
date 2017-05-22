@@ -3,29 +3,21 @@
 namespace Overtrue\LaravelWechat\Model;
 
 
-use Encore\Admin\Auth\Database\Traits\DynamicData;
 use Illuminate\Database\Eloquent\Model;
 
 
 class WechatPlatformConfig extends Model
 {
 
-    
-    protected $guarded=[
+
+    protected $guarded = [
 
     ];
 
-    /**
-     * WechatAuthInfo constructor.
-     *
-     * @param array $attributes
-     */
-    public function __construct(array $attributes = [])
-    {
-        $connection = config('wechat.connection_name') ?: config('database.default');
+    protected $casts = [
+        "suite_ticket" => "array",
+        "permanent_code"=>"array"
+    ];
 
-        $this->setConnection($connection);
-        parent::__construct($attributes);
-    }
 
 }

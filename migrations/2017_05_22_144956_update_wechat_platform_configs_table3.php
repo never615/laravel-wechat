@@ -5,10 +5,9 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * 记录微信用户信息
  * Class CreateWechatUserInfoTable
  */
-class CreateWechatPlatformConfigsTable extends Migration
+class UpdateWechatPlatformConfigsTable3 extends Migration
 {
     /**
      * Run the migrations.
@@ -17,10 +16,8 @@ class CreateWechatPlatformConfigsTable extends Migration
      */
     public function up()
     {
-        Schema::create('wechat_platform_configs', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string("component_verify_ticket");
-            $table->timestamps();
+        Schema::table('wechat_platform_configs', function (Blueprint $table) {
+            $table->json("permanent_code")->nullable()->comment("企业号应用的永久授权码");
         });
     }
 
@@ -31,6 +28,9 @@ class CreateWechatPlatformConfigsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('wechat_platform_configs');
+        Schema::table('wechat_platform_configs', function (Blueprint $table) {
+            $table->dropColumn('permanent_code');
+        });
+
     }
 }

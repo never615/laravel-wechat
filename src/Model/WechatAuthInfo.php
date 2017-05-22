@@ -8,13 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class WechatAuthInfo extends Model
 {
-    /**
-     * The connection name for the model.
-     *
-     * @var string
-     */
-    protected $connection;
-
 
     protected $fillable = [
         'authorizer_appid',
@@ -32,19 +25,7 @@ class WechatAuthInfo extends Model
         'authorization_code',
     ];
 
-    /**
-     * WechatAuthInfo constructor.
-     *
-     * @param array $attributes
-     */
-    public function __construct(array $attributes = [])
-    {
-        $connection = config('wechat.connection_name') ?: config('database.default');
 
-        $this->setConnection($connection);
-        parent::__construct($attributes);
-    }
-    
     public function users(){
         return $this->hasMany(WechatUserInfo::class);
     }

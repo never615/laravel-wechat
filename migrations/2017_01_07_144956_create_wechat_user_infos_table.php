@@ -17,8 +17,7 @@ class CreateWechatUserInfosTable extends Migration
      */
     public function up()
     {
-        $connection = config('wechat.connection_name') ?: config('database.default');
-        Schema::connection($connection)->create('wechat_user_infos', function (Blueprint $table) {
+        Schema::create('wechat_user_infos', function (Blueprint $table) {
             $table->increments('id');
             $table->string("openid");
             $table->string("nickname")->nullable();
@@ -42,9 +41,6 @@ class CreateWechatUserInfosTable extends Migration
      */
     public function down()
     {
-
-        $connection =config('wechat.connection_name') ?: config('database.default');
-
-        Schema::connection($connection)->dropIfExists('wechat_user_infos');
+        Schema::dropIfExists('wechat_user_infos');
     }
 }

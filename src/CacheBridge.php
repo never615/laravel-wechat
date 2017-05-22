@@ -11,6 +11,11 @@ use Overtrue\LaravelWechat\Model\WechatPlatformConfig;
  */
 class CacheBridge implements CacheInterface
 {
+
+    const COMPONENT_VERIFY_TICKET = 'easywechat.open_platform.component_verify_ticket.';
+    const SUIT_TICKET = 'easywechat.corp_server.suite_ticket.';
+    const PERMANENT_CODE = 'easywechat.corp_server.permanent_code.';
+
     /**
      * Fetches an entry from the cache.
      *
@@ -24,11 +29,28 @@ class CacheBridge implements CacheInterface
         if ($data) {
             return $data;
         } else {
-            $prefix = 'easywechat.open_platform.component_verify_ticket.';
-            if (strpos($id, $prefix) === 0) {
+            if (strpos($id, self::COMPONENT_VERIFY_TICKET) === 0) {
                 $config = WechatPlatformConfig::first();
                 if ($config) {
                     return $config->component_verify_ticket;
+                } else {
+                    return $data;
+                }
+            } elseif (strpos($id, self::SUIT_TICKET) === 0) {
+                $config = WechatPlatformConfig::first();
+                if ($config) {
+                    $appId = str_replace(self::SUIT_TICKET, "", $id);
+
+                    return $config->suite_ticket["$appId"];
+                } else {
+                    return $data;
+                }
+            } elseif (strpos($id, self::PERMANENT_CODE) === 0) {
+                $config = WechatPlatformConfig::first();
+                if ($config) {
+                    $appId = str_replace(self::SUIT_TICKET, "", $id);
+
+                    return $config->permanent_code["$appId"];
                 } else {
                     return $data;
                 }
@@ -65,9 +87,7 @@ class CacheBridge implements CacheInterface
      */
     public function save($id, $data, $lifeTime = 0)
     {
-        $prefix = 'easywechat.open_platform.component_verify_ticket.';
-
-        if (strpos($id, $prefix) === 0) {
+        if (strpos($id, self::COMPONENT_VERIFY_TICKET) === 0) {
             //在保存ticket,为了保证安全,在数据库在保存一份
             $platformConfig = WechatPlatformConfig::first();
             if ($platformConfig) {
@@ -78,7 +98,39 @@ class CacheBridge implements CacheInterface
                     "component_verify_ticket" => $data,
                 ]);
             }
+        } elseif (strpos($id, self::SUIT_TICKET) === 0) {
+            $appId = str_replace(self::SUIT_TICKET, "", $id);
+
+
+            //在保存ticket,为了保证安全,在数据库在保存一份
+            $platformConfig = WechatPlatformConfig::first();
+            if ($platformConfig) {
+                $suiteTicke = $platformConfig->suite_ticket;
+                $suiteTicke[$appId] = $data;
+                $platformConfig->suite_ticket = $suiteTicke;
+                $platformConfig->save();
+            } else {
+                WechatPlatformConfig::create([
+                    "suite_ticket" => [$appId => $data],
+                ]);
+            }
+        } elseif (strpos($id, self::PERMANENT_CODE) === 0) {
+            $appId = str_replace(self::PERMANENT_CODE, "", $id);
+
+            //在保存永久授权码,为了保证安全,在数据库在保存一份
+            $platformConfig = WechatPlatformConfig::first();
+            if ($platformConfig) {
+                $permanentCode = $platformConfig->permanent_code;
+                $permanentCode[$appId] = $data;
+                $platformConfig->permanent_code = $permanentCode;
+                $platformConfig->save();
+            } else {
+                WechatPlatformConfig::create([
+                    "permanent_code" => [$appId => $data],
+                ]);
+            }
         }
+
 
         if ($lifeTime == 0) {
             return Cache::forever($id, $data);
