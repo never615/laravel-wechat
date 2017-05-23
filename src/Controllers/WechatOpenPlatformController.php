@@ -22,14 +22,22 @@ class WechatOpenPlatformController extends Controller
 
     private $wechat;
     private $openPlatform;
+    /**
+     * @var WechatUtils
+     */
+    private $wechatUtils;
 
     /**
      * WechatOpenPlatformController constructor.
+     *
+     * @param Application $wechat
+     * @param WechatUtils $wechatUtils
      */
-    public function __construct(Application $wechat)
+    public function __construct(Application $wechat,WechatUtils $wechatUtils)
     {
         $this->wechat = $wechat;
         $this->openPlatform = $wechat->open_platform;
+        $this->wechatUtils = $wechatUtils;
     }
 
 
@@ -133,7 +141,7 @@ class WechatOpenPlatformController extends Controller
      */
     public function jsConfig(\Symfony\Component\HttpFoundation\Request $request)
     {
-        list($appId, $refreshToken) = WechatUtils::createAuthorizerApplicationParams($request);
+        list($appId, $refreshToken) = $this->wechatUtils->createAuthorizerApplicationParams($request);
         // 传递 AuthorizerAppId 和 AuthorizerRefreshToken（注意不是 AuthorizerAccessToken）即可。
         $app = $this->openPlatform->createAuthorizerApplication($appId, $refreshToken);
         // 调用方式与普通调用一致。

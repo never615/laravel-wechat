@@ -7,6 +7,7 @@ use App\Exceptions\ResourceException;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Request;
 use Overtrue\LaravelWechat\Model\WechatAuthInfo;
+use Overtrue\LaravelWechat\Model\WechatAuthInfoRepository;
 
 /**
  * Created by PhpStorm.
@@ -17,12 +18,29 @@ use Overtrue\LaravelWechat\Model\WechatAuthInfo;
 class WechatUtils
 {
     /**
+     * @var WechatAuthInfoRepository
+     */
+    private $authInfoRepository;
+
+
+    /**
+     * WechatUtils constructor.
+     *
+     * @param WechatAuthInfoRepository $authInfoRepository
+     */
+    public function __construct(WechatAuthInfoRepository $authInfoRepository)
+    {
+        $this->authInfoRepository = $authInfoRepository;
+    }
+
+
+    /**
      * get appid from url.  [appid].xxx.com
      *
      * @param $request
      * @return mixed
      */
-    public static function getAppid($request)
+    public  function getAppid($request)
     {
 
         $appId = Request::header("APP_ID");
@@ -48,7 +66,7 @@ class WechatUtils
     }
 
 
-    public static function getUUID($request)
+    public  function getUUID($request)
     {
 
         $uuid = Request::header("UUID");
@@ -62,19 +80,8 @@ class WechatUtils
         }
 
         throw new InvalidParamException("无效的参数,无法得知微信主体");
-
     }
 
-
-    public static function getRefreshToken($appId)
-    {
-        $wechatAuthInfo = WechatAuthInfo::where("authorizer_appid", $appId)->first();
-        if (!$wechatAuthInfo) {
-            throw new PermissionDeniedException("公众号主体未授权");
-        }
-
-        return $wechatAuthInfo->authorizer_refresh_token;
-    }
 
 
     /**
@@ -83,17 +90,17 @@ class WechatUtils
      * @param $request
      * @return array
      */
-    public static function createAuthorizerApplicationParams($request)
+    public  function createAuthorizerApplicationParams($request)
     {
-        $appId = self::getAppid($request);
+        $appId = $this->getAppid($request);
         if ($appId) {
             return [
                 $appId,
-                self::getRefreshToken($appId),
+                $this->authInfoRepository->getRefreshToken($appId),
             ];
         }
 
-        $UUID = self::getUUID($request);
+        $UUID = $this->getUUID($request);
         if ($UUID) {
             //根据subjectId查询appId
             $wechatAuthInfo = WechatAuthInfo::where("uuid", $UUID)->first();
@@ -110,10 +117,10 @@ class WechatUtils
         throw new InvalidParamException("无效的参数,无法得知微信主体");
     }
 
-    public static function jsConfig($appId)
+    public  function jsConfig($appId)
     {
         $wechat = app("wechat");
-        $refreshToken = self::getRefreshToken($appId);
+        $refreshToken = $this->authInfoRepository->getRefreshToken($appId);
         // 传递 AuthorizerAppId 和 AuthorizerRefreshToken（注意不是 AuthorizerAccessToken）即可。
         $app = $wechat->open_platform->createAuthorizerApplication($appId, $refreshToken);
         // 调用方式与普通调用一致。

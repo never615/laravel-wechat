@@ -14,16 +14,16 @@ use Overtrue\LaravelWechat\Model\WechatUserInfoRepository;
 use Overtrue\LaravelWechat\WechatUtils;
 
 /**
- * 微信开放平台
- * 代公众号获取用户授权信息
- * 中间件
+ * 微信企业号套件
+ * 获取用户授权信息
+ * 的中间件
  *
  * Created by PhpStorm.
  * User: never615
  * Date: 15/12/2016
  * Time: 4:57 PM
  */
-class PublicPlatformOAuthAuthenticate
+class CorpServerOAuthAuthenticate
 {
 
     /**

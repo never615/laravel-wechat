@@ -14,6 +14,21 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class WechatOAuthController extends \Illuminate\Routing\Controller
 {
+    /**
+     * @var WechatUtils
+     */
+    private $wechatUtils;
+
+    /**
+     * WechatOAuthController constructor.
+     *
+     * @param WechatUtils $wechatUtils
+     */
+    public function __construct(WechatUtils $wechatUtils)
+    {
+        $this->wechatUtils = $wechatUtils;
+    }
+
 
     /**
      * 获得用户微信的授权信息,授权中转站
@@ -22,7 +37,7 @@ class WechatOAuthController extends \Illuminate\Routing\Controller
      */
     public function oauth(Request $request)
     {
-        $uuid = WechatUtils::getUUID($request);
+        $uuid = $this->wechatUtils->getUUID($request);
         $redirectUrl = $request->redirect_url;
         $wechatUser = session('wechat.oauth_user'.$uuid);
 
@@ -55,7 +70,7 @@ class WechatOAuthController extends \Illuminate\Routing\Controller
      * @param Request $request
      */
     public function userTest(Request $request){
-        $uuid = WechatUtils::getUUID($request);
+        $uuid = $this->wechatUtils->getUUID($request);
         $user = session('wechat.oauth_user'.$uuid); // 拿到授权用户资料
         Log::info($uuid);
         echo $uuid;
