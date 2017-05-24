@@ -10,6 +10,7 @@ use Event;
 use Illuminate\Support\Facades\Request;
 use Log;
 use Overtrue\LaravelWechat\Events\WeChatUserAuthorized;
+use Overtrue\LaravelWechat\Model\WechatCorpAuthRepository;
 use Overtrue\LaravelWechat\Model\WechatCorpUserInfoRepository;
 use Overtrue\LaravelWechat\WechatUtils;
 
@@ -36,6 +37,10 @@ class CorpServerOAuthAuthenticate
      * @var WechatUtils
      */
     private $wechatUtils;
+    /**
+     * @var WechatCorpAuthRepository
+     */
+    private $wechatCorpAuthRepository;
 
 
     /**
@@ -44,15 +49,18 @@ class CorpServerOAuthAuthenticate
      * @param Application                  $wechat
      * @param WechatCorpUserInfoRepository $userInfoRepository
      * @param WechatUtils                  $wechatUtils
+     * @param WechatCorpAuthRepository     $wechatCorpAuthRepository
      */
     public function __construct(
         Application $wechat,
         WechatCorpUserInfoRepository $userInfoRepository,
-        WechatUtils $wechatUtils
+        WechatUtils $wechatUtils,
+        WechatCorpAuthRepository $wechatCorpAuthRepository
     ) {
         $this->wechat = $wechat;
         $this->userInfoRepository = $userInfoRepository;
         $this->wechatUtils = $wechatUtils;
+        $this->wechatCorpAuthRepository = $wechatCorpAuthRepository;
     }
 
     /**
@@ -94,6 +102,8 @@ class CorpServerOAuthAuthenticate
         }
 
         if (!session('wechat.oauth_user'.$uuid) || $this->needReauth($scopes)) {
+
+
             $fullUrl = $request->fullUrl();
             if ($request->has('code')) {
 
@@ -102,10 +112,9 @@ class CorpServerOAuthAuthenticate
                     Cache::forget("wechat.oauth_code".$request->code);
 
                     session()->forget('wechat.oauth_user'.$uuid);
+                    $agentId = $this->wechatCorpAuthRepository->getAgentId($corpId, 1);
 
-
-                    //todo 根据企业id查询agentid
-                    return $app->oauth->agent(19)->scopes($scopes)->redirect($fullUrl);
+                    return $app->oauth->agent($agentId)->scopes($scopes)->redirect($fullUrl);
                 } else {
                     Cache::put("wechat.oauth_code".$request->code, $request->code, 5);
                 }
@@ -123,9 +132,9 @@ class CorpServerOAuthAuthenticate
             }
 
             session()->forget('wechat.oauth_user'.$uuid);
+            $agentId = $this->wechatCorpAuthRepository->getAgentId($corpId, 1);
 
-            //todo 根据企业id查询agentid
-            return $app->oauth->agent(19)->scopes($scopes)->redirect($fullUrl);
+            return $app->oauth->agent($agentId)->scopes($scopes)->redirect($fullUrl);
         }
 
         $this->userInfoRepository->createOrUpdate(session('wechat.oauth_user'.$uuid), $corpId);
