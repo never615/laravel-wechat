@@ -41,9 +41,9 @@ class CorpServerOAuthAuthenticate
     /**
      * Inject the wechat service.
      *
-     * @param Application              $wechat
+     * @param Application                  $wechat
      * @param WechatCorpUserInfoRepository $userInfoRepository
-     * @param WechatUtils              $wechatUtils
+     * @param WechatUtils                  $wechatUtils
      */
     public function __construct(
         Application $wechat,
@@ -94,10 +94,7 @@ class CorpServerOAuthAuthenticate
         }
 
         if (!session('wechat.oauth_user'.$uuid) || $this->needReauth($scopes)) {
-            $fullUrl=$request->fullUrl();
-//            $fullUrl=str_replace("http","https",$fullUrl);
-//            \Log::info($fullUrl);
-
+            $fullUrl = $request->fullUrl();
             if ($request->has('code')) {
 
                 if (Cache::has("wechat.oauth_code".$request->code)) {
@@ -120,7 +117,6 @@ class CorpServerOAuthAuthenticate
                 $isNewSession = true;
                 $this->userInfoRepository->createOrUpdate($user, $corpId);
                 Event::fire(new WeChatUserAuthorized($user, $isNewSession));
-
 
 
                 return redirect()->to($this->getTargetUrl($request));
@@ -149,7 +145,8 @@ class CorpServerOAuthAuthenticate
     {
         $queries = array_except($request->query(), ['code', 'state']);
 
-        $url= $request->url().(empty($queries) ? '' : '?'.http_build_query($queries));
+        $url = $request->url().(empty($queries) ? '' : '?'.http_build_query($queries));
+
         return $url;
     }
 

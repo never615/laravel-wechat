@@ -12,8 +12,13 @@ class WechatCorpUserInfo extends Model
 
     ];
 
-    
-    public function auth(){
+    protected $casts = [
+        'department' => "array",
+    ];
+
+
+    public function auth()
+    {
         return $this->belongsTo(WechatCorpAuth::class);
     }
 }

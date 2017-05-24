@@ -22,7 +22,7 @@ class CreateWechatCorpUserInfosTable extends Migration
             $table->string("user_id");
             $table->string("name")->nullable();
             $table->string("gender")->nullable();
-            $table->string("department")->nullable();
+            $table->json("department")->nullable();
             $table->string("position")->nullable();
             $table->string("avatar")->nullable();
             $table->string("mobile")->nullable();

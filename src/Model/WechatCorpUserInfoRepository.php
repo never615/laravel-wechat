@@ -26,9 +26,9 @@ class WechatCorpUserInfoRepository
             throw new PermissionDeniedException("企业号号未授权");
         }
 
-        if (isset($wechatUser['userid'])) {
+        if (isset($wechatUser["original"]['userid'])) {
 
-            $user = WechatCorpUserInfo::where('userid', $wechatUser['userid'])->first();
+            $user = WechatCorpUserInfo::where('user_id', $wechatUser['userid'])->first();
             if ($user) {
                 $this->updateUser($user, $wechatUser, $app_id, $wechatAuthInfo->id);
             } else {
@@ -63,7 +63,7 @@ class WechatCorpUserInfoRepository
      */
     private function createUser($wechatInfoArr, $app_id, $authId)
     {
-        return WechatUserInfo::create($this->makeUserArr($wechatInfoArr, $app_id, $authId));
+        return WechatCorpUserInfo::create($this->makeUserArr($wechatInfoArr, $app_id, $authId));
     }
 
 
@@ -76,13 +76,17 @@ class WechatCorpUserInfoRepository
             $mobile = $wechatInfoArr['original']['mobile'];
             $email = $wechatInfoArr['original']['email'];
         }
+        $position = "";
+        if (isset($wechatInfoArr['original']['position'])) {
+            $position = $wechatInfoArr['original']['position'];
+        }
 
         $data = [
-            'userid'              => $wechatInfoArr['original']['userid'],
+            'user_id'             => $wechatInfoArr['original']['userid'],
             'name'                => $wechatInfoArr['original']['name'],
             'gender'              => $wechatInfoArr['original']['gender'],
             'department'          => $wechatInfoArr['original']['department'],
-            'position'            => $wechatInfoArr['original']['position'],
+            'position'            => $position,
             'avatar'              => $wechatInfoArr['original']['avatar'],
             'mobile'              => $mobile,
             'email'               => $email,
