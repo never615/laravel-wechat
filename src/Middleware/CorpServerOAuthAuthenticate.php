@@ -10,7 +10,7 @@ use Event;
 use Illuminate\Support\Facades\Request;
 use Log;
 use Overtrue\LaravelWechat\Events\WeChatUserAuthorized;
-use Overtrue\LaravelWechat\Model\WechatUserInfoRepository;
+use Overtrue\LaravelWechat\Model\WechatCorpUserInfoRepository;
 use Overtrue\LaravelWechat\WechatUtils;
 
 /**
@@ -42,11 +42,14 @@ class CorpServerOAuthAuthenticate
      * Inject the wechat service.
      *
      * @param Application              $wechat
-     * @param WechatUserInfoRepository $userInfoRepository
+     * @param WechatCorpUserInfoRepository $userInfoRepository
      * @param WechatUtils              $wechatUtils
      */
-    public function __construct(Application $wechat, WechatUserInfoRepository $userInfoRepository,WechatUtils $wechatUtils)
-    {
+    public function __construct(
+        Application $wechat,
+        WechatCorpUserInfoRepository $userInfoRepository,
+        WechatUtils $wechatUtils
+    ) {
         $this->wechat = $wechat;
         $this->userInfoRepository = $userInfoRepository;
         $this->wechatUtils = $wechatUtils;
@@ -63,11 +66,14 @@ class CorpServerOAuthAuthenticate
      */
     public function handle($request, Closure $next, $scopes = null)
     {
+        $uuid = $this->wechatUtils->getUUID($request);
 
-        $uuid=$this->wechatUtils->getUUID($request);
-        list($appId, $refreshToken) = $this->wechatUtils->createAuthorizerApplicationParams($request);
-        $openPlatform = $this->wechat->open_platform;
-        $app = $openPlatform->createAuthorizerApplication($appId, $refreshToken);
+//        session()->forget('wechat.oauth_user'.$uuid);
+
+
+        list($corpId, $permanentCode) = $this->wechatUtils->createAuthorizerApplicationParamsByCorp($request);
+        $corp_server_qa = $this->wechat->corp_server_qa;
+        $app = $corp_server_qa->createAuthorizerApplication($corpId, $permanentCode);
 
         $isNewSession = false;
         $onlyRedirectInWeChatBrowser = config('wechat.oauth.only_wechat_browser', false);
@@ -88,34 +94,45 @@ class CorpServerOAuthAuthenticate
         }
 
         if (!session('wechat.oauth_user'.$uuid) || $this->needReauth($scopes)) {
+            $fullUrl=$request->fullUrl();
+//            $fullUrl=str_replace("http","https",$fullUrl);
+//            \Log::info($fullUrl);
+
             if ($request->has('code')) {
-                if(Cache::has("wechat.oauth_code".$request->code)){
+
+                if (Cache::has("wechat.oauth_code".$request->code)) {
                     //code已经被用过了
                     Cache::forget("wechat.oauth_code".$request->code);
 
                     session()->forget('wechat.oauth_user'.$uuid);
 
-                    return $app->oauth->scopes($scopes)->redirect($request->fullUrl());
-                }else{
-                    Cache::put("wechat.oauth_code".$request->code,$request->code,5);
+
+                    //todo 根据企业id查询agentid
+                    return $app->oauth->agent(19)->scopes($scopes)->redirect($fullUrl);
+                } else {
+                    Cache::put("wechat.oauth_code".$request->code, $request->code, 5);
                 }
 
                 $user = $app->oauth->user();
 
                 session(['wechat.oauth_user'.$uuid => $user]);
+
                 $isNewSession = true;
-                $this->userInfoRepository->createOrUpdate($user, $appId);
-                Event::fire(new WeChatUserAuthorized(session('wechat.oauth_user'.$uuid), $isNewSession));
+                $this->userInfoRepository->createOrUpdate($user, $corpId);
+                Event::fire(new WeChatUserAuthorized($user, $isNewSession));
+
+
 
                 return redirect()->to($this->getTargetUrl($request));
             }
 
             session()->forget('wechat.oauth_user'.$uuid);
 
-            return $app->oauth->scopes($scopes)->redirect($request->fullUrl());
+            //todo 根据企业id查询agentid
+            return $app->oauth->agent(19)->scopes($scopes)->redirect($fullUrl);
         }
 
-        $this->userInfoRepository->createOrUpdate(session('wechat.oauth_user'.$uuid), $appId);
+        $this->userInfoRepository->createOrUpdate(session('wechat.oauth_user'.$uuid), $corpId);
         Event::fire(new WeChatUserAuthorized(session('wechat.oauth_user'.$uuid), $isNewSession));
 
         return $next($request);
@@ -132,7 +149,8 @@ class CorpServerOAuthAuthenticate
     {
         $queries = array_except($request->query(), ['code', 'state']);
 
-        return $request->url().(empty($queries) ? '' : '?'.http_build_query($queries));
+        $url= $request->url().(empty($queries) ? '' : '?'.http_build_query($queries));
+        return $url;
     }
 
     /**
