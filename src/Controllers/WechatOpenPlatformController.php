@@ -129,7 +129,7 @@ class WechatOpenPlatformController extends Controller
         } else {
             WechatAuthInfo::create($data);
         }
-        echo $authorizerInfo["authorizer_info"]["nick_name"]."授权给微信开放平台服务商墨兔科技成功";
+        echo $authorizerInfo["authorizer_info"]["nick_name"]."授权给微信开放平台服务商深圳墨兔成功";
     }
 
 

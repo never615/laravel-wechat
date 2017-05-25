@@ -64,7 +64,7 @@ class QaController extends Controller
      */
     public function serve(Request $request)
     {
-        Log::info('request arrived.'); # 注意：Log 为 Laravel 组件，所以它记的日志去 Laravel 日志看，而不是 EasyWeChat 日志
+//        Log::info('request arrived.'); # 注意：Log 为 Laravel 组件，所以它记的日志去 Laravel 日志看，而不是 EasyWeChat 日志
 //        Log::info(Input::all());
 //        Log::info($request->getContent(false));
 
@@ -73,7 +73,7 @@ class QaController extends Controller
         // 自定义处理
         $this->corp_server_qa->server->setMessageHandler(function ($event) {
             // 事件类型常量定义在 \EasyWeChat\OpenPlatform\Guard 类里
-            Log::info($event);
+//            Log::info($event);
 
             switch ($event->InfoType) {
                 case 'create_auth':
@@ -90,7 +90,7 @@ class QaController extends Controller
                     break;
                 case 'suite_ticket':
                     // ...
-                    Log::info("suite_ticket");
+//                    Log::info("suite_ticket");
                     break;
                 default:
                     Log::info("其他事件");
@@ -121,7 +121,7 @@ class QaController extends Controller
         $authorizationInfo = $this->corp_server_qa->getAuthorizationInfo();
         $this->authHandler($authorizationInfo);
         //todo 进入应用管理页面
-        echo $authorizationInfo['auth_corp_info']['corp_name']."申请使用墨兔科技企业号应用(问答系统)成功";
+        echo $authorizationInfo['auth_corp_info']['corp_name']."申请使用深圳墨兔企业号应用(问答系统)成功";
     }
 
     /**
@@ -187,6 +187,12 @@ class QaController extends Controller
         }
 
         $name = "创建者";
+
+        if($userInfo["usertype"]!="1"||$userInfo["usertype"]!="2"){
+            throw new PermissionDeniedException("权限不足");
+        }
+
+
         if (isset($userInfo["user_info"]['email'])) {
             $username = $userInfo["user_info"]['email'];
         } else {
@@ -216,8 +222,10 @@ class QaController extends Controller
             ]);
         }
 
-        $admin->roles()->save($role);
-
+        $tempRole = $admin->roles()->where("slug", $role->slug)->first();
+        if (!$tempRole) {
+            $admin->roles()->save($role);
+        }
 
         //todo 优化代码
         if (Auth::guard('admin')->attempt([
