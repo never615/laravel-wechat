@@ -5,6 +5,7 @@ namespace Overtrue\LaravelWechat\Controllers\CorpServer;
 use App\Exceptions\PermissionDeniedException;
 use EasyWeChat\Foundation\Application;
 use Encore\Admin\Auth\Database\Administrator;
+use Encore\Admin\Auth\Database\Permission;
 use Encore\Admin\Auth\Database\Role;
 use Encore\Admin\Auth\Database\Subject;
 use Illuminate\Routing\Controller;
@@ -71,7 +72,7 @@ class QaController extends Controller
         //todo 事件处理
 
         // 自定义处理
-        $this->corp_server_qa->server->setMessageHandler(function ($event) {
+        $this->corp_server_qa->server->setMessageHandler(function ($event) use ($request) {
             // 事件类型常量定义在 \EasyWeChat\OpenPlatform\Guard 类里
 //            Log::info($event);
 
@@ -94,6 +95,10 @@ class QaController extends Controller
                     break;
                 default:
                     Log::info("其他事件");
+                    Log::info($event);
+                    Log::info($request->getContent(false));
+
+
                     break;
             }
         });
@@ -130,24 +135,24 @@ class QaController extends Controller
      *
      * @param $corpId
      */
-    public function coreCallback($corpId)
+    public function corpCallback($corpId)
     {
-        Log::info("---------- coreCallback ---------");
-        $input = Input::all();
-        Log::info($input);
-
-        //todo 问答系统应用企业号用户消息的回调
-
-
-        $permanentCode = "";
-        $authInfo = WechatCorpAuth::where('corp_id', $corpId)->first();
-        if ($authInfo) {
-            $permanentCode = $authInfo->permanent_code;
-        }
-
-        $app = $this->corp_server_qa->createAuthorizerApplication($corpId, $permanentCode);
-
-        return $app->server->serve();
+//        Log::info("---------- coreCallback ---------");
+//        $input = Input::all();
+//        Log::info($input);
+//
+//        //todo 问答系统应用企业号用户消息的回调
+//
+//
+//        $permanentCode = "";
+//        $authInfo = WechatCorpAuth::where('corp_id', $corpId)->first();
+//        if ($authInfo) {
+//            $permanentCode = $authInfo->permanent_code;
+//        }
+//
+//        $app = $this->corp_server_qa->createAuthorizerApplication($corpId, $permanentCode);
+//
+//        return $app->server->serve();
     }
 
     /**
@@ -186,9 +191,10 @@ class QaController extends Controller
             ]);
         }
 
+
         $name = "创建者";
 
-        if($userInfo["usertype"]!="1"||$userInfo["usertype"]!="2"){
+        if ($userInfo["usertype"] != "1" && $userInfo["usertype"] != "2") {
             throw new PermissionDeniedException("权限不足");
         }
 
@@ -220,6 +226,12 @@ class QaController extends Controller
                 "slug"       => "qa",
                 "subject_id" => $subject->id,
             ]);
+
+            $qaPermission = Permission::where("slug", "qa")->first();
+            $bannerPermission = Permission::where("slug", "page_banners")->first();
+
+            $role->permissions()->save($qaPermission);
+            $role->permissions()->save($bannerPermission);
         }
 
         $tempRole = $admin->roles()->where("slug", $role->slug)->first();
@@ -234,6 +246,7 @@ class QaController extends Controller
         ])
         ) {
             admin_toastr(trans('admin::lang.login_successful'));
+            \Log::info(config('admin.prefix'));
 
             return redirect(config('admin.prefix'));
         }
@@ -289,4 +302,5 @@ class QaController extends Controller
             ? trans('auth.failed')
             : 'These credentials do not match our records.';
     }
+
 }
