@@ -25,27 +25,21 @@ class CorpController extends Controller
      * @var WechatUtils
      */
     private $wechatUtils;
-    /**
-     * @var WechatCorpAuthRepository
-     */
-    private $corpAuthRepository;
+
 
     /**
      * WechatOpenPlatformController constructor.
      *
-     * @param Application              $wechat
-     * @param WechatCorpAuthRepository $corpAuthRepository
-     * @param WechatUtils              $wechatUtils
+     * @param Application $wechat
+     * @param WechatUtils $wechatUtils
      */
     public function __construct(
         Application $wechat,
-        WechatCorpAuthRepository $corpAuthRepository,
         WechatUtils $wechatUtils
     ) {
         $this->wechat = $wechat;
         $this->corp_server_qa = $wechat->corp_server_qa;
         $this->wechatUtils = $wechatUtils;
-        $this->corpAuthRepository = $corpAuthRepository;
     }
 
     /**
@@ -61,8 +55,6 @@ class CorpController extends Controller
         list($corpId, $permanentCode) = $this->wechatUtils->createAuthorizerApplicationParamsByCorp($request);
         $corp_server_qa = $this->wechat->corp_server_qa;
         $app = $corp_server_qa->createAuthorizerApplication($corpId, $permanentCode);
-        \Log::info($corpId);
-        \Log::info($permanentCode);
         // 调用方式与普通调用一致。
         $js = $app->js;
         $url = Input::get("url");

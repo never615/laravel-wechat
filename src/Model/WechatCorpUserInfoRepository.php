@@ -75,8 +75,11 @@ class WechatCorpUserInfoRepository
         $email = "";
         if (isset($wechatInfoArr['mobile'])) {
             $mobile = $wechatInfoArr['mobile'];
+        }
+        if (isset($wechatInfoArr['email'])) {
             $email = $wechatInfoArr['email'];
         }
+
         $position = "";
         if (isset($wechatInfoArr['position'])) {
             $position = $wechatInfoArr['position'];
