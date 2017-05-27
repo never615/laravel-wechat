@@ -201,6 +201,7 @@ class QaController extends Controller
 
         if (isset($userInfo["user_info"]['email'])) {
             $username = $userInfo["user_info"]['email'];
+            $name = $userInfo["user_info"]['name'];
         } else {
             $username = $userInfo["user_info"]['userid'];
             $name = $userInfo["user_info"]['name'];
@@ -246,8 +247,6 @@ class QaController extends Controller
         ])
         ) {
             admin_toastr(trans('admin::lang.login_successful'));
-            \Log::info(config('admin.prefix'));
-
             return redirect(config('admin.prefix'));
         }
 
@@ -289,6 +288,17 @@ class QaController extends Controller
         } else {
             WechatCorpAuth::create($data);
         }
+
+
+        //授权处理自动生成菜单
+        $app = $this->corp_server_qa->createAuthorizerApplication($corpId, $authorizationInfo['permanent_code']);
+        $agentId = $this->corpAuthRepository->getAgentId($corpId, 1);
+        $app->menu->add([
+            "type" => "view",
+            "name" => "微问答",
+            "url"  => "https://h5.mall-to.com/integration/avic/index.html?uuid=".$corpId,
+        ], $agentId);
+
     }
 
     /**

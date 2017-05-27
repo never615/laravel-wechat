@@ -102,8 +102,6 @@ class CorpServerOAuthAuthenticate
         }
 
         if (!session('wechat.oauth_user'.$uuid) || $this->needReauth($scopes)) {
-
-
             $fullUrl = $request->fullUrl();
             if ($request->has('code')) {
 
@@ -136,6 +134,7 @@ class CorpServerOAuthAuthenticate
 
             return $app->oauth->agent($agentId)->scopes($scopes)->redirect($fullUrl);
         }
+
 
         $this->userInfoRepository->createOrUpdate(session('wechat.oauth_user'.$uuid), $corpId);
         Event::fire(new WeChatUserAuthorized(session('wechat.oauth_user'.$uuid), $isNewSession));

@@ -68,7 +68,6 @@ class WechatUtils
 
     public function getUUID($request)
     {
-
         $uuid = Request::header("UUID");
         if ($uuid) {
             return $uuid;
