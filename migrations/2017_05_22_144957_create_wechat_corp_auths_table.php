@@ -21,7 +21,7 @@ class CreateWechatCorpAuthsTable extends Migration
             $table->increments('id');
             $table->string("permanent_code");
             $table->string("corp_id")->unique();
-            $table->unsignedInteger("uuid")->unique()->nullable()->comment("分配的商城id");
+            $table->string("uuid")->unique()->nullable()->comment("主体的uuid");
             $table->string('corp_name');
             $table->json("auth_info");
             $table->timestamps();

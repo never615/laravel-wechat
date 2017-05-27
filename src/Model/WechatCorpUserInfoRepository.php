@@ -29,7 +29,9 @@ class WechatCorpUserInfoRepository
         $wechatUser = $wechatUser["original"];
         if (isset($wechatUser['userid'])) {
 
-            $user = WechatCorpUserInfo::where('user_id', $wechatUser['userid'])->first();
+            $user = WechatCorpUserInfo::where('user_id', $wechatUser['userid'])
+                ->where("corp_id",$app_id)
+                ->first();
             if ($user) {
                 $this->updateUser($user, $wechatUser, $app_id, $wechatAuthInfo->id);
             } else {
