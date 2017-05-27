@@ -283,6 +283,7 @@ class QaController extends Controller
             'permanent_code' => $authorizationInfo['permanent_code'],
             'corp_name'      => $authorizationInfo['auth_corp_info']['corp_name'],
             'auth_info'      => $authorizationInfo,
+            "uuid"           => $corpId,
         ];
         if ($wechatCorpAuth) {
             call_user_func([$wechatCorpAuth, "update"], $data);

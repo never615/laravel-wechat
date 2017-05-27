@@ -41,11 +41,11 @@ class WechatOAuthController extends \Illuminate\Routing\Controller
         $redirectUrl = $request->redirect_url;
         $wechatUser = session('wechat.oauth_user'.$uuid);
 
-        $cryptOpenId=encrypt($wechatUser->id);
+        $cryptOpenId = encrypt($wechatUser->id);
 
-        return ResponseUtils::responseBasicByRedirect($redirectUrl,["openid"=> $cryptOpenId]);
+        return ResponseUtils::responseBasicByRedirect($redirectUrl, ["openid" => $cryptOpenId]);
 //            ->cookie('openid', $wechatUser->id, 1000, null, null, false, false);
-
+        
 //        return redirect($redirectUrl)
 //            ->cookie('openid', $wechatUser->id, 1000, null, null, false, false);
     }
@@ -69,7 +69,8 @@ class WechatOAuthController extends \Illuminate\Routing\Controller
      *
      * @param Request $request
      */
-    public function userTest(Request $request){
+    public function userTest(Request $request)
+    {
         $uuid = $this->wechatUtils->getUUID($request);
         $user = session('wechat.oauth_user'.$uuid); // 拿到授权用户资料
         Log::info($uuid);
