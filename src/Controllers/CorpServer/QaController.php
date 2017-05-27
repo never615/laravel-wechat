@@ -247,6 +247,7 @@ class QaController extends Controller
         ])
         ) {
             admin_toastr(trans('admin::lang.login_successful'));
+
             return redirect(config('admin.prefix'));
         }
 
@@ -294,9 +295,12 @@ class QaController extends Controller
         $app = $this->corp_server_qa->createAuthorizerApplication($corpId, $authorizationInfo['permanent_code']);
         $agentId = $this->corpAuthRepository->getAgentId($corpId, 1);
         $app->menu->add([
-            "type" => "view",
-            "name" => "微问答",
-            "url"  => "https://h5.mall-to.com/integration/avic/index.html?uuid=".$corpId,
+            [
+                "type" => "view",
+                "name" => "微问答",
+                "url"  => "https://qy.mall-to.com/wechat/qa/user?uuid=".$corpId,
+//            "url"  => "https://h5.mall-to.com/integration/avic/index.html?uuid=".$corpId,
+            ],
         ], $agentId);
 
     }
