@@ -298,8 +298,8 @@ class QaController extends Controller
             [
                 "type" => "view",
                 "name" => "微问答",
-                "url"  => "https://qy.mall-to.com/wechat/qa/user?uuid=".$corpId,
-//            "url"  => "https://h5.mall-to.com/integration/avic/index.html?uuid=".$corpId,
+//                "url"  => "https://qy.mall-to.com/wechat/qa/user?uuid=".$corpId,
+                "url"  => "https://qy.mall-to.com/wechat_page/production/avic/index.html?uuid=".$corpId,
             ],
         ], $agentId);
 
