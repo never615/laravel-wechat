@@ -125,8 +125,9 @@ class QaController extends Controller
 //        // Optional: $authorizationCode 不传值时会自动获取 URL 中 auth_code 值
         $authorizationInfo = $this->corp_server_qa->getAuthorizationInfo();
         $this->authHandler($authorizationInfo);
-        //todo 进入应用管理页面
-        echo $authorizationInfo['auth_corp_info']['corp_name']."申请使用深圳墨兔企业号应用(问答系统)成功";
+//        echo $authorizationInfo['auth_corp_info']['corp_name']."申请使用深圳墨兔企业号应用(问答系统)成功";
+
+        return view("admin::login");
     }
 
     /**
