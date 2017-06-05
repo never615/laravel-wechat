@@ -299,7 +299,7 @@ class QaController extends Controller
         $app->menu->add([
             [
                 "type" => "view",
-                "name" => "拜托了!小伙伴",
+                "name" => "拜托了!伙伴",
 //                "url"  => "https://qy.mall-to.com/wechat/qa/user?uuid=".$corpId,
                 "url"  => "https://qy.mall-to.com/wechat_page/production/avic/index.html?uuid=".$corpId,
             ],
