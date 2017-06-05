@@ -91,7 +91,7 @@ class QaController extends Controller
                     break;
                 case 'suite_ticket':
                     // ...
-//                    Log::info("suite_ticket");
+                    Log::info("suite_ticket");
                     break;
                 default:
                     Log::info("其他事件");
