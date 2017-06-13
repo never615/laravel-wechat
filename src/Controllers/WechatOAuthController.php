@@ -1,7 +1,7 @@
 <?php
 namespace Overtrue\LaravelWechat\Controllers;
 
-use App\Lib\ResponseUtils;
+use Mallto\Tool\Utils\ResponseUtils;
 use Illuminate\Support\Facades\Log;
 use Overtrue\LaravelWechat\WechatUtils;
 use Symfony\Component\HttpFoundation\Request;

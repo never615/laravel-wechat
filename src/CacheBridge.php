@@ -25,6 +25,7 @@ class CacheBridge implements CacheInterface
     public function fetch($id)
     {
         $data = Cache::get($id);
+
         if ($data) {
             return $data;
         } else {

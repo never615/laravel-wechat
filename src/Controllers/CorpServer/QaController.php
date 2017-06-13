@@ -146,18 +146,25 @@ class QaController extends Controller
 //        //todo 问答系统应用企业号用户消息的回调
 //
 //
-//        $permanentCode = "";
-//        $authInfo = WechatCorpAuth::where('corp_id', $corpId)->first();
-//        if ($authInfo) {
-//            $permanentCode = $authInfo->permanent_code;
-//        }
-//
-//        $app = $this->corp_server_qa->createAuthorizerApplication($corpId, $permanentCode);
-//
-//        return $app->server->serve();
+        try {
+
+
+            $permanentCode = "";
+            $authInfo = WechatCorpAuth::where('corp_id', $corpId)->first();
+            if ($authInfo) {
+                $permanentCode = $authInfo->permanent_code;
+            }
+            $app = $this->corp_server_qa->createAuthorizerApplication($corpId, $permanentCode);
+
+            return $app->server->serve();
+        } catch (\Exception $e) {
+
+        }
     }
 
     /**
+     * 业务设置URL
+     *
      * 从企业号登录一键登录到服务商网站
      *
      * 业务设置URL:该URL为服务商侧的管理后台链接,
@@ -167,10 +174,11 @@ class QaController extends Controller
     {
         Log::info("--------- loginFromCorp -----------");
         $input = Input::all();
-        Log::info($input);
-
+        if (count($input) == 0) {
+            return;
+        }
         $userInfo = $this->corp_server_qa->login_user->getUserInfo();
-        Log::info($userInfo);
+//        Log::info($userInfo);
 
 
         $corpId = $userInfo["corp_info"]['corpid'];
@@ -297,12 +305,14 @@ class QaController extends Controller
         //授权处理自动生成菜单
         $app = $this->corp_server_qa->createAuthorizerApplication($corpId, $authorizationInfo['permanent_code']);
         $agentId = $this->corpAuthRepository->getAgentId($corpId, 1);
+
+        $env = config("app.debug") ? "staging" : "production";
         $app->menu->add([
             [
                 "type" => "view",
                 "name" => "微问答",
 //                "url"  => "https://qy.mall-to.com/wechat/qa/user?uuid=".$corpId,
-                "url"  => "https://qy.mall-to.com/wechat_page/production/avic/index.html?uuid=".$corpId,
+                "url"  => "https://qy.mall-to.com/wechat_page/$env/avic/index.html?uuid=".$corpId,
             ],
         ], $agentId);
 
