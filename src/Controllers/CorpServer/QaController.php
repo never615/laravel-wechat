@@ -94,11 +94,9 @@ class QaController extends Controller
 //                    Log::info("suite_ticket");
                     break;
                 default:
-                    Log::info("其他事件");
-                    Log::info($event);
-                    Log::info($request->getContent(false));
-
-
+//                    Log::info("其他事件");
+//                    Log::info($event);
+//                    Log::info($request->getContent(false));
                     break;
             }
         });
