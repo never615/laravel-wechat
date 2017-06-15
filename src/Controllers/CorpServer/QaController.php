@@ -217,9 +217,7 @@ class QaController extends Controller
             $username = $userInfo["user_info"]['userid'];
             if (isset($userInfo["user_info"]['name'])) {
                 $name = $userInfo["user_info"]['name'];
-            } else {
-                $name = $userInfo["user_info"]['email'];
-            }
+            } 
         }
 
 
