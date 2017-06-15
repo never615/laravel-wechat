@@ -209,10 +209,18 @@ class QaController extends Controller
 
         if (isset($userInfo["user_info"]['email'])) {
             $username = $userInfo["user_info"]['email'];
-            $name = $userInfo["user_info"]['name'];
+            if (isset($userInfo["user_info"]['name'])) {
+                $name = $userInfo["user_info"]['email'];
+            } else {
+                $name = $userInfo["user_info"]['name'];
+            }
         } else {
             $username = $userInfo["user_info"]['userid'];
-            $name = $userInfo["user_info"]['name'];
+            if (isset($userInfo["user_info"]['name'])) {
+                $name = $userInfo["user_info"]['email'];
+            } else {
+                $name = $userInfo["user_info"]['name'];
+            }
         }
 
 
