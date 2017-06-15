@@ -206,20 +206,19 @@ class QaController extends Controller
             throw new PermissionDeniedException("权限不足");
         }
 
-
         if (isset($userInfo["user_info"]['email'])) {
             $username = $userInfo["user_info"]['email'];
             if (isset($userInfo["user_info"]['name'])) {
-                $name = $userInfo["user_info"]['email'];
-            } else {
                 $name = $userInfo["user_info"]['name'];
+            } else {
+                $name = $userInfo["user_info"]['email'];
             }
         } else {
             $username = $userInfo["user_info"]['userid'];
             if (isset($userInfo["user_info"]['name'])) {
-                $name = $userInfo["user_info"]['email'];
-            } else {
                 $name = $userInfo["user_info"]['name'];
+            } else {
+                $name = $userInfo["user_info"]['email'];
             }
         }
 
