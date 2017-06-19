@@ -1,8 +1,8 @@
 <?php
 namespace Overtrue\LaravelWechat\Controllers;
 
-use App\Lib\ResponseUtils;
 use Illuminate\Support\Facades\Log;
+use Mallto\Tool\Utils\ResponseUtils;
 use Overtrue\LaravelWechat\WechatUtils;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -45,7 +45,7 @@ class WechatOAuthController extends \Illuminate\Routing\Controller
 
         return ResponseUtils::responseBasicByRedirect($redirectUrl, ["openid" => $cryptOpenId]);
 //            ->cookie('openid', $wechatUser->id, 1000, null, null, false, false);
-        
+
 //        return redirect($redirectUrl)
 //            ->cookie('openid', $wechatUser->id, 1000, null, null, false, false);
     }
