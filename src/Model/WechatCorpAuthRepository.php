@@ -1,7 +1,7 @@
 <?php
 namespace Overtrue\LaravelWechat\Model;
 
-use App\Exceptions\PermissionDeniedException;
+use Mallto\Tool\Exception\PermissionDeniedException;
 
 
 /**

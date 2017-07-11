@@ -2,7 +2,7 @@
 namespace Overtrue\LaravelWechat\Controllers\CorpServer;
 
 
-use App\Exceptions\PermissionDeniedException;
+use Mallto\Tool\Exception\PermissionDeniedException;
 use EasyWeChat\Foundation\Application;
 use Encore\Admin\Auth\Database\Administrator;
 use Encore\Admin\Auth\Database\Permission;

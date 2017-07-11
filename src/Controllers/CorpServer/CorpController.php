@@ -2,7 +2,7 @@
 namespace Overtrue\LaravelWechat\Controllers\CorpServer;
 
 
-use App\Exceptions\ResourceException;
+use Mallto\Tool\Exception\ResourceException;
 use EasyWeChat\Foundation\Application;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Input;
