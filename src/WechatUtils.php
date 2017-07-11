@@ -1,8 +1,8 @@
 <?php
 namespace Overtrue\LaravelWechat;
 
-use App\Exceptions\InvalidParamException;
-use App\Exceptions\ResourceException;
+use Mallto\Tool\Exception\InvalidParamException;
+use Mallto\Tool\Exception\ResourceException;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Request;
 use Overtrue\LaravelWechat\Model\WechatAuthInfo;
