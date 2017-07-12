@@ -44,10 +44,6 @@ class WechatOAuthController extends \Illuminate\Routing\Controller
         $cryptOpenId = encrypt($wechatUser->id);
 
         return ResponseUtils::responseBasicByRedirect($redirectUrl, ["openid" => $cryptOpenId]);
-//            ->cookie('openid', $wechatUser->id, 1000, null, null, false, false);
-
-//        return redirect($redirectUrl)
-//            ->cookie('openid', $wechatUser->id, 1000, null, null, false, false);
     }
 
 //    /**
