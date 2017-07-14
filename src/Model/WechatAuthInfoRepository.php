@@ -12,6 +12,7 @@ use Mallto\Tool\Exception\PermissionDeniedException;
  */
 class WechatAuthInfoRepository
 {
+    protected $connection = 'wechat_public';
 
     /**
      * 获取refreshToken

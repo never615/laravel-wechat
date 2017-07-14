@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class WechatCorpAuth extends Model
 {
+    protected $connection = 'wechat_public';
 
     protected $guarded = [
 

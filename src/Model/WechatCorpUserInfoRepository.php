@@ -12,6 +12,7 @@ use Mallto\Tool\Exception\PermissionDeniedException;
  */
 class WechatCorpUserInfoRepository
 {
+    protected $connection = 'wechat_public';
 
     /**
      * 创建或者更新一个微信用户

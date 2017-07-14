@@ -12,6 +12,7 @@ use Mallto\Tool\Exception\PermissionDeniedException;
  */
 class WechatCorpAuthRepository
 {
+    protected $connection = 'wechat_public';
 
     /**
      * 获取永久授权码

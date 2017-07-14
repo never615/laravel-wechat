@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class WechatAuthInfo extends Model
 {
+    protected $connection = 'wechat_public';
 
     protected $fillable = [
         'authorizer_appid',

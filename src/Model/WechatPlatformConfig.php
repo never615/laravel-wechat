@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class WechatPlatformConfig extends Model
 {
+    protected $connection = 'wechat_public';
 
 
     protected $guarded = [
