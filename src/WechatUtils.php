@@ -1,10 +1,11 @@
 <?php
 namespace Overtrue\LaravelWechat;
 
-use Mallto\Tool\Exception\InvalidParamException;
-use Mallto\Tool\Exception\ResourceException;
+use Encore\Admin\AppUtils;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Request;
+use Mallto\Tool\Exception\InvalidParamException;
+use Mallto\Tool\Exception\ResourceException;
 use Overtrue\LaravelWechat\Model\WechatAuthInfo;
 use Overtrue\LaravelWechat\Model\WechatAuthInfoRepository;
 use Overtrue\LaravelWechat\Model\WechatCorpAuth;
@@ -55,17 +56,14 @@ class WechatUtils
 
 
         return null;
-
-
-        //下面的方式暂时不用,应为一个域名要使用一个https证书,太麻烦.
-//        $url = $request->url();
-//        //获取第一段域名
-//        $urlArr = explode(".", explode("//", $url)[1]);
-//
-//        return $urlArr[0];
     }
 
 
+    /**
+     * @deprecated
+     * @param $request
+     * @return mixed
+     */
     public function getUUID($request)
     {
         $uuid = Request::header("UUID");
@@ -83,8 +81,29 @@ class WechatUtils
 
 
     /**
+     * 从开放平台创建代公众号实现业务的app
+     *
+     * @param $openPlatform
+     * @return array
+     */
+    public function createAppFromOpenPlatform($openPlatform)
+    {
+        $uuid = AppUtils::getUUID();
+        if ($uuid) {
+            $wechatAuthInfo = WechatAuthInfo::where("uuid", $uuid)->first();
+            if ($wechatAuthInfo) {
+                $appId = $wechatAuthInfo->authorizer_appid;
+
+                return $openPlatform->createAuthorizerApplication($appId, $wechatAuthInfo->authorizer_refresh_token);
+            }
+        }
+        throw new InvalidParamException("无效的参数,无法得知微信主体");
+    }
+
+    /**
      * 获取createAuthorizerApplication的参数
      *
+     * @deprecated
      * @param $request
      * @return array
      */
