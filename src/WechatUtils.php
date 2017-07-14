@@ -95,9 +95,13 @@ class WechatUtils
                 $appId = $wechatAuthInfo->authorizer_appid;
 
                 return $openPlatform->createAuthorizerApplication($appId, $wechatAuthInfo->authorizer_refresh_token);
+            } else {
+                return false;
             }
+
+        } else {
+            throw new InvalidParamException("无效的uuid,无法得知微信主体");
         }
-        throw new InvalidParamException("无效的参数,无法得知微信主体");
     }
 
     /**
