@@ -12,6 +12,7 @@ use Log;
 use Overtrue\LaravelWechat\Events\WeChatUserAuthorized;
 use Overtrue\LaravelWechat\Model\WechatUserInfoRepository;
 use Overtrue\LaravelWechat\WechatUtils;
+use Overtrue\Socialite\AuthorizeFailedException;
 
 /**
  * 微信开放平台
@@ -41,12 +42,15 @@ class PublicPlatformOAuthAuthenticate
     /**
      * Inject the wechat service.
      *
-     * @param Application              $wechat
+     * @param Application $wechat
      * @param WechatUserInfoRepository $userInfoRepository
-     * @param WechatUtils              $wechatUtils
+     * @param WechatUtils $wechatUtils
      */
-    public function __construct(Application $wechat, WechatUserInfoRepository $userInfoRepository,WechatUtils $wechatUtils)
-    {
+    public function __construct(
+        Application $wechat,
+        WechatUserInfoRepository $userInfoRepository,
+        WechatUtils $wechatUtils
+    ) {
         $this->wechat = $wechat;
         $this->userInfoRepository = $userInfoRepository;
         $this->wechatUtils = $wechatUtils;
@@ -63,8 +67,7 @@ class PublicPlatformOAuthAuthenticate
      */
     public function handle($request, Closure $next, $scopes = null)
     {
-
-        $uuid=$this->wechatUtils->getUUID($request);
+        $uuid = $this->wechatUtils->getUUID($request);
         list($appId, $refreshToken) = $this->wechatUtils->createAuthorizerApplicationParams($request);
         $openPlatform = $this->wechat->open_platform;
         $app = $openPlatform->createAuthorizerApplication($appId, $refreshToken);
@@ -89,18 +92,26 @@ class PublicPlatformOAuthAuthenticate
 
         if (!session('wechat.oauth_user'.$uuid) || $this->needReauth($scopes)) {
             if ($request->has('code')) {
-                if(Cache::has("wechat.oauth_code".$request->code)){
+                if (Cache::has("wechat.oauth_code".$request->code)) {
                     //code已经被用过了
                     Cache::forget("wechat.oauth_code".$request->code);
 
                     session()->forget('wechat.oauth_user'.$uuid);
 
                     return $app->oauth->scopes($scopes)->redirect($request->fullUrl());
-                }else{
-                    Cache::put("wechat.oauth_code".$request->code,$request->code,5);
+                } else {
+                    Cache::put("wechat.oauth_code".$request->code, $request->code, 5);
                 }
 
-                $user = $app->oauth->user();
+                try {
+                    $user = $app->oauth->user();
+                } catch (AuthorizeFailedException $e) {
+                    Cache::forget("wechat.oauth_code".$request->code);
+
+                    session()->forget('wechat.oauth_user'.$uuid);
+                    return $app->oauth->scopes($scopes)->redirect($request->fullUrl());
+                }
+
 
                 session(['wechat.oauth_user'.$uuid => $user]);
                 $isNewSession = true;
