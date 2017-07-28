@@ -103,6 +103,9 @@ class PublicPlatformOAuthAuthenticate
                     Cache::put("wechat.oauth_code".$request->code, $request->code, 5);
                 }
 
+//                $user = $app->oauth->user();
+
+
                 try {
                     $user = $app->oauth->user();
                 } catch (AuthorizeFailedException $e) {

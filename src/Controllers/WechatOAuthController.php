@@ -1,6 +1,7 @@
 <?php
 namespace Overtrue\LaravelWechat\Controllers;
 
+use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Log;
 use Mallto\Tool\Utils\ResponseUtils;
 use Overtrue\LaravelWechat\WechatUtils;
@@ -37,6 +38,7 @@ class WechatOAuthController extends \Illuminate\Routing\Controller
      */
     public function oauth(Request $request)
     {
+
         $uuid = $this->wechatUtils->getUUID($request);
         $redirectUrl = $request->redirect_url;
         $wechatUser = session('wechat.oauth_user'.$uuid);

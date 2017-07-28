@@ -163,6 +163,7 @@ class WechatOpenPlatformController extends Controller
             'onMenuShareQQ',
             'onMenuShareWeibo',
             'onMenuShareQZone',
+            'openLocation',
         ], $debug = false, $beta = false, $json = true);
 
         return response($result);
