@@ -1,6 +1,7 @@
 {
     "name": "overtrue/laravel-wechat",
     "description": "微信 SDK for Laravel",
+    "type": "library",
     "keywords": [
         "wechat",
         "weixin",
