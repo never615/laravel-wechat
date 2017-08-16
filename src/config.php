@@ -6,45 +6,55 @@ return [
      *
      * 当值为 false 时，所有的日志都不会记录
      */
-    'debug'             => true,
+//    'debug'             => env("APP_DEBUG", false),
+    'debug'             => false,
 
     /*
      * 使用 Laravel 的缓存系统
      */
     'use_laravel_cache' => true,
 
-
-    /**
-     * 授权中心地址
-     */
-    "oauth_url"         => "https://wechat.mall-to.com/wechat/oauth",
-
     /*
-     * 账号基本信息，请从微信公众平台获取
+     * 账号基本信息，请从微信公众平台/开放平台获取
      */
-    'app_id'            => env('WECHAT_APPID', 'your-app-id'),
-    // AppID
-    'secret'            => env('WECHAT_SECRET', 'your-app-secret'),
-    // AppSecret
-    'token'             => env('WECHAT_TOKEN', 'your-token'),
-    // Token
-    'aes_key'           => env('WECHAT_AES_KEY', ''),
-    // EncodingAESKey
+//    'app_id'  => env('WECHAT_APPID', 'your-app-id'),         // AppID
+//    'secret'  => env('WECHAT_SECRET', 'your-app-secret'),     // AppSecret
+//    'token'   => env('WECHAT_TOKEN', 'your-token'),          // Token
+//    'aes_key' => env('WECHAT_AES_KEY', ''),                    // EncodingAESKey
+
+//    /**
+//     * 开放平台第三方平台配置信息
+//     */
+//    'open_platform'     => [
+////        /**
+////         * 事件推送URL
+////         */
+////        'serve_url' => env('WECHAT_OPEN_PLATFORM_SERVE_URL', 'serve'),
+//
+//        'app_id'  => env('WECHAT_APPID', 'your-app-id'),         // AppID
+//        'secret'  => env('WECHAT_SECRET', 'your-app-secret'),     // AppSecret
+//        'token'   => env('WECHAT_TOKEN', 'your-token'),          // Token
+//        'aes_key' => env('WECHAT_AES_KEY', ''),
+//    ],
+
 
     /**
-     * 开放平台第三方平台配置信息
+     * 企业号服务商配置信息
      */
-    //'open_platform' => [
-    /**
-     * 事件推送URL,不可用
-     */
-    //'serve_url' => env('WECHAT_OPEN_PLATFORM_SERVE_URL', 'serve'),
-    // 账号基本信息，请从开放平台获取
-    //'app_id'  => env('WECHAT_APPID', 'your-app-id'),         // AppID
-    //'secret'  => env('WECHAT_SECRET', 'your-app-secret'),     // AppSecret
-    //'token'   => env('WECHAT_TOKEN', 'your-token'),          // Token
-    //'aes_key' => env('WECHAT_AES_KEY', ''),                    // EncodingAESKey
-    //],
+    'corp_server'       => [
+        'suites'          => [
+            //企业按活动套件,历史原因简称qa
+            "qa" => [
+                "suite_id" => env("WECHAT_SUITEID", ""),
+                "secret"   => env("WECHAT_SUITE_SECRET", ""),
+                'token'    => env('WECHAT_TOKEN', 'your-token'),          // Token
+                'aes_key'  => env('WECHAT_AES_KEY', ''),
+            ],
+        ],
+        "corp_id"         => env('WECHAT_CORP_ID'),
+        "provider_secret" => env('WECHAT_CORP_PROVIDER_SECRET'),
+    ],
+
 
     /*
      * 日志配置
@@ -65,11 +75,11 @@ return [
      * scopes：公众平台（snsapi_userinfo / snsapi_base），开放平台：snsapi_login
      * callback：OAuth授权完成后的回调页地址(如果使用中间件，则随便填写。。。)
      */
-    // 'oauth' => [
-    //     'only_wechat_browser' => false,
-    //     'scopes'   => array_map('trim', explode(',', env('WECHAT_OAUTH_SCOPES', 'snsapi_userinfo'))),
-    //     'callback' => env('WECHAT_OAUTH_CALLBACK', '/examples/oauth_callback.php'),
-    // ],
+    'oauth'             => [
+        'only_wechat_browser' => false,
+        'scopes'              => array_map('trim', explode(',', env('WECHAT_OAUTH_SCOPES', 'snsapi_userinfo'))),
+        'callback'            => env('WECHAT_OAUTH_CALLBACK', '/examples/oauth_callback.php'),
+    ],
 
     /*
      * 微信支付
