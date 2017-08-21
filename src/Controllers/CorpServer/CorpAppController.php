@@ -470,7 +470,11 @@ class CorpAppController extends Controller
 
         }
 
-        $admin->roles()->save($adminRole);
+        $tempRole = $admin->roles()->where("slug", $adminRole->slug)->first();
+        if (!$tempRole) {
+            $admin->roles()->save($adminRole);
+        }
+
 
     }
 
