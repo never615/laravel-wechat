@@ -189,6 +189,9 @@ class CorpAppController extends Controller
         $admin = $this->createAdmin($subject, $userInfo);
         //分配角色
         if ($agentIds == "all") {
+            //配置主体总管理角色
+            $this->adminRole($subject, $admin);
+
             //分配已有所有角色
             $this->qaRole($subject, $admin);
             $this->djRole($subject, $admin);
@@ -310,7 +313,7 @@ class CorpAppController extends Controller
                     $this->qaRole($subject, $admin);
                     break;
                 case 2: //党建应用
-                    $this->djRole($subject, $admin,true);
+                    $this->djRole($subject, $admin, true);
                     break;
                 default:
                     break;
@@ -392,17 +395,17 @@ class CorpAppController extends Controller
                     "slug"       => "dangjian",
                     "subject_id" => $subject->id,
                 ]);
-
             }
-
 
             $coursePermission = Permission::where("slug", "course_parent")->first();
             $examPermission = Permission::where("slug", "exam_parent")->first();
             $studyPermission = Permission::where("slug", "online_study_parent")->first();
             $companyPermission = Permission::where("slug", "companies")->first();
-            $verifyInfoPermission = Permission::where("slug", "verify_user_infos")->first();
-            $partyTagPermission = Permission::where("slug", "party_tags")->first();
             $videosPermission = Permission::where("slug", "videos")->first();
+            $partyTagPermission = Permission::where("slug", "party_tags")->first();
+            $verifyInfoPermission = Permission::where("slug", "verify_user_infos")->first();
+            $userPermission = Permission::where("slug", "users")->first();
+
 
             $role->permissions()->save($coursePermission);
             $role->permissions()->save($examPermission);
@@ -411,12 +414,64 @@ class CorpAppController extends Controller
             $role->permissions()->save($verifyInfoPermission);
             $role->permissions()->save($partyTagPermission);
             $role->permissions()->save($videosPermission);
+            $role->permissions()->save($userPermission);
         }
 
         $tempRole = $admin->roles()->where("slug", $role->slug)->first();
         if (!$tempRole) {
             $admin->roles()->save($role);
         }
+    }
+
+
+    /**
+     * 分配管理员角色
+     *
+     * @param $subject
+     * @param $admin
+     */
+    private function adminRole($subject, $admin)
+    {
+        //检查该主体是否有总管理角色,没有则创建
+        $adminRole = Role::where("slug", 'admin')
+            ->where('subject_id', $subject->id)
+            ->first();
+
+        if (!$adminRole) {
+            $adminRole = Role::create([
+                "subject_id" => $subject->id,
+                "slug"       => 'admin',
+                "name"       => $subject->name."总管理员",
+            ]);
+
+
+            //分配主体基本权限
+            $subjectPermission = Permission::where("slug", "subjects")->first();
+            $adminPermission = Permission::where("slug", "admins")->first();
+            $rolePermission = Permission::where("slug", "roles")->first();
+            $reportPermission = Permission::where("slug", "reports")->first();
+            $userPermission = Permission::where("slug", "users")->first();
+            $videoPermission = Permission::where("slug", "videos")->first();
+            $companyPermission = Permission::where("slug", "companies")->first();
+            $verifyInfoPermission = Permission::where("slug", "verify_user_infos")->first();
+            $partyTagPermission = Permission::where("slug", "party_tags")->first();
+
+
+            $adminRole->permissions()->save($subjectPermission);
+            $adminRole->permissions()->save($adminPermission);
+            $adminRole->permissions()->save($rolePermission);
+            $adminRole->permissions()->save($reportPermission);
+
+            $adminRole->permissions()->save($userPermission);
+            $adminRole->permissions()->save($videoPermission);
+            $adminRole->permissions()->save($companyPermission);
+            $adminRole->permissions()->save($verifyInfoPermission);
+            $adminRole->permissions()->save($partyTagPermission);
+
+        }
+
+        $admin->roles()->save($adminRole);
+
     }
 
 
