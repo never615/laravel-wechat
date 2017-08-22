@@ -101,13 +101,13 @@ class CorpAppController extends Controller
      */
     public function loginFromCorp(Request $request)
     {
-        Log::info("--------- loginFromCorp -----------");
+//        Log::info("--------- loginFromCorp -----------");
         $input = Input::all();
         if (count($input) == 0) {
             return;
         }
         $userInfo = $this->corp_server_qa->login_user->getUserInfo();
-        Log::info($userInfo);
+//        Log::info($userInfo);
 
         /*
          *
@@ -267,7 +267,7 @@ class CorpAppController extends Controller
         if (!$admin) {
             $admin = Administrator::create([
                 'username'       => $username,
-                'password'       => bcrypt($username),
+                'password'       => bcrypt($username.env('SALT')),
                 'name'           => $name,
                 "subject_id"     => $subject->id,
                 "adminable_id"   => $subject->id,
