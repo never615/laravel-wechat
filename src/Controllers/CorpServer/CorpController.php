@@ -213,7 +213,7 @@ class CorpController extends Controller
                     $this->generateQaMenu($corpId, $permanentCode);
                     break;
                 case 2: //党建应用
-
+                    $this->generateDjMenu($corpId, $permanentCode);
                     break;
                 default:
                     \Log::info("其他应用:".$agent["appid"]);
@@ -235,14 +235,42 @@ class CorpController extends Controller
         $app = $this->corp_server_qa->createAuthorizerApplication($corpId, $permanentCode);
         $agentId = $this->wechatCorpAuthRepository->getAgentId($corpId, 1);
 
-        $env = config("app.debug") ? "staging" : "production";
+        if (config("app.debug")) {
+            $env = "staging";
+            $url = "https://test-qy.mall-to.com";
+        } else {
+            $env = "production";
+            $url = "https://qy.mall-to.com";
+        }
         $app->menu->add([
             [
                 "type" => "view",
                 "name" => "微问答",
-//                "url"  => "https://qy.mall-to.com/wechat/qa/user?uuid=".$corpId,
-                "url"  => "https://qy.mall-to.com/wechat_page/$env/avic/index.html?uuid=".$corpId,
+                "url"  => "$url/wechat_page/$env/avic/index.html?uuid=$corpId&agent_id=$agentId",
             ],
         ], $agentId);
     }
+
+    private function generateDjMenu($corpId, $permanentCode)
+    {
+        //授权处理自动生成菜单
+        $app = $this->corp_server_qa->createAuthorizerApplication($corpId, $permanentCode);
+        $agentId = $this->wechatCorpAuthRepository->getAgentId($corpId, 2);
+
+        if (config("app.debug")) {
+            $env = "staging";
+            $url = "https://test-qy.mall-to.com";
+        } else {
+            $env = "production";
+            $url = "https://qy.mall-to.com";
+        }
+        $app->menu->add([
+            [
+                "type" => "view",
+                "name" => "e党校",
+                "url"  => "$url/wechat_page/$env/learn/index.html?uuid=$corpId&agent_id=$agentId",
+            ],
+        ], $agentId);
+    }
+
 }

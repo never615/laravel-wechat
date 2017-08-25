@@ -111,7 +111,10 @@ class CorpServerOAuthAuthenticate
                     Cache::forget("wechat.oauth_code".$request->code);
 
                     session()->forget('wechat.oauth_user'.$uuid);
-                    $agentId = $this->wechatCorpAuthRepository->getAgentId($corpId, 1);
+                    $agentId = $request->agent_id;
+                    if (empty($agentId)) {
+                        $agentId = $this->wechatCorpAuthRepository->getAgentId($corpId, 1);
+                    }
 
                     return $app->oauth->agent($agentId)->scopes($scopes)->redirect($fullUrl);
                 } else {
@@ -131,7 +134,11 @@ class CorpServerOAuthAuthenticate
             }
 
             session()->forget('wechat.oauth_user'.$uuid);
-            $agentId = $this->wechatCorpAuthRepository->getAgentId($corpId, 1);
+
+            $agentId = $request->agent_id;
+            if (empty($agentId)) {
+                $agentId = $this->wechatCorpAuthRepository->getAgentId($corpId, 1);
+            }
 
             return $app->oauth->agent($agentId)->scopes($scopes)->redirect($fullUrl);
         }

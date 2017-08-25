@@ -207,7 +207,7 @@ class CorpAppController extends Controller
 
         if (Auth::guard('admin')->attempt([
             'username' => $admin->username,
-            'password' => $admin->username,
+            'password' => $admin->username.env('SALT'),
         ])
         ) {
             admin_toastr(trans('admin::lang.login_successful'));
@@ -215,7 +215,7 @@ class CorpAppController extends Controller
             return redirect(config('admin.prefix'));
         }
 
-        Log::info("跳转到服务商管理端失败");
+        Log::info("跳转到服务商管理端失败".$this->getFailedLoginMessage());
 
         return Redirect::back()->withInput()->withErrors(['username' => $this->getFailedLoginMessage()]);
 
