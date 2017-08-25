@@ -377,7 +377,7 @@ class CorpAppController extends Controller
                 $qyUserid = $admin->extra['qy_userid'];
 
                 $registerInfo = RegisterVerifyInfo::where("qy_userid", $qyUserid)
-                    ->where("temp_subject_id", $subject->id)
+                    ->where("top_subject_id", $subject->id)
                     ->first();
 
                 if ($registerInfo) {
@@ -405,6 +405,7 @@ class CorpAppController extends Controller
             $partyTagPermission = Permission::where("slug", "party_tags")->first();
             $verifyInfoPermission = Permission::where("slug", "verify_user_infos")->first();
             $userPermission = Permission::where("slug", "users")->first();
+            $studyTimePermission = Permission::where("slug", "user-study-time-records")->first();
 
 
             $role->permissions()->save($coursePermission);
@@ -415,6 +416,7 @@ class CorpAppController extends Controller
             $role->permissions()->save($partyTagPermission);
             $role->permissions()->save($videosPermission);
             $role->permissions()->save($userPermission);
+            $role->permissions()->save($studyTimePermission);
         }
 
         $tempRole = $admin->roles()->where("slug", $role->slug)->first();
