@@ -186,7 +186,7 @@ class CorpAppController extends Controller
         }
 
         //创建管理端账户
-        $admin = $this->createAdmin($subject, $userInfo);
+        $admin = $this->createAdmin($subject, $userInfo, $agentIds);
 
         //分配角色
         if ($agentIds == "all") {
@@ -243,7 +243,7 @@ class CorpAppController extends Controller
      * @param $userInfo
      * @return $this|\Illuminate\Database\Eloquent\Model|null|static
      */
-    private function createAdmin($subject, $userInfo)
+    private function createAdmin($subject, $userInfo, $agentIds)
     {
         $name = "创建者";
 
@@ -264,17 +264,37 @@ class CorpAppController extends Controller
             throw new PermissionDeniedException("权限不足");
         }
 
-        $admin = Administrator::where("username", $username.'_'.$subject->id)
-            ->where('subject_id',$subject->id)->first();
+
+        $tempSubjectId = $subject->id;
+
+        if ($agentIds != 'all') {
+            //去注册信息表查改用户对应的主体id,即:所属党支部
+            $qyUserid = $userInfo["user_info"]['userid'];
+
+            $registerInfo = RegisterVerifyInfo::where("qy_userid", $qyUserid)
+                ->where("top_subject_id", $subject->id)
+                ->first();
+
+
+            if (!$registerInfo) {
+                throw new PermissionDeniedException("请先在微信端注册党员信息,才可登录管理端");
+            }
+
+            $tempSubjectId = $registerInfo->subject_id;
+        }
+
+
+        $admin = Administrator::where("username", $username.'_'.$tempSubjectId)
+            ->where('subject_id', $subject->id)->first();
 
 
         if (!$admin) {
             $admin = Administrator::create([
-                'username'       => $username.'_'.$subject->id,
-                'password'       => bcrypt($username.'_'.$subject->id.env('SALT')),
+                'username'       => $username.'_'.$tempSubjectId,
+                'password'       => bcrypt($username.'_'.$tempSubjectId.env('SALT')),
                 'name'           => $name,
-                "subject_id"     => $subject->id,
-                "adminable_id"   => $subject->id,
+                "subject_id"     => $tempSubjectId,
+                "adminable_id"   => $tempSubjectId,
                 "adminable_type" => "subject",
                 'extra'          => ["qy_userid" => $userInfo["user_info"]['userid']],
             ]);
@@ -377,21 +397,11 @@ class CorpAppController extends Controller
         if (!$role) {
             if ($isSubAdmin) {
 
-                //去注册信息表查改用户对应的主体id,即:所属党支部
-                $qyUserid = $admin->extra['qy_userid'];
-
-                $registerInfo = RegisterVerifyInfo::where("qy_userid", $qyUserid)
-                    ->where("top_subject_id", $subject->id)
-                    ->first();
-
-                if ($registerInfo) {
-                    throw new PermissionDeniedException("请先在微信端注册党员信息,才可登录管理端");
-                }
 
                 $role = Role::create([
                     "name"       => "党建管理员",
                     "slug"       => "dangjian",
-                    "subject_id" => $registerInfo->subject_id,
+                    "subject_id" => $subject->subject_id,
                 ]);
             } else {
                 $role = Role::create([
