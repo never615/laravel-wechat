@@ -187,6 +187,7 @@ class CorpAppController extends Controller
 
         //创建管理端账户
         $admin = $this->createAdmin($subject, $userInfo);
+
         //分配角色
         if ($agentIds == "all") {
             //配置主体总管理角色
@@ -263,11 +264,14 @@ class CorpAppController extends Controller
             throw new PermissionDeniedException("权限不足");
         }
 
-        $admin = Administrator::where("username", $username)->first();
+        $admin = Administrator::where("username", $username.'_'.$subject->id)
+            ->where('subject_id',$subject->id)->first();
+
+
         if (!$admin) {
             $admin = Administrator::create([
-                'username'       => $username,
-                'password'       => bcrypt($username.env('SALT')),
+                'username'       => $username.'_'.$subject->id,
+                'password'       => bcrypt($username.'_'.$subject->id.env('SALT')),
                 'name'           => $name,
                 "subject_id"     => $subject->id,
                 "adminable_id"   => $subject->id,
