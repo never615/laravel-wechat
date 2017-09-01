@@ -186,7 +186,7 @@ class CorpAppController extends Controller
         }
 
         //创建管理端账户
-        $admin = $this->createAdmin($subject, $userInfo, $agentIds);
+        $admin = $this->createAdmin($subject, $userInfo, $agentIds, $wechatCorpAuth);
 
         //分配角色
         if ($agentIds == "all") {
@@ -219,7 +219,6 @@ class CorpAppController extends Controller
         Log::info("跳转到服务商管理端失败".$this->getFailedLoginMessage());
 
         return Redirect::back()->withInput()->withErrors(['username' => $this->getFailedLoginMessage()]);
-
     }
 
 
@@ -241,9 +240,11 @@ class CorpAppController extends Controller
      *
      * @param $subject
      * @param $userInfo
-     * @return $this|\Illuminate\Database\Eloquent\Model|null|static
+     * @param $agentIds
+     * @param $wechatCorpAuth
+     * @return Administrator
      */
-    private function createAdmin($subject, $userInfo, $agentIds)
+    private function createAdmin($subject, $userInfo, $agentIds, $wechatCorpAuth)
     {
         $name = "创建者";
 
@@ -261,31 +262,39 @@ class CorpAppController extends Controller
             }
         } else {
             \Log::error("获取不到用户标识用做管理端登录名");
-            throw new PermissionDeniedException("权限不足");
+            throw new PermissionDeniedException("权限不足,无法获取用户标识");
         }
 
 
         $tempSubjectId = $subject->id;
 
-        if ($agentIds != 'all') {
-            //去注册信息表查改用户对应的主体id,即:所属党支部
-            $qyUserid = $userInfo["user_info"]['userid'];
+        //去注册信息表查改用户对应的主体id,即:所属党支部
+        $qyUserid = $userInfo["user_info"]['userid'];
 
-            $registerInfo = RegisterVerifyInfo::where("qy_userid", $qyUserid)
-                ->where("top_subject_id", $subject->id)
-                ->first();
+        $registerInfo = RegisterVerifyInfo::where("qy_userid", $qyUserid)
+            ->where("top_subject_id", $subject->id)
+            ->first();
 
-
-            if (!$registerInfo) {
-                throw new PermissionDeniedException("请先在微信端注册党员信息,才可登录管理端");
-            }
-
+        if ($registerInfo) {
             $tempSubjectId = $registerInfo->subject_id;
         }
 
+        //拥有党建应用权限的人,必须有注册核对信息,必须注册微信用户,否则就不能创建
+        if ($this->hasAppPermission($agentIds, $wechatCorpAuth, 2)) {
+            if (!$registerInfo || !$registerInfo->is_register) {
+                throw new PermissionDeniedException("未在e党校注册,无法进入后台");
+            }
+        }
+
+
+        //如果已经是管理员,但是权限改变,如:是问答分级管理员或者超级管理员->党建管理员
+
+        //admin不存在,也有可能是已经是管理员了,但是所属主体变了,需要处理
+        //不需要管,结果就是一个人可能会有多个账号,但是旧的用不到了
+
 
         $admin = Administrator::where("username", $username.'_'.$tempSubjectId)
-            ->where('subject_id', $subject->id)->first();
+            ->where('subject_id', $tempSubjectId)->first();
 
 
         if (!$admin) {
@@ -298,6 +307,11 @@ class CorpAppController extends Controller
                 "adminable_type" => "subject",
                 'extra'          => ["qy_userid" => $userInfo["user_info"]['userid']],
             ]);
+            if ($agentIds == 'all') {
+                //超级管理员分配全部数据查看范围
+                $admin->manager_subject_ids = [$subject->id];
+                $admin->save();
+            }
         } else {
             $tempExtra = $admin->extra;
             $tempExtra['qy_userid'] = $userInfo["user_info"]['userid'];
@@ -305,8 +319,43 @@ class CorpAppController extends Controller
             $admin->save();
         }
 
+
         return $admin;
     }
+
+
+    /**
+     * 不是超级管理员,且拥有指定的appid权限,则返回true
+     *
+     * @param $agentIds
+     * @param $wechatCorpAuth
+     * @param $needCheckAppId ,1是问答应用;2是党校应用
+     * @return bool
+     * @internal param $agentId
+     */
+    private function hasAppPermission($agentIds, $wechatCorpAuth, $needCheckAppId)
+    {
+        if (!is_array($agentIds)) {
+            return false;
+        }
+        foreach ($agentIds as $agentId) {
+            $authInfo = $wechatCorpAuth->auth_info;
+            $authInfo = $authInfo['auth_info'];
+            $agents = $authInfo["agent"];
+            $appId = null;
+            foreach ($agents as $agent) {
+                if ($agent["agentid"] == $agentId) {
+                    //找到
+                    $appId = $agent["appid"];
+                }
+            }
+
+            return $appId == $needCheckAppId;
+        }
+
+        return false;
+    }
+
 
     /**
      * 根据agentId分配角色
@@ -383,42 +432,34 @@ class CorpAppController extends Controller
     /**
      * 给管理端用户分配党建管理角色
      *
+     * 只分配查看权限,用户相关的,还是有统计
+     *
      * @param      $subject
      * @param      $admin
      * @param bool $isSubAdmin
      */
     private function djRole($subject, $admin, $isSubAdmin = false)
     {
-        //分配问答管理员角色
-        $role = Role::where("slug", "dangjian")
-            ->where("subject_id", $subject->id)
+        //分配党建管理员角色
+        $role = Role::where("slug", "dangxiao")
+            ->where("subject_id", $admin->subject_id)
             ->first();
 
         if (!$role) {
-            if ($isSubAdmin) {
+            $role = Role::create([
+                "name"       => "e党校管理员",
+                "slug"       => "dangxiao",
+                "subject_id" => $admin->subject_id,
+            ]);
 
-
-                $role = Role::create([
-                    "name"       => "党建管理员",
-                    "slug"       => "dangjian",
-                    "subject_id" => $subject->subject_id,
-                ]);
-            } else {
-                $role = Role::create([
-                    "name"       => "党建管理员",
-                    "slug"       => "dangjian",
-                    "subject_id" => $subject->id,
-                ]);
-            }
-
-            $coursePermission = Permission::where("slug", "course_parent")->first();
-            $examPermission = Permission::where("slug", "exam_parent")->first();
-            $studyPermission = Permission::where("slug", "online_study_parent")->first();
             $companyPermission = Permission::where("slug", "companies")->first();
             $videosPermission = Permission::where("slug", "videos")->first();
             $partyTagPermission = Permission::where("slug", "party_tags")->first();
             $verifyInfoPermission = Permission::where("slug", "verify_user_infos")->first();
             $userPermission = Permission::where("slug", "users")->first();
+            $coursePermission = Permission::where("slug", "course_parent")->first();
+            $examPermission = Permission::where("slug", "exam_parent")->first();
+            $studyPermission = Permission::where("slug", "online_study_parent")->first();
             $studyTimePermission = Permission::where("slug", "user-study-time-records")->first();
 
 
@@ -433,10 +474,46 @@ class CorpAppController extends Controller
             $role->permissions()->save($studyTimePermission);
         }
 
-        $tempRole = $admin->roles()->where("slug", $role->slug)->first();
-        if (!$tempRole) {
-            $admin->roles()->save($role);
+        //分配党建管理员角色
+        $viewRole = Role::where("slug", "dangxiao_user_view")
+            ->where("subject_id", $admin->subject_id)
+            ->first();
+
+        if (!$viewRole) {
+            $viewRole = Role::create([
+                "name"       => "e党校用户相关查看管理员",
+                "slug"       => "dangxiao_user_view",
+                "subject_id" => $admin->subject_id,
+            ]);
+
+
+            $userCoursePermission = Permission::where("slug", "user_courses")->first();
+            $userExamPermission = Permission::where("slug", "user_exams")->first();
+            $userStudyPermission = Permission::where("slug", "user_online_studies")->first();
+            $userPermission = Permission::where("slug", "users")->first();
+            $studyTimePermission = Permission::where("slug", "user-study-time-records")->first();
+
+            $viewRole->permissions()->save($userCoursePermission);
+            $viewRole->permissions()->save($userExamPermission);
+            $viewRole->permissions()->save($userStudyPermission);
+            $viewRole->permissions()->save($userPermission);
+            $viewRole->permissions()->save($studyTimePermission);
         }
+
+        if($isSubAdmin){
+            //分配查看角色
+            $tempRole = $admin->roles()->where("slug", $viewRole->slug)->first();
+            if (!$tempRole) {
+                $admin->roles()->save($viewRole);
+            }
+        }else{
+            //分配正常角色
+            $tempRole = $admin->roles()->where("slug", $role->slug)->first();
+            if (!$tempRole) {
+                $admin->roles()->save($role);
+            }
+        }
+
     }
 
 
