@@ -206,9 +206,10 @@ class CorpAppController extends Controller
             throw new PermissionDeniedException("权限不足");
         }
 
+
         if (Auth::guard('admin')->attempt([
             'username' => $admin->username,
-            'password' => $admin->username.env('SALT'),
+            'password' => $admin->username.config('app.salt'),
         ])
         ) {
             admin_toastr(trans('admin::lang.login_successful'));
@@ -300,7 +301,7 @@ class CorpAppController extends Controller
         if (!$admin) {
             $admin = Administrator::create([
                 'username'       => $username.'_'.$tempSubjectId,
-                'password'       => bcrypt($username.'_'.$tempSubjectId.env('SALT')),
+                'password'       => bcrypt($username.'_'.$tempSubjectId.config('app.salt')),
                 'name'           => $name,
                 "subject_id"     => $tempSubjectId,
                 "adminable_id"   => $tempSubjectId,
@@ -309,7 +310,7 @@ class CorpAppController extends Controller
             ]);
             if ($agentIds == 'all') {
                 //超级管理员分配全部数据查看范围
-                $admin->manager_subject_ids = [$subject->id];
+                $admin->manager_subject_ids = ["$subject->id"];
                 $admin->save();
             }
         } else {
@@ -500,13 +501,13 @@ class CorpAppController extends Controller
             $viewRole->permissions()->save($studyTimePermission);
         }
 
-        if($isSubAdmin){
+        if ($isSubAdmin) {
             //分配查看角色
             $tempRole = $admin->roles()->where("slug", $viewRole->slug)->first();
             if (!$tempRole) {
                 $admin->roles()->save($viewRole);
             }
-        }else{
+        } else {
             //分配正常角色
             $tempRole = $admin->roles()->where("slug", $role->slug)->first();
             if (!$tempRole) {
