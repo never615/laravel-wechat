@@ -317,6 +317,12 @@ class CorpAppController extends Controller
             $tempExtra = $admin->extra;
             $tempExtra['qy_userid'] = $userInfo["user_info"]['userid'];
             $admin->extra = $tempExtra;
+            if ($agentIds == 'all') {
+                //超级管理员分配全部数据查看范围
+                $admin->manager_subject_ids = ["$subject->id"];
+            } else {
+                $admin->manager_subject_ids = null;
+            }
             $admin->save();
         }
 
@@ -443,14 +449,14 @@ class CorpAppController extends Controller
     {
         //分配党建管理员角色
         $role = Role::where("slug", "dangxiao")
-            ->where("subject_id", $admin->subject_id)
+            ->where("subject_id", $subject->id)
             ->first();
 
         if (!$role) {
             $role = Role::create([
                 "name"       => "e党校管理员",
                 "slug"       => "dangxiao",
-                "subject_id" => $admin->subject_id,
+                "subject_id" => $subject->id,
             ]);
 
             $companyPermission = Permission::where("slug", "companies")->first();
@@ -477,14 +483,14 @@ class CorpAppController extends Controller
 
         //分配党建管理员角色
         $viewRole = Role::where("slug", "dangxiao_user_view")
-            ->where("subject_id", $admin->subject_id)
+            ->where("subject_id", $subject->id)
             ->first();
 
         if (!$viewRole) {
             $viewRole = Role::create([
                 "name"       => "e党校用户相关查看管理员",
                 "slug"       => "dangxiao_user_view",
-                "subject_id" => $admin->subject_id,
+                "subject_id" => $subject->id,
             ]);
 
 
