@@ -543,7 +543,6 @@ class CorpAppController extends Controller
             $rolePermission = Permission::where("slug", "roles")->first();
             $reportPermission = Permission::where("slug", "reports")->first();
             $userPermission = Permission::where("slug", "users")->first();
-//            $videoPermission = Permission::where("slug", "videos")->first();
             $companyPermission = Permission::where("slug", "companies")->first();
             $verifyInfoPermission = Permission::where("slug", "verify_user_infos")->first();
             $partyTagPermission = Permission::where("slug", "party_tags")->first();
@@ -555,7 +554,6 @@ class CorpAppController extends Controller
             $adminRole->permissions()->save($reportPermission);
 
             $adminRole->permissions()->save($userPermission);
-//            $adminRole->permissions()->save($videoPermission);
             $adminRole->permissions()->save($companyPermission);
             $adminRole->permissions()->save($verifyInfoPermission);
             $adminRole->permissions()->save($partyTagPermission);
