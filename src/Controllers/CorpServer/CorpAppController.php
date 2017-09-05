@@ -149,16 +149,10 @@ class CorpAppController extends Controller
             throw new PermissionDeniedException("企业号未授权");
         }
 
-        $corpName = $wechatCorpAuth->corp_name;
-
         $subject = Subject::where("uuid", $corpId)->first();
 
         if (!$subject) {
-            $subject = Subject::create([
-                'name'      => $corpName,
-                "parent_id" => 1,
-                'uuid'      => $corpId,
-            ]);
+            throw new PermissionDeniedException("企业号对应项目主体不存在,请联系开发商.");
         }
 
         //管理员拥有的应用权限
@@ -460,7 +454,6 @@ class CorpAppController extends Controller
             ]);
 
             $companyPermission = Permission::where("slug", "companies")->first();
-//            $videosPermission = Permission::where("slug", "videos")->first();
             $partyTagPermission = Permission::where("slug", "party_tags")->first();
             $verifyInfoPermission = Permission::where("slug", "verify_user_infos")->first();
             $userPermission = Permission::where("slug", "users")->first();
@@ -476,7 +469,6 @@ class CorpAppController extends Controller
             $role->permissions()->save($companyPermission);
             $role->permissions()->save($verifyInfoPermission);
             $role->permissions()->save($partyTagPermission);
-//            $role->permissions()->save($videosPermission);
             $role->permissions()->save($userPermission);
             $role->permissions()->save($studyTimePermission);
         }

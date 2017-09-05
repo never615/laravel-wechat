@@ -4,6 +4,8 @@ namespace Overtrue\LaravelWechat\Controllers\CorpServer;
 
 
 use EasyWeChat\Foundation\Application;
+use Encore\Admin\Auth\Database\Permission;
+use Encore\Admin\Auth\Database\Subject;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Input;
@@ -205,21 +207,84 @@ class CorpController extends Controller
             WechatCorpAuth::create($data);
         }
 
+        //创建主体,分配已购模块
+        $subject = Subject::where("uuid", $corpId)->first();
+
+        if (!$subject) {
+            $subject = Subject::create([
+                'name'      => $authorizerInfo['auth_corp_info']['corp_name'],
+                "parent_id" => 1,
+                'uuid'      => $corpId,
+                "base"      => true,
+            ]);
+            //分配已购模块,根据agentId授权分配
+        }
+
+
+        $waitAddPermissionIds = [];
+
+        //分配基础机构模块
+        $basePermissionIds = Permission::whereIn("slug", [
+            "users",
+        ])
+            ->pluck('id')
+            ->toArray();
+
+        $waitAddPermissionIds = array_merge($waitAddPermissionIds, $basePermissionIds);
+
+
         //如果授权了appId为1的应用,即问答应用,则创建菜单
         $agents = $authorizerInfo['auth_info']['agent'];
         foreach ($agents as $agent) {
             switch ($agent["appid"]) {
                 case 1: //问答应用
                     $this->generateQaMenu($corpId, $permanentCode);
+                    //分配问答模块相关已购功能
+                    $qaPermissionIds = Permission::whereIn("slug", [
+                        'page',
+                        "qa",
+                    ])
+                        ->pluck('id')
+                        ->toArray();
+                    $waitAddPermissionIds = array_merge($waitAddPermissionIds, $qaPermissionIds);
                     break;
                 case 2: //党建应用
                     $this->generateDjMenu($corpId, $permanentCode);
+                    //分配党校模块相关已购功能
+                    //和进行配置
+                    //{"dangjian_statistics":1}
+
+                    $djPermissionIds = Permission::whereIn("slug", [
+                        'companies',
+                        "party_tags",
+                        'verify_user_infos',
+                        'course_parent',
+                        'exam_parent',
+                        'online_study_parent',
+                        'user-study-time-records',
+                    ])
+                        ->pluck('id')
+                        ->toArray();
+
+                    $waitAddPermissionIds = array_merge($waitAddPermissionIds, $djPermissionIds);
+
+
+                    $subject->extra_config = '{"dangjian_statistics":1}';
+                    $subject->save();
+
                     break;
                 default:
                     \Log::info("其他应用:".$agent["appid"]);
                     break;
             }
         }
+
+
+        //检查已经有的权限,添加没有的
+        $havedPermissionIds = $subject->permissions->pluck('id')->toArray();
+        $newPermissionIds = array_diff($waitAddPermissionIds, $havedPermissionIds);
+
+        $subject->permissions()->attach($newPermissionIds);
     }
 
 
