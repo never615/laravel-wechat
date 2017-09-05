@@ -454,7 +454,7 @@ class CorpAppController extends Controller
             ]);
 
             $companyPermission = Permission::where("slug", "companies")->first();
-            $videosPermission = Permission::where("slug", "videos")->first();
+//            $videosPermission = Permission::where("slug", "videos")->first();
             $partyTagPermission = Permission::where("slug", "party_tags")->first();
             $verifyInfoPermission = Permission::where("slug", "verify_user_infos")->first();
             $userPermission = Permission::where("slug", "users")->first();
@@ -470,7 +470,7 @@ class CorpAppController extends Controller
             $role->permissions()->save($companyPermission);
             $role->permissions()->save($verifyInfoPermission);
             $role->permissions()->save($partyTagPermission);
-            $role->permissions()->save($videosPermission);
+//            $role->permissions()->save($videosPermission);
             $role->permissions()->save($userPermission);
             $role->permissions()->save($studyTimePermission);
         }
@@ -545,7 +545,7 @@ class CorpAppController extends Controller
             $rolePermission = Permission::where("slug", "roles")->first();
             $reportPermission = Permission::where("slug", "reports")->first();
             $userPermission = Permission::where("slug", "users")->first();
-            $videoPermission = Permission::where("slug", "videos")->first();
+//            $videoPermission = Permission::where("slug", "videos")->first();
             $companyPermission = Permission::where("slug", "companies")->first();
             $verifyInfoPermission = Permission::where("slug", "verify_user_infos")->first();
             $partyTagPermission = Permission::where("slug", "party_tags")->first();
@@ -557,7 +557,7 @@ class CorpAppController extends Controller
             $adminRole->permissions()->save($reportPermission);
 
             $adminRole->permissions()->save($userPermission);
-            $adminRole->permissions()->save($videoPermission);
+//            $adminRole->permissions()->save($videoPermission);
             $adminRole->permissions()->save($companyPermission);
             $adminRole->permissions()->save($verifyInfoPermission);
             $adminRole->permissions()->save($partyTagPermission);
