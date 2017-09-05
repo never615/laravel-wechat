@@ -441,77 +441,77 @@ class CorpAppController extends Controller
      */
     private function djRole($subject, $admin, $isSubAdmin = false)
     {
-        //分配党建管理员角色
-        $role = Role::where("slug", "dangxiao")
-            ->where("subject_id", $subject->id)
-            ->first();
-
-        if (!$role) {
-            $role = Role::create([
-                "name"       => "e党校管理员",
-                "slug"       => "dangxiao",
-                "subject_id" => $subject->id,
-            ]);
-
-            $companyPermission = Permission::where("slug", "companies")->first();
-            $partyTagPermission = Permission::where("slug", "party_tags")->first();
-            $verifyInfoPermission = Permission::where("slug", "verify_user_infos")->first();
-            $userPermission = Permission::where("slug", "users")->first();
-            $coursePermission = Permission::where("slug", "course_parent")->first();
-            $examPermission = Permission::where("slug", "exam_parent")->first();
-            $studyPermission = Permission::where("slug", "online_study_parent")->first();
-            $studyTimePermission = Permission::where("slug", "user-study-time-records")->first();
-
-
-            $role->permissions()->save($coursePermission);
-            $role->permissions()->save($examPermission);
-            $role->permissions()->save($studyPermission);
-            $role->permissions()->save($companyPermission);
-            $role->permissions()->save($verifyInfoPermission);
-            $role->permissions()->save($partyTagPermission);
-            $role->permissions()->save($userPermission);
-            $role->permissions()->save($studyTimePermission);
-        }
-
-        //分配党建管理员角色
-        $viewRole = Role::where("slug", "dangxiao_user_view")
-            ->where("subject_id", $subject->id)
-            ->first();
-
-        if (!$viewRole) {
-            $viewRole = Role::create([
-                "name"       => "e党校用户相关查看管理员",
-                "slug"       => "dangxiao_user_view",
-                "subject_id" => $subject->id,
-            ]);
-
-
-            $userCoursePermission = Permission::where("slug", "user_courses")->first();
-            $userExamPermission = Permission::where("slug", "user_exams")->first();
-            $userStudyPermission = Permission::where("slug", "user_online_studies")->first();
-            $userPermission = Permission::where("slug", "users")->first();
-            $studyTimePermission = Permission::where("slug", "user-study-time-records")->first();
-
-            $viewRole->permissions()->save($userCoursePermission);
-            $viewRole->permissions()->save($userExamPermission);
-            $viewRole->permissions()->save($userStudyPermission);
-            $viewRole->permissions()->save($userPermission);
-            $viewRole->permissions()->save($studyTimePermission);
-        }
-
         if ($isSubAdmin) {
             //分配查看角色
+            //分配党建管理员角色
+            $viewRole = Role::where("slug", "dangxiao_user_view")
+                ->where("subject_id", $subject->id)
+                ->first();
+
+            if (!$viewRole) {
+                $viewRole = Role::create([
+                    "name"       => "e党校用户相关查看管理员",
+                    "slug"       => "dangxiao_user_view",
+                    "subject_id" => $subject->id,
+                ]);
+
+
+                $userCoursePermission = Permission::where("slug", "user_courses")->first();
+                $userExamPermission = Permission::where("slug", "user_exams")->first();
+                $userStudyPermission = Permission::where("slug", "user_online_studies")->first();
+                $userPermission = Permission::where("slug", "users")->first();
+                $studyTimePermission = Permission::where("slug", "user-study-time-records")->first();
+
+                $viewRole->permissions()->save($userCoursePermission);
+                $viewRole->permissions()->save($userExamPermission);
+                $viewRole->permissions()->save($userStudyPermission);
+                $viewRole->permissions()->save($userPermission);
+                $viewRole->permissions()->save($studyTimePermission);
+            }
+
+
             $tempRole = $admin->roles()->where("slug", $viewRole->slug)->first();
             if (!$tempRole) {
                 $admin->roles()->save($viewRole);
             }
         } else {
-            //分配正常角色
+            //分配党建管理员角色
+            $role = Role::where("slug", "dangxiao")
+                ->where("subject_id", $subject->id)
+                ->first();
+
+            if (!$role) {
+                $role = Role::create([
+                    "name"       => "e党校管理员",
+                    "slug"       => "dangxiao",
+                    "subject_id" => $subject->id,
+                ]);
+
+                $companyPermission = Permission::where("slug", "companies")->first();
+                $partyTagPermission = Permission::where("slug", "party_tags")->first();
+                $verifyInfoPermission = Permission::where("slug", "verify_user_infos")->first();
+                $userPermission = Permission::where("slug", "users")->first();
+                $coursePermission = Permission::where("slug", "course_parent")->first();
+                $examPermission = Permission::where("slug", "exam_parent")->first();
+                $studyPermission = Permission::where("slug", "online_study_parent")->first();
+                $studyTimePermission = Permission::where("slug", "user-study-time-records")->first();
+
+
+                $role->permissions()->save($coursePermission);
+                $role->permissions()->save($examPermission);
+                $role->permissions()->save($studyPermission);
+                $role->permissions()->save($companyPermission);
+                $role->permissions()->save($verifyInfoPermission);
+                $role->permissions()->save($partyTagPermission);
+                $role->permissions()->save($userPermission);
+                $role->permissions()->save($studyTimePermission);
+            }
             $tempRole = $admin->roles()->where("slug", $role->slug)->first();
             if (!$tempRole) {
                 $admin->roles()->save($role);
             }
         }
+
 
     }
 
