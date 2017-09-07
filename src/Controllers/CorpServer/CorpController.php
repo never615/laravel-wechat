@@ -310,7 +310,7 @@ class CorpController extends Controller
         $app->menu->add([
             [
                 "type" => "view",
-                "name" => "微问答",
+                "name" => "拜托了!伙伴",
                 "url"  => "$url/wechat_page/$env/avic/index.html?uuid=$corpId&agent_id=$agentId",
             ],
         ], $agentId);
