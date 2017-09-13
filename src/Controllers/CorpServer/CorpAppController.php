@@ -299,6 +299,11 @@ class CorpAppController extends Controller
 
 
         if (!$admin) {
+            $extra = null;
+            if (isset($userInfo["user_info"]['userid'])) {
+                $extra = ["qy_userid" => $userInfo["user_info"]['userid']];
+            }
+
             $admin = Administrator::create([
                 'username'       => $username.'_'.$tempSubjectId,
                 'password'       => bcrypt($username.'_'.$tempSubjectId.config('app.salt')),
@@ -306,7 +311,7 @@ class CorpAppController extends Controller
                 "subject_id"     => $tempSubjectId,
                 "adminable_id"   => $tempSubjectId,
                 "adminable_type" => "subject",
-                'extra'          => ["qy_userid" => $userInfo["user_info"]['userid']],
+                'extra'          => $extra,
             ]);
             if ($agentIds == 'all') {
                 //超级管理员分配全部数据查看范围
@@ -314,8 +319,11 @@ class CorpAppController extends Controller
                 $admin->save();
             }
         } else {
+
             $tempExtra = $admin->extra;
-            $tempExtra['qy_userid'] = $userInfo["user_info"]['userid'];
+            if (isset($userInfo["user_info"]['userid'])) {
+                $tempExtra['qy_userid'] = $userInfo["user_info"]['userid'];
+            }
             $admin->extra = $tempExtra;
             if ($agentIds == 'all') {
                 //超级管理员分配全部数据查看范围
