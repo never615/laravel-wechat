@@ -241,6 +241,8 @@ class CorpAppController extends Controller
      */
     private function createAdmin($subject, $userInfo, $agentIds, $wechatCorpAuth)
     {
+
+
         $name = "创建者";
 
         if (isset($userInfo["user_info"]['email'])) {
@@ -264,11 +266,15 @@ class CorpAppController extends Controller
         $tempSubjectId = $subject->id;
 
         //去注册信息表查改用户对应的主体id,即:所属党支部
-        $qyUserid = $userInfo["user_info"]['userid'];
+        $registerInfo = null;
+        if (isset($userInfo["user_info"]['userid'])) {
 
-        $registerInfo = RegisterVerifyInfo::where("qy_userid", $qyUserid)
-            ->where("top_subject_id", $subject->id)
-            ->first();
+            $qyUserid = $userInfo["user_info"]['userid'];
+
+            $registerInfo = RegisterVerifyInfo::where("qy_userid", $qyUserid)
+                ->where("top_subject_id", $subject->id)
+                ->first();
+        }
 
         if ($registerInfo) {
             $tempSubjectId = $registerInfo->subject_id;
