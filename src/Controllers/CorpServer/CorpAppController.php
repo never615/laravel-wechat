@@ -319,12 +319,14 @@ class CorpAppController extends Controller
                 $admin->save();
             }
         } else {
-
             $tempExtra = $admin->extra;
             if (isset($userInfo["user_info"]['userid'])) {
                 $tempExtra['qy_userid'] = $userInfo["user_info"]['userid'];
             }
+
             $admin->extra = $tempExtra;
+
+
             if ($agentIds == 'all') {
                 //超级管理员分配全部数据查看范围
                 $admin->manager_subject_ids = ["$subject->id"];
@@ -333,7 +335,6 @@ class CorpAppController extends Controller
             }
             $admin->save();
         }
-
 
         return $admin;
     }
@@ -475,14 +476,15 @@ class CorpAppController extends Controller
                 $userStudyPermission = Permission::where("slug", "user_online_studies")->first();
                 $userPermission = Permission::where("slug", "users")->first();
                 $studyTimePermission = Permission::where("slug", "user-study-time-records")->first();
+                $statisticsPermission = Permission::where("slug", "dj_subject_statistics")->first();
 
                 $viewRole->permissions()->save($userCoursePermission);
                 $viewRole->permissions()->save($userExamPermission);
                 $viewRole->permissions()->save($userStudyPermission);
                 $viewRole->permissions()->save($userPermission);
                 $viewRole->permissions()->save($studyTimePermission);
+                $viewRole->permissions()->save($statisticsPermission);
             }
-
 
             $tempRole = $admin->roles()->where("slug", $viewRole->slug)->first();
             if (!$tempRole) {
@@ -509,6 +511,7 @@ class CorpAppController extends Controller
                 $examPermission = Permission::where("slug", "exam_parent")->first();
                 $studyPermission = Permission::where("slug", "online_study_parent")->first();
                 $studyTimePermission = Permission::where("slug", "user-study-time-records")->first();
+                $statisticsPermission = Permission::where("slug", "dj_subject_statistics")->first();
 
 
                 $role->permissions()->save($coursePermission);
@@ -519,6 +522,7 @@ class CorpAppController extends Controller
                 $role->permissions()->save($partyTagPermission);
                 $role->permissions()->save($userPermission);
                 $role->permissions()->save($studyTimePermission);
+                $role->permissions()->save($statisticsPermission);
             }
             $tempRole = $admin->roles()->where("slug", $role->slug)->first();
             if (!$tempRole) {
