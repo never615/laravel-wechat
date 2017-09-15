@@ -477,6 +477,7 @@ class CorpAppController extends Controller
                 $userPermission = Permission::where("slug", "users")->first();
                 $studyTimePermission = Permission::where("slug", "user-study-time-records")->first();
                 $statisticsPermission = Permission::where("slug", "dj_subject_statistics")->first();
+                $djConfigPermission = Permission::where("slug", "dj_configs")->first();
 
                 $viewRole->permissions()->save($userCoursePermission);
                 $viewRole->permissions()->save($userExamPermission);
@@ -484,6 +485,7 @@ class CorpAppController extends Controller
                 $viewRole->permissions()->save($userPermission);
                 $viewRole->permissions()->save($studyTimePermission);
                 $viewRole->permissions()->save($statisticsPermission);
+                $viewRole->permissions()->save($djConfigPermission);
             }
 
             $tempRole = $admin->roles()->where("slug", $viewRole->slug)->first();
@@ -512,6 +514,7 @@ class CorpAppController extends Controller
                 $studyPermission = Permission::where("slug", "online_study_parent")->first();
                 $studyTimePermission = Permission::where("slug", "user-study-time-records")->first();
                 $statisticsPermission = Permission::where("slug", "dj_subject_statistics")->first();
+                $djConfigPermission = Permission::where("slug", "dj_configs")->first();
 
 
                 $role->permissions()->save($coursePermission);
@@ -523,6 +526,7 @@ class CorpAppController extends Controller
                 $role->permissions()->save($userPermission);
                 $role->permissions()->save($studyTimePermission);
                 $role->permissions()->save($statisticsPermission);
+                $role->permissions()->save($djConfigPermission);
             }
             $tempRole = $admin->roles()->where("slug", $role->slug)->first();
             if (!$tempRole) {
