@@ -77,8 +77,6 @@ class ContactCorpController extends Controller
                     $authorizationInfo = $this->corp_server_contact->
                     getAuthorizationInfo($event['AuthCode']);
 
-                    \Log::info($authorizationInfo);
-
                     $this->authSuccess($authorizationInfo['permanent_code'],
                         $authorizationInfo["auth_corp_info"]["corpid"]);
                     break;

@@ -181,19 +181,22 @@ class CorpController extends Controller
         $wechatCorpAuth = WechatCorpAuth::where("corp_id", $corpId)
             ->first();
 
-        if (empty($permanentCode) && $wechatCorpAuth) {
-            $permanentCode = $wechatCorpAuth->permanent_code;
-        } else {
-            \Log::error("授权出错,授权码不存在");
-        }
+        if (empty($permanentCode)) {
+            //如果授权码不存在,则使用数据库保存的授权码
+            if ($wechatCorpAuth) {
+                $permanentCode = $wechatCorpAuth->permanent_code;
+            }
 
+            if (empty($permanentCode)) {
+                \Log::warning("授权出错,授权码不存在");
+                throw new ResourceException("授权出错,授权码不存在");
+            }
+        }
 
         //获取授权方的公众号帐号基本信息
         $authorizerInfo = $this->corp_server_qa
-            ->getAuthorizerInfo($corpId,
-                $permanentCode);
+            ->getAuthorizerInfo($corpId, $permanentCode);
 
-//        Log::info($authorizerInfo);
         $data = [
             'corp_id'        => $corpId,
             'permanent_code' => $permanentCode,
