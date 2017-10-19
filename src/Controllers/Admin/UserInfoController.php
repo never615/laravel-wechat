@@ -37,22 +37,23 @@ class UserInfoController extends \Encore\Admin\Controllers\Base\AdminCommonContr
 
     protected function gridOption(Grid $grid)
     {
-        $grid->openid();
-        $grid->nickname();
-        $grid->sex();
-        $grid->language();
-        $grid->city();
-        $grid->province();
-        $grid->country();
-        $grid->app_id();
+        $grid->openid()->sortable();
+        $grid->nickname()->sortable();
+        $grid->sex()->sortable();
+        $grid->language()->sortable();
+        $grid->city()->sortable();
+        $grid->province()->sortable();
+        $grid->country()->sortable();
+        $grid->app_id()->sortable();
         $grid->wechat_name("公众号")->display(function(){
             $appId=$this->app_id;
             $info=WechatAuthInfo::where("authorizer_appid",$appId)->first();
             return $info->nick_name;
-        });
+        })->sortable();
 
         $grid->filter(function($filter){
             $filter->like("app_id","app_id");
+            $filter->like("openid","openid");
         });
 
     }
