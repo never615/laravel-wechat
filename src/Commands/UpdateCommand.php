@@ -4,7 +4,7 @@ namespace Overtrue\LaravelWechat\Commands;
 
 use Illuminate\Console\Command;
 
-class UpdatelCommand extends Command
+class UpdateCommand extends Command
 {
     /**
      * The console command name.
