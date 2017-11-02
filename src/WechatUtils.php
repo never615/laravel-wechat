@@ -1,4 +1,5 @@
 <?php
+
 namespace Overtrue\LaravelWechat;
 
 use Encore\Admin\AppUtils;
@@ -6,6 +7,7 @@ use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Request;
 use Mallto\Tool\Exception\InvalidParamException;
 use Mallto\Tool\Exception\ResourceException;
+use Mallto\Tool\Utils\SubjectUtils;
 use Overtrue\LaravelWechat\Model\WechatAuthInfo;
 use Overtrue\LaravelWechat\Model\WechatAuthInfoRepository;
 use Overtrue\LaravelWechat\Model\WechatCorpAuth;
@@ -60,27 +62,6 @@ class WechatUtils
 
 
     /**
-     * @deprecated
-     * @param $request
-     * @return mixed
-     */
-    public function getUUID($request)
-    {
-        $uuid = Request::header("UUID");
-        if ($uuid) {
-            return $uuid;
-        }
-
-        $uuid = $request->uuid;
-        if ($uuid) {
-            return $uuid;
-        }
-
-        throw new InvalidParamException("无效的参数,无法得知微信主体");
-    }
-
-
-    /**
      * 从开放平台创建代公众号实现业务的app
      *
      * @param $openPlatform
@@ -88,7 +69,7 @@ class WechatUtils
      */
     public function createAppFromOpenPlatform($openPlatform)
     {
-        $uuid = AppUtils::getUUID();
+        $uuid = SubjectUtils::getUUID();
         if ($uuid) {
             $wechatAuthInfo = WechatAuthInfo::where("uuid", $uuid)->first();
             if ($wechatAuthInfo) {
@@ -120,8 +101,8 @@ class WechatUtils
                 $this->authInfoRepository->getRefreshToken($appId),
             ];
         }
+        $UUID = SubjectUtils::getUUID();
 
-        $UUID = $this->getUUID($request);
         if ($UUID) {
             //根据subjectId查询appId
             $wechatAuthInfo = WechatAuthInfo::where("uuid", $UUID)->first();
@@ -147,7 +128,7 @@ class WechatUtils
      */
     public function createAuthorizerApplicationParamsByCorp($request)
     {
-        $UUID = $this->getUUID($request);
+        $UUID = AppUtils::getUUID();
         if ($UUID) {
             //根据subjectId查询appId
             $wechatAuthInfo = WechatCorpAuth::where("corp_id", $UUID)->first();
