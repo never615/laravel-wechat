@@ -128,7 +128,7 @@ class WechatUtils
      */
     public function createAuthorizerApplicationParamsByCorp($request)
     {
-        $UUID = AppUtils::getUUID();
+        $UUID = SubjectUtils::getUUID();
         if ($UUID) {
             //根据subjectId查询appId
             $wechatAuthInfo = WechatCorpAuth::where("corp_id", $UUID)->first();

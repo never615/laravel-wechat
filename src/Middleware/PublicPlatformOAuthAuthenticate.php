@@ -9,6 +9,7 @@ use EasyWeChat\Foundation\Application;
 use Event;
 use Illuminate\Support\Facades\Request;
 use Log;
+use Mallto\Tool\Utils\SubjectUtils;
 use Overtrue\LaravelWechat\Events\WeChatUserAuthorized;
 use Overtrue\LaravelWechat\Model\WechatUserInfoRepository;
 use Overtrue\LaravelWechat\WechatUtils;
@@ -67,7 +68,7 @@ class PublicPlatformOAuthAuthenticate
      */
     public function handle($request, Closure $next, $scopes = null)
     {
-        $uuid = $this->wechatUtils->getUUID($request);
+        $uuid = SubjectUtils::getUUID($request);
         list($appId, $refreshToken) = $this->wechatUtils->createAuthorizerApplicationParams($request);
         $openPlatform = $this->wechat->open_platform;
         $app = $openPlatform->createAuthorizerApplication($appId, $refreshToken);

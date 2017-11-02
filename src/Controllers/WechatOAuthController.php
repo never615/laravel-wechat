@@ -4,6 +4,7 @@ namespace Overtrue\LaravelWechat\Controllers;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Log;
 use Mallto\Tool\Utils\ResponseUtils;
+use Mallto\Tool\Utils\SubjectUtils;
 use Overtrue\LaravelWechat\WechatUtils;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -39,7 +40,7 @@ class WechatOAuthController extends \Illuminate\Routing\Controller
     public function oauth(Request $request)
     {
 
-        $uuid = $this->wechatUtils->getUUID($request);
+        $uuid = SubjectUtils::getUUID($request);
         $redirectUrl = $request->redirect_url;
         $wechatUser = session('wechat.oauth_user'.$uuid);
 
@@ -69,7 +70,7 @@ class WechatOAuthController extends \Illuminate\Routing\Controller
      */
     public function userTest(Request $request)
     {
-        $uuid = $this->wechatUtils->getUUID($request);
+        $uuid = SubjectUtils::getUUID($request);
         $user = session('wechat.oauth_user'.$uuid); // 拿到授权用户资料
         Log::info($uuid);
         echo $uuid;

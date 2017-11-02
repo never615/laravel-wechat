@@ -9,6 +9,7 @@ use EasyWeChat\Foundation\Application;
 use Event;
 use Illuminate\Support\Facades\Request;
 use Log;
+use Mallto\Tool\Utils\SubjectUtils;
 use Overtrue\LaravelWechat\Events\WeChatUserAuthorized;
 use Overtrue\LaravelWechat\Model\WechatCorpAuthRepository;
 use Overtrue\LaravelWechat\Model\WechatCorpUserInfoRepository;
@@ -74,7 +75,7 @@ class CorpServerOAuthAuthenticate
      */
     public function handle($request, Closure $next, $scopes = null)
     {
-        $uuid = $this->wechatUtils->getUUID($request);
+        $uuid = SubjectUtils::getUUID($request);
 
 //        session()->forget('wechat.oauth_user'.$uuid);
 
