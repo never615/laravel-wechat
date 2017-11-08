@@ -6,7 +6,7 @@
  * Time: 5:43 PM
  */
 
-namespace Mallto\Tool\Domain;
+namespace Overtrue\LaravelWechat\Domain;
 
 
 use Mallto\Tool\Exception\PermissionDeniedException;
