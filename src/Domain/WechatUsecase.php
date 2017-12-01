@@ -35,7 +35,7 @@ class WechatUsecase
             ->first();
 
         if (!$wechatUserInfo) {
-            \Log::error("无法获取微信信息");
+            \Log::error("无法获取微信信息:".$openid.",".$uuid);
 
             throw new PermissionDeniedException("openid未找到,请在微信内打开");
         }
