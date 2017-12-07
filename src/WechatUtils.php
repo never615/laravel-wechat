@@ -2,7 +2,6 @@
 
 namespace Overtrue\LaravelWechat;
 
-use Encore\Admin\AppUtils;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Request;
 use Mallto\Tool\Exception\InvalidParamException;
@@ -64,12 +63,16 @@ class WechatUtils
     /**
      * 从开放平台创建代公众号实现业务的app
      *
-     * @param $openPlatform
+     * @param      $openPlatform
+     * @param null $uuid
      * @return array
      */
-    public function createAppFromOpenPlatform($openPlatform)
+    public function createAppFromOpenPlatform($openPlatform, $uuid = null)
     {
-        $uuid = SubjectUtils::getUUID();
+        if (!$uuid) {
+            $uuid = SubjectUtils::getUUID();
+        }
+
         if ($uuid) {
             $wechatAuthInfo = WechatAuthInfo::where("uuid", $uuid)->first();
             if ($wechatAuthInfo) {
