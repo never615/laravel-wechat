@@ -331,7 +331,7 @@ class CorpAppController extends Controller
                 //超级管理员分配全部数据查看范围
                 $admin->manager_subject_ids = ["$subject->id"];
             } else {
-                $admin->manager_subject_ids = null;
+//                $admin->manager_subject_ids = null;
             }
             $admin->save();
         }
