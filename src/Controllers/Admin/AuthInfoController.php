@@ -40,6 +40,7 @@ class AuthInfoController extends \Encore\Admin\Controllers\Base\AdminCommonContr
         $grid->authorizer_appid("AppId");
         $grid->principal_name("公司");
         $grid->alias("公众号");
+        $grid->uuid()->editable();
     }
 
     protected function defaultFormOption(Form $form)
