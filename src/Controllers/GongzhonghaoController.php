@@ -71,6 +71,7 @@ class GongzhonghaoController extends \Illuminate\Routing\Controller
     public function userTest(Request $request)
     {
         $user = session('wechat.oauth_user'); // 拿到授权用户资料
+        echo $cryptOpenId = encrypt($user->id);
         dd($user);
     }
 
