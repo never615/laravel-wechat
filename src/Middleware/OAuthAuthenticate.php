@@ -7,23 +7,34 @@ use EasyWeChat\Foundation\Application;
 use Event;
 use Log;
 use Overtrue\LaravelWechat\Events\WeChatUserAuthorized;
+use Overtrue\LaravelWechat\Model\WechatUserInfoRepository;
 
 /**
  * Class OAuthAuthenticate.
  */
 class OAuthAuthenticate
 {
+
     /**
      * Use Service Container would be much artisan.
      */
     private $wechat;
 
+    private $userInfoRepository;
+
+
     /**
      * Inject the wechat service.
+     *
+     * @param Application $wechat
+     * @param WechatUserInfoRepository $userInfoRepository
      */
-    public function __construct(Application $wechat)
-    {
+    public function __construct(
+        Application $wechat,
+        WechatUserInfoRepository $userInfoRepository
+    ) {
         $this->wechat = $wechat;
+        $this->userInfoRepository = $userInfoRepository;
     }
 
     /**
@@ -68,6 +79,8 @@ class OAuthAuthenticate
 
             return $this->wechat->oauth->scopes($scopes)->redirect($request->fullUrl());
         }
+
+        $this->userInfoRepository->createOrUpdate(session('wechat.oauth_user'));
 
         Event::fire(new WeChatUserAuthorized(session('wechat.oauth_user'), $isNewSession));
 

@@ -18,21 +18,27 @@ class WechatUsecase
     /**
      * 获取微信用户的信息
      *
-     * @param $uuid
-     * @param $openid
+     * @param      $uuid
+     * @param      $openid
      * @return WechatUserInfo
      */
     public function getWechatUserInfo($uuid, $openid)
     {
-        //查询微信用户信息
-        $wechatAuthInfo = WechatAuthInfo::where("uuid", $uuid)->first();
-        if (!$wechatAuthInfo) {
-            throw new PermissionDeniedException("公众号未授权");
+        $mode = config("wechat.mode");
+        if ($mode == 'open_platform' || empty($mode)) {
+            //查询微信用户信息
+            $wechatAuthInfo = WechatAuthInfo::where("uuid", $uuid)->first();
+            if (!$wechatAuthInfo) {
+                throw new PermissionDeniedException("公众号未授权");
+            }
+            $wechatUserInfo = WechatUserInfo::where("openid", $openid)
+                ->where("app_id", $wechatAuthInfo->authorizer_appid)
+                ->first();
+        } else {
+            $wechatUserInfo = WechatUserInfo::where("openid", $openid)
+                ->first();
         }
 
-        $wechatUserInfo = WechatUserInfo::where("openid", $openid)
-            ->where("app_id", $wechatAuthInfo->authorizer_appid)
-            ->first();
 
         if (!$wechatUserInfo) {
             \Log::error("无法获取微信信息:".$openid.",".$uuid);

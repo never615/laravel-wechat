@@ -1,4 +1,5 @@
 <?php
+
 namespace Overtrue\LaravelWechat\Model;
 
 use Mallto\Tool\Exception\PermissionDeniedException;
@@ -20,25 +21,41 @@ class WechatUserInfoRepository
      * @param $wechatUser
      * @param $app_id
      */
-    public function createOrUpdate($wechatUser, $app_id)
+    public function createOrUpdate($wechatUser, $app_id = null)
     {
-        $wechatAuthInfo = WechatAuthInfo::where("authorizer_appid", $app_id)->first();
-        if (!$wechatAuthInfo) {
-            throw new PermissionDeniedException("公众号未授权");
-        }
+        $mode = config("wechat.mode");
+        if ($mode == 'open_platform' || empty($mode)) {
+            $wechatAuthInfo = WechatAuthInfo::where("authorizer_appid", $app_id)->first();
+            if (!$wechatAuthInfo) {
+                throw new PermissionDeniedException("公众号未授权");
+            }
+            $wechatUser = $wechatUser["original"];
+            if (isset($wechatUser['openid'])) {
 
-        $wechatUser = $wechatUser["original"];
-        if (isset($wechatUser['openid'])) {
+                $user = WechatUserInfo::where('openid', $wechatUser['openid'])
+                    ->where("app_id", $app_id)
+                    ->first();
+                if ($user) {
+                    $this->updateUser($user, $wechatUser, $app_id, $wechatAuthInfo->id);
+                } else {
+                    $this->createUser($wechatUser, $app_id, $wechatAuthInfo->id);
+                }
+            }
+        } else {
+            $wechatUser = $wechatUser["original"];
+            if (isset($wechatUser['openid'])) {
 
-            $user = WechatUserInfo::where('openid', $wechatUser['openid'])
-                ->where("app_id",$app_id)
-                ->first();
-            if ($user) {
-                $this->updateUser($user, $wechatUser, $app_id, $wechatAuthInfo->id);
-            } else {
-                $this->createUser($wechatUser, $app_id, $wechatAuthInfo->id);
+                $user = WechatUserInfo::where('openid', $wechatUser['openid'])
+                    ->first();
+                if ($user) {
+                    $this->updateUser($user, $wechatUser);
+                } else {
+                    $this->createUser($wechatUser);
+                }
             }
         }
+
+
     }
 
     /**
@@ -51,7 +68,7 @@ class WechatUserInfoRepository
      * @return mixed
      * @internal param array $weChatUser
      */
-    private function updateUser($user, $wechatInfoArr, $app_id, $authId)
+    private function updateUser($user, $wechatInfoArr, $app_id = null, $authId = null)
     {
         return $user->update($this->makeUserArr($wechatInfoArr, $app_id, $authId));
     }
@@ -65,7 +82,7 @@ class WechatUserInfoRepository
      * @return static
      * @internal param $weChatUser
      */
-    private function createUser($wechatInfoArr, $app_id, $authId)
+    private function createUser($wechatInfoArr, $app_id = null, $authId = null)
     {
         return WechatUserInfo::create($this->makeUserArr($wechatInfoArr, $app_id, $authId));
     }
