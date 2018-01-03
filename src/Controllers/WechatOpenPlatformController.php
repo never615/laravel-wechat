@@ -137,7 +137,7 @@ class WechatOpenPlatformController extends Controller
      * js签名
      *
      * @param \Symfony\Component\HttpFoundation\Request $request
-     * @return
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
      */
     public function jsConfig(\Symfony\Component\HttpFoundation\Request $request)
     {
