@@ -3,12 +3,12 @@
 namespace Overtrue\LaravelWechat\Middleware;
 
 
-use Cache;
 use Closure;
 use EasyWeChat\Foundation\Application;
-use Event;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
-use Log;
 use Mallto\Tool\Utils\SubjectUtils;
 use Overtrue\LaravelWechat\Events\WeChatUserAuthorized;
 use Overtrue\LaravelWechat\Model\WechatUserInfoRepository;
@@ -43,9 +43,9 @@ class PublicPlatformOAuthAuthenticate
     /**
      * Inject the wechat service.
      *
-     * @param Application $wechat
+     * @param Application              $wechat
      * @param WechatUserInfoRepository $userInfoRepository
-     * @param WechatUtils $wechatUtils
+     * @param WechatUtils              $wechatUtils
      */
     public function __construct(
         Application $wechat,
@@ -110,9 +110,13 @@ class PublicPlatformOAuthAuthenticate
                 try {
                     $user = $app->oauth->user();
                 } catch (AuthorizeFailedException $e) {
+                    \Log::error('authorizeFailedExcetion');
+                    \Log::error($e->getMessage());
+
                     Cache::forget("wechat.oauth_code".$request->code);
 
                     session()->forget('wechat.oauth_user'.$uuid);
+
                     return $app->oauth->scopes($scopes)->redirect($request->fullUrl());
                 }
 
