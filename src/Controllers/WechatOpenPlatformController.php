@@ -6,7 +6,6 @@ use Mallto\Tool\Exception\ResourceException;
 use EasyWeChat\Foundation\Application;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Input;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Overtrue\LaravelWechat\Model\WechatAuthInfo;
 use Overtrue\LaravelWechat\WechatUtils;
@@ -48,8 +47,8 @@ class WechatOpenPlatformController extends Controller
      */
     public function serve()
     {
-//        Log::info('request arrived.'); # 注意：Log 为 Laravel 组件，所以它记的日志去 Laravel 日志看，而不是 EasyWeChat 日志
-//        Log::info(Input::all());
+//        \Log::info('request arrived.'); # 注意：Log 为 Laravel 组件，所以它记的日志去 Laravel 日志看，而不是 EasyWeChat 日志
+//        \Log::info(Input::all());
 //
         // 自定义处理
         $this->openPlatform->server->setMessageHandler(function ($event) {
@@ -57,25 +56,25 @@ class WechatOpenPlatformController extends Controller
             switch ($event->InfoType) {
                 case 'authorized':
                 case 'updateauthorized':
-                    Log::info("authorized和updateauthorized");
+                    \Log::info("authorized和updateauthorized");
                     // 授权信息，主要是 token 和授权域
                     $info1 = $event->authorization_info;
                     // 授权方信息，就是授权方公众号的信息了
                     $info2 = $event->authorizer_info;
-                    Log::info($info1);
-                    Log::info($info2);
+                    \Log::info($info1);
+                    \Log::info($info2);
                     break;
                 case 'unauthorized':
                     // ...
-                    Log::info("unauthorized");
-                    Log::info($event);
+                    \Log::info("unauthorized");
+                    \Log::info($event);
                     break;
                 case 'component_verify_ticket':
                     // ...
 //                    Log::info("component_verify_ticket");
                     break;
                 default:
-                    Log::info("其他事件");
+                    \Log::info("其他事件");
                     break;
             }
         });
@@ -131,6 +130,13 @@ class WechatOpenPlatformController extends Controller
         }
         echo $authorizerInfo["authorizer_info"]["nick_name"]."授权给微信开放平台服务商深圳墨兔成功";
     }
+
+
+    public function wechatCallback($appid){
+//        \Log::info($appid);
+//        \Log::info(Input::all());
+    }
+
 
 
     /**
