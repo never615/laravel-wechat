@@ -143,7 +143,7 @@ class PublicPlatformOAuthAuthenticate
     /**
      * Build the target business url.
      *
-     * @param Request $request
+     * @param $request
      *
      * @return string
      */
