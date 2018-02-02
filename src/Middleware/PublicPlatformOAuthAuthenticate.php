@@ -92,20 +92,20 @@ class PublicPlatformOAuthAuthenticate
 
         if (!session('wechat.oauth_user'.$uuid) || $this->needReauth($scopes)) {
             if ($request->has('code')) {
-                if (Cache::has("wechat.oauth_code".$request->code)) {
-                    //code已经被用过了
-                    Cache::forget("wechat.oauth_code".$request->code);
-
-                    session()->forget('wechat.oauth_user'.$uuid);
-
-//                    $request->fullUrl()
-                    \Log::warning("code被使用");
-                    \Log::warning($request->fullUrl());
-
-                    return $app->oauth->scopes($scopes)->redirect($request->fullUrl());
-                } else {
-                    Cache::put("wechat.oauth_code".$request->code, $request->code, 5);
-                }
+//                if (Cache::has("wechat.oauth_code".$request->code)) {
+//                    //code已经被用过了
+//                    Cache::forget("wechat.oauth_code".$request->code);
+//
+//                    session()->forget('wechat.oauth_user'.$uuid);
+//
+////                    $request->fullUrl()
+//                    \Log::error("code被使用");
+//                    \Log::warning($request->fullUrl());
+//
+//                    return $app->oauth->scopes($scopes)->redirect($request->fullUrl());
+//                } else {
+//                    Cache::put("wechat.oauth_code".$request->code, $request->code, 5);
+//                }
 
 //                $user = $app->oauth->user();
 
@@ -116,6 +116,7 @@ class PublicPlatformOAuthAuthenticate
                     \Log::error('authorizeFailedExcetion');
                     \Log::error($e->getMessage());
                     \Log::warning($e->getTraceAsString());
+                    \Log::warning($request->fullUrl());
 
                     Cache::forget("wechat.oauth_code".$request->code);
 
