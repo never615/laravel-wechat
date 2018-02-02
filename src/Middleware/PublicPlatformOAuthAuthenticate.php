@@ -8,7 +8,6 @@ use EasyWeChat\Foundation\Application;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Request;
 use Mallto\Tool\Utils\SubjectUtils;
 use Overtrue\LaravelWechat\Events\WeChatUserAuthorized;
 use Overtrue\LaravelWechat\Model\WechatUserInfoRepository;
@@ -99,6 +98,10 @@ class PublicPlatformOAuthAuthenticate
 
                     session()->forget('wechat.oauth_user'.$uuid);
 
+//                    $request->fullUrl()
+                    \Log::warning("code被使用");
+                    \Log::warning($request->fullUrl());
+
                     return $app->oauth->scopes($scopes)->redirect($request->fullUrl());
                 } else {
                     Cache::put("wechat.oauth_code".$request->code, $request->code, 5);
@@ -112,6 +115,7 @@ class PublicPlatformOAuthAuthenticate
                 } catch (AuthorizeFailedException $e) {
                     \Log::error('authorizeFailedExcetion');
                     \Log::error($e->getMessage());
+                    \LOg::warning($e->getTraceAsString());
 
                     Cache::forget("wechat.oauth_code".$request->code);
 
