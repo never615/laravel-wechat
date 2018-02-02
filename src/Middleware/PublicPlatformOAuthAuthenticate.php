@@ -115,7 +115,7 @@ class PublicPlatformOAuthAuthenticate
                 } catch (AuthorizeFailedException $e) {
                     \Log::error('authorizeFailedExcetion');
                     \Log::error($e->getMessage());
-                    \LOg::warning($e->getTraceAsString());
+                    \Log::warning($e->getTraceAsString());
 
                     Cache::forget("wechat.oauth_code".$request->code);
 
