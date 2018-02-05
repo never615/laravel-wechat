@@ -50,10 +50,14 @@ class AccessTokenUsecase
                 $app = $openPlatform->createAuthorizerApplication($auth->authorizer_appid,
                     $auth->authorizer_refresh_token);
                 $accessToken = $app->access_token;
-                $token = $accessToken->getToken(true);
-                \Log::warning("重新刷新token");
-                \Log::warning($auth);
-                \Log::warning($token);
+                try {
+                    $token = $accessToken->getToken(true);
+                    \Log::warning("重新刷新token");
+                    \Log::warning($auth);
+                    \Log::warning($token);
+                } catch (\Exception $exception) {
+                }
+
             }
         });
     }
