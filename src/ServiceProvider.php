@@ -23,6 +23,8 @@ class ServiceProvider extends LaravelServiceProvider
     protected $commands = [
         'Overtrue\LaravelWechat\Commands\InstallCommand',
         'Overtrue\LaravelWechat\Commands\UpdateCommand',
+        'Overtrue\LaravelWechat\Commands\RefreshAccessTokenCommand',
+
     ];
 
     /**

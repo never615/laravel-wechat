@@ -90,8 +90,6 @@ class CacheBridge implements CacheInterface
             }
         } elseif (strpos($id, self::SUIT_TICKET) === 0) {
             $appId = str_replace(self::SUIT_TICKET, "", $id);
-
-
             //在保存ticket,为了保证安全,在数据库在保存一份
             $platformConfig = WechatPlatformConfig::first();
             if ($platformConfig) {
