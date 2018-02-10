@@ -41,7 +41,7 @@ class AccessTokenUsecase
 
     public function refreshAccessToken()
     {
-        \Log::error('refreshAccessToken');
+        \Log::warning('refreshAccessToken');
 
         $openPlatform = $this->wechat->open_platform;
 
