@@ -74,6 +74,7 @@ class WechatOAuthController extends \Illuminate\Routing\Controller
         $user = session('wechat.oauth_user'.$uuid); // 拿到授权用户资料
         Log::info($uuid);
         echo $uuid;
+        \Log::warning(json_decode(json_encode($user),true));
         dd($user);
     }
 
