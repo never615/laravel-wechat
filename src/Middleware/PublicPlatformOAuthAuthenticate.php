@@ -8,6 +8,7 @@ use EasyWeChat\Foundation\Application;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
+use Mallto\Tool\Exception\ResourceException;
 use Mallto\Tool\Utils\SubjectUtils;
 use Overtrue\LaravelWechat\Events\WeChatUserAuthorized;
 use Overtrue\LaravelWechat\Model\WechatUserInfoRepository;
@@ -141,6 +142,13 @@ class PublicPlatformOAuthAuthenticate
 
         $this->userInfoRepository->createOrUpdate(session('wechat.oauth_user'.$uuid), $appId);
         Event::fire(new WeChatUserAuthorized(session('wechat.oauth_user'.$uuid), $isNewSession));
+
+        $tempUser = session('wechat.oauth_user'.$uuid);
+        
+        if ($tempUser && empty($tempUser->id)) {
+            session()->forget('wechat.oauth_user'.$uuid);
+            throw new ResourceException("微信授权失败");
+        }
 
         return $next($request);
     }
