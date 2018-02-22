@@ -144,8 +144,7 @@ class PublicPlatformOAuthAuthenticate
         Event::fire(new WeChatUserAuthorized(session('wechat.oauth_user'.$uuid), $isNewSession));
 
         $tempUser = session('wechat.oauth_user'.$uuid);
-        
-        if ($tempUser && empty($tempUser->id)) {
+        if ($tempUser && is_null($tempUser->id)) {
             session()->forget('wechat.oauth_user'.$uuid);
             throw new ResourceException("微信授权失败");
         }
