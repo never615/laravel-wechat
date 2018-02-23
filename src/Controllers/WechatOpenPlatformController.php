@@ -1,12 +1,12 @@
 <?php
+
 namespace Overtrue\LaravelWechat\Controllers;
 
 
-use Mallto\Tool\Exception\ResourceException;
-use EasyWeChat\Foundation\Application;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Request;
+use Mallto\Tool\Exception\ResourceException;
 use Overtrue\LaravelWechat\Model\WechatAuthInfo;
 use Overtrue\LaravelWechat\WechatUtils;
 
@@ -29,78 +29,86 @@ class WechatOpenPlatformController extends Controller
     /**
      * WechatOpenPlatformController constructor.
      *
-     * @param Application $wechat
      * @param WechatUtils $wechatUtils
      */
-    public function __construct(Application $wechat,WechatUtils $wechatUtils)
+    public function __construct(WechatUtils $wechatUtils)
     {
-        $this->wechat = $wechat;
-        $this->openPlatform = $wechat->open_platform;
+        $this->openPlatform = \EasyWeChat::openPlatform(); // 开放平台
         $this->wechatUtils = $wechatUtils;
     }
 
-
-    /**
-     * 处理微信的请求消息
-     *
-     * @return string
-     */
-    public function serve()
-    {
-//        \Log::info('request arrived.'); # 注意：Log 为 Laravel 组件，所以它记的日志去 Laravel 日志看，而不是 EasyWeChat 日志
-//        \Log::info(Input::all());
 //
-        // 自定义处理
-        $this->openPlatform->server->setMessageHandler(function ($event) {
-            // 事件类型常量定义在 \EasyWeChat\OpenPlatform\Guard 类里
-            switch ($event->InfoType) {
-                case 'authorized':
-                case 'updateauthorized':
-                    \Log::info("authorized和updateauthorized");
-                    // 授权信息，主要是 token 和授权域
-                    $info1 = $event->authorization_info;
-                    // 授权方信息，就是授权方公众号的信息了
-                    $info2 = $event->authorizer_info;
-                    \Log::info($info1);
-                    \Log::info($info2);
-                    break;
-                case 'unauthorized':
-                    // ...
-                    \Log::info("unauthorized");
-                    \Log::info($event);
-                    break;
-                case 'component_verify_ticket':
-                    // ...
-//                    Log::info("component_verify_ticket");
-                    break;
-                default:
-                    \Log::info("其他事件");
-                    break;
-            }
-        });
-
-
-        return $this->openPlatform->server->serve();
-    }
+//    /**
+//     * 处理微信的请求消息
+//     *
+//     * @return string
+//     */
+//    public function serve()
+//    {
+////        \Log::info('request arrived.'); # 注意：Log 为 Laravel 组件，所以它记的日志去 Laravel 日志看，而不是 EasyWeChat 日志
+////        \Log::info(Input::all());
+////
+//        // 自定义处理
+//        $this->openPlatform->server->setMessageHandler(function ($event) {
+//            // 事件类型常量定义在 \EasyWeChat\OpenPlatform\Guard 类里
+//            switch ($event->InfoType) {
+//                case 'authorized':
+//                case 'updateauthorized':
+//                    \Log::info("authorized和updateauthorized");
+//                    // 授权信息，主要是 token 和授权域
+//                    $info1 = $event->authorization_info;
+//                    // 授权方信息，就是授权方公众号的信息了
+//                    $info2 = $event->authorizer_info;
+//                    \Log::info($info1);
+//                    \Log::info($info2);
+//                    break;
+//                case 'unauthorized':
+//                    // ...
+//                    \Log::info("unauthorized");
+//                    \Log::info($event);
+//                    break;
+//                case 'component_verify_ticket':
+//                    // ...
+////                    Log::info("component_verify_ticket");
+//                    break;
+//                default:
+//                    \Log::info("其他事件");
+//                    break;
+//            }
+//        });
+//
+//
+//        return $this->openPlatform->server->serve();
+//    }
 
     /**
      * 第三方公众号请求授权
+     * 获取用户授权页 URL
      */
     public function auth()
     {
-        return $this->openPlatform->pre_auth->redirect(Request::root().'/wechat/platform/auth/callback');
+        $url = $this->openPlatform->getPreAuthorizationUrl(Request::root().'/wechat/platform/auth/callback'); // 传入回调URI即可
+
+        return redirect($url);
     }
 
     /**
      * 第三方公众号请求授权的回调
+     *
+     * 使用授权码换取接口调用凭据和授权信息
      */
     public function authCallback()
     {
+//        \Log::info('authCallback');
+
         // 使用授权码换取公众号的接口调用凭据和授权信息
         // Optional: $authorizationCode 不传值时会自动获取 URL 中 auth_code 值
-        $authorizationInfo = $this->wechat->open_platform->getAuthorizationInfo();
+        $authorizationInfo = $this->openPlatform->handleAuthorize();
+//        \Log::info($authorizationInfo);
+
         //获取授权方的公众号帐号基本信息
-        $authorizerInfo = $this->wechat->open_platform->getAuthorizerInfo($authorizationInfo["authorization_info"]["authorizer_appid"]);
+        $authorizerInfo = $this->openPlatform->getAuthorizer($authorizationInfo["authorization_info"]["authorizer_appid"]);
+//        \Log::info($authorizerInfo);
 
         $authorization_appid = $authorizationInfo['authorization_info']['authorizer_appid'];
         $authorization_access_token = $authorizationInfo['authorization_info']['authorizer_access_token'];
@@ -132,11 +140,16 @@ class WechatOpenPlatformController extends Controller
     }
 
 
-    public function wechatCallback($appid){
+    /**
+     * 公众号事件回调通知
+     *
+     * @param $appid
+     */
+    public function wechatCallback($appid)
+    {
 //        \Log::info($appid);
 //        \Log::info(Input::all());
     }
-
 
 
     /**
@@ -149,15 +162,16 @@ class WechatOpenPlatformController extends Controller
     {
         list($appId, $refreshToken) = $this->wechatUtils->createAuthorizerApplicationParams($request);
         // 传递 AuthorizerAppId 和 AuthorizerRefreshToken（注意不是 AuthorizerAccessToken）即可。
-        $app = $this->openPlatform->createAuthorizerApplication($appId, $refreshToken);
+        $officialAccount = $this->openPlatform->officialAccount($appId, $refreshToken);
+
         // 调用方式与普通调用一致。
-        $js = $app->js;
+        $js = $officialAccount->jssdk;
         $url = Input::get("url");
         if (is_null($url)) {
             throw new ResourceException("url is null");
         }
         $js->setUrl($url);
-        $result = $js->config([
+        $result = $js->buildConfig([
             'menuItem:copyUr',
             'hideOptionMenu',
             'hideAllNonBaseMenuItem',

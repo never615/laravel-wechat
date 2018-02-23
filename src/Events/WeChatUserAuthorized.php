@@ -1,6 +1,15 @@
 <?php
 
-namespace Overtrue\LaravelWechat\Events;
+/*
+ * This file is part of the overtrue/laravel-wechat.
+ *
+ * (c) overtrue <i@overtrue.me>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
+namespace Overtrue\LaravelWeChat\Events;
 
 use Illuminate\Queue\SerializesModels;
 use Overtrue\Socialite\User;
@@ -10,20 +19,29 @@ class WeChatUserAuthorized
     use SerializesModels;
 
     public $user;
+
     public $isNewSession;
+
+    public $account;
+    /**
+     * @var null|string
+     */
+    public $officialAccount;
 
     /**
      * Create a new event instance.
      *
      * @param \Overtrue\Socialite\User $user
      * @param bool                     $isNewSession
-     *
-     * @return void
+     * @param string                   $account
+     * @param string|null              $officialAccount
      */
-    public function __construct(User $user, $isNewSession = false)
+    public function __construct(User $user, $isNewSession = false, string $account,string $officialAccount=null)
     {
         $this->user = $user;
         $this->isNewSession = $isNewSession;
+        $this->account = $account;
+        $this->officialAccount = $officialAccount;
     }
 
     /**
@@ -34,6 +52,16 @@ class WeChatUserAuthorized
     public function getUser()
     {
         return $this->user;
+    }
+
+    /**
+     * The name of official account.
+     *
+     * @return string
+     */
+    public function getAccount()
+    {
+        return $this->account;
     }
 
     /**
@@ -54,5 +82,21 @@ class WeChatUserAuthorized
     public function broadcastOn()
     {
         return [];
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getOfficialAccount()
+    {
+        return $this->officialAccount;
+    }
+
+    /**
+     * @param null|string $officialAccount
+     */
+    public function setOfficialAccount($officialAccount)
+    {
+        $this->officialAccount = $officialAccount;
     }
 }

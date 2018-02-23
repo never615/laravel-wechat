@@ -1,7 +1,7 @@
 <?php
+
 namespace Overtrue\LaravelWechat\Controllers;
 
-use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Log;
 use Mallto\Tool\Utils\ResponseUtils;
 use Mallto\Tool\Utils\SubjectUtils;
@@ -42,7 +42,8 @@ class WechatOAuthController extends \Illuminate\Routing\Controller
 
         $uuid = SubjectUtils::getUUID($request);
         $redirectUrl = $request->redirect_url;
-        $wechatUser = session('wechat.oauth_user'.$uuid);
+        $sessionKey = \sprintf('wechat.oauth_user.%s.%s', 'default', $uuid);
+        $wechatUser = session($sessionKey);
 
         $cryptOpenId = encrypt($wechatUser->id);
 
@@ -70,11 +71,14 @@ class WechatOAuthController extends \Illuminate\Routing\Controller
      */
     public function userTest(Request $request)
     {
+        \Log::info('usertest');
         $uuid = SubjectUtils::getUUID($request);
-        $user = session('wechat.oauth_user'.$uuid); // 拿到授权用户资料
+        $sessionKey = \sprintf('wechat.oauth_user.%s.%s', 'default', $uuid);
+
+        $user = session($sessionKey); // 拿到授权用户资料
         Log::info($uuid);
         echo $uuid;
-        \Log::warning(json_decode(json_encode($user),true));
+        \Log::warning(json_decode(json_encode($user), true));
         dd($user);
     }
 

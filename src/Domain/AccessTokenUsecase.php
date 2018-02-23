@@ -9,16 +9,11 @@
 namespace Overtrue\LaravelWechat\Domain;
 
 
-use EasyWeChat\Foundation\Application;
 use Overtrue\LaravelWechat\Model\WechatAuthInfo;
 use Overtrue\LaravelWechat\WechatUtils;
 
 class AccessTokenUsecase
 {
-    /**
-     * @var Application
-     */
-    private $wechat;
     /**
      * @var WechatUtils
      */
@@ -27,34 +22,30 @@ class AccessTokenUsecase
     /**
      * Inject the wechat service.
      *
-     * @param Application $wechat
      * @param WechatUtils $wechatUtils
      */
     public function __construct(
-        Application $wechat,
         WechatUtils $wechatUtils
     ) {
-        $this->wechat = $wechat;
         $this->wechatUtils = $wechatUtils;
     }
 
 
     public function refreshAccessToken()
     {
-        \Log::warning('refreshAccessToken');
-
-        $openPlatform = $this->wechat->open_platform;
+//        \Log::warning('refreshAccessToken');
+        $openPlatform = \EasyWeChat::openPlatform(); // 开放平台
 
         WechatAuthInfo::chunk(1, function ($auths) use ($openPlatform) {
             foreach ($auths as $auth) {
-                $app = $openPlatform->createAuthorizerApplication($auth->authorizer_appid,
-                    $auth->authorizer_refresh_token);
-                $accessToken = $app->access_token;
+                $officialAccount = $openPlatform->officialAccount($auth->authorizer_appid,$auth->authorizer_refresh_token);
+
+                $accessToken = $officialAccount->access_token;
                 try {
                     $token = $accessToken->getToken(true);
-                    \Log::warning("重新刷新token");
-                    \Log::warning($auth);
-                    \Log::warning($token);
+//                    \Log::warning("重新刷新token");
+//                    \Log::warning($auth);
+//                    \Log::warning($token);
                 } catch (\Exception $exception) {
                 }
 

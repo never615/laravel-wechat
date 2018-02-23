@@ -149,34 +149,34 @@ class WechatUtils
     }
 
 
-    public function jsConfig($appId)
-    {
-        $wechat = app("wechat");
-        $refreshToken = $this->authInfoRepository->getRefreshToken($appId);
-        // 传递 AuthorizerAppId 和 AuthorizerRefreshToken（注意不是 AuthorizerAccessToken）即可。
-        $app = $wechat->open_platform->createAuthorizerApplication($appId, $refreshToken);
-        // 调用方式与普通调用一致。
-        $js = $app->js;
-        $url = Input::get("url");
-        if (is_null($url)) {
-            throw new ResourceException("url is null");
-        }
-        $js->setUrl($url);
-        $result = $js->config([
-            'menuItem:copyUr',
-            'hideOptionMenu',
-            'hideAllNonBaseMenuItem',
-            'hideMenuItems',
-            'showMenuItems',
-            'showAllNonBaseMenuItem',
-            'onMenuShareTimeline',
-            'onMenuShareAppMessage',
-            'onMenuShareQQ',
-            'onMenuShareWeibo',
-            'onMenuShareQZone',
-        ], $debug = false, $beta = false, $json = true);
-
-        return $result;
-    }
+//    public function jsConfig($appId)
+//    {
+//        $wechat = app("wechat");
+//        $refreshToken = $this->authInfoRepository->getRefreshToken($appId);
+//        // 传递 AuthorizerAppId 和 AuthorizerRefreshToken（注意不是 AuthorizerAccessToken）即可。
+//        $app = $wechat->open_platform->createAuthorizerApplication($appId, $refreshToken);
+//        // 调用方式与普通调用一致。
+//        $js = $app->js;
+//        $url = Input::get("url");
+//        if (is_null($url)) {
+//            throw new ResourceException("url is null");
+//        }
+//        $js->setUrl($url);
+//        $result = $js->config([
+//            'menuItem:copyUr',
+//            'hideOptionMenu',
+//            'hideAllNonBaseMenuItem',
+//            'hideMenuItems',
+//            'showMenuItems',
+//            'showAllNonBaseMenuItem',
+//            'onMenuShareTimeline',
+//            'onMenuShareAppMessage',
+//            'onMenuShareQQ',
+//            'onMenuShareWeibo',
+//            'onMenuShareQZone',
+//        ], $debug = false, $beta = false, $json = true);
+//
+//        return $result;
+//    }
 
 }

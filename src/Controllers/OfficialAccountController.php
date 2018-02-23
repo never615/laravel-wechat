@@ -15,7 +15,7 @@ use Overtrue\LaravelWechat\WechatUtils;
  * Date: 19/04/2017
  * Time: 7:01 PM
  */
-class GongzhonghaoController extends \Illuminate\Routing\Controller
+class OfficialAccountController extends \Illuminate\Routing\Controller
 {
     /**
      * @var WechatUtils
@@ -49,20 +49,6 @@ class GongzhonghaoController extends \Illuminate\Routing\Controller
         return ResponseUtils::responseBasicByRedirect($redirectUrl, ["openid" => $cryptOpenId]);
     }
 
-//    /**
-//     * 重定向携带微信用户信息
-//     *
-//     * @param Request $request
-//     * @return \App\Lib\Redirect
-//     */
-//    public function oauthInfo(Request $request)
-//    {
-//        $redirectUrl = $request->redirect_url;
-//        $wechatUser = session('wechat.oauth_user');
-//
-//        return ResponseUtils::responseBasicByRedirect2($redirectUrl, $wechatUser);
-//    }
-
     /**
      * 测试
      *
@@ -70,7 +56,9 @@ class GongzhonghaoController extends \Illuminate\Routing\Controller
      */
     public function userTest(Request $request)
     {
-        $user = session('wechat.oauth_user'); // 拿到授权用户资料
+        $sessionKey = \sprintf('wechat.oauth_user.%s', 'default');
+
+        $user = session($sessionKey); // 拿到授权用户资料
         echo $cryptOpenId = encrypt($user->id);
         dd($user);
     }
@@ -82,15 +70,15 @@ class GongzhonghaoController extends \Illuminate\Routing\Controller
      */
     public function jsConfig()
     {
-        $app = new Application(config('wechat'));
+        $officialAccount = \EasyWeChat::officialAccount(); // 公众号
 
-        $js = $app->js;
+        $js = $officialAccount->jssdk;
         $url = Input::get("url");
         if (is_null($url)) {
             throw new ResourceException("url is null");
         }
         $js->setUrl($url);
-        $result = $js->config([
+        $result = $js->buildConfig([
             'menuItem:copyUr',
             'hideOptionMenu',
             'hideAllNonBaseMenuItem',

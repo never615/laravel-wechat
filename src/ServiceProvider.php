@@ -1,21 +1,35 @@
 <?php
+/*
+ * This file is part of the overtrue/laravel-wechat.
+ *
+ * (c) overtrue <i@overtrue.me>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
 
-namespace Overtrue\LaravelWechat;
+namespace Overtrue\LaravelWeChat;
 
-use EasyWeChat\Foundation\Application as EasyWeChatApplication;
+use EasyWeChat\MiniProgram\Application as MiniProgram;
+use EasyWeChat\OfficialAccount\Application as OfficialAccount;
+use EasyWeChat\OpenPlatform\Application as OpenPlatform;
+use EasyWeChat\Payment\Application as Payment;
+use EasyWeChat\Work\Application as Work;
 use Illuminate\Foundation\Application as LaravelApplication;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider as LaravelServiceProvider;
 use Laravel\Lumen\Application as LumenApplication;
-use Overtrue\Socialite\User as SocialiteUser;
+use Overtrue\LaravelWeChat\Events\OpenPlatformSubscriber;
+use Overtrue\LaravelWeChat\Events\WeChatUserAuthorized;
+use Overtrue\LaravelWeChat\Events\WeChatUserAuthorizedNotification;
 
+/**
+ * Class ServiceProvider.
+ *
+ * @author overtrue <i@overtrue.me>
+ */
 class ServiceProvider extends LaravelServiceProvider
 {
-    /**
-     * 延迟加载.
-     *
-     * @var bool
-     */
-    protected $defer = true;
 
     /**
      * @var array
@@ -24,108 +38,134 @@ class ServiceProvider extends LaravelServiceProvider
         'Overtrue\LaravelWechat\Commands\InstallCommand',
         'Overtrue\LaravelWechat\Commands\UpdateCommand',
         'Overtrue\LaravelWechat\Commands\RefreshAccessTokenCommand',
+    ];
 
+    /**
+     * The application's route middleware.
+     *
+     * @var array
+     */
+    protected $routeMiddleware = [
+        "wechat.open_platform_oauth" => \Overtrue\LaravelWechat\Middleware\PublicPlatformOAuthAuthenticate::class,
+        'wechat.oauth' => \Overtrue\LaravelWeChat\Middleware\OAuthAuthenticate::class,
+    ];
+
+    /**
+     * The application's route middleware groups.
+     *
+     * @var array
+     */
+    protected $middlewareGroups = [
     ];
 
     /**
      * Boot the provider.
-     *
-     * @return void
      */
     public function boot()
     {
-        $this->setupConfig();
+        $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
+        $this->loadRoutesFrom(__DIR__.'/../routes/api.php');
+
+        Event::listen(WeChatUserAuthorized::class, WeChatUserAuthorizedNotification::class);
+        Event::subscribe(OpenPlatformSubscriber::class);
+
     }
 
     /**
      * Setup the config.
-     *
-     * @return void
      */
     protected function setupConfig()
     {
         $source = realpath(__DIR__.'/config.php');
-
-        if ($this->app instanceof LaravelApplication) {
-            if ($this->app->runningInConsole()) {
-                $this->publishes([
-                    $source => config_path('wechat.php'),
-                ]);
-            }
-
-            // 创建模拟授权
-            $this->setUpMockAuthUser();
+        if ($this->app instanceof LaravelApplication && $this->app->runningInConsole()) {
+            $this->publishes([$source => config_path('wechat.php')], 'laravel-wechat');
         } elseif ($this->app instanceof LumenApplication) {
             $this->app->configure('wechat');
         }
-
         $this->mergeConfigFrom($source, 'wechat');
     }
 
     /**
      * Register the provider.
-     *
-     * @return void
      */
     public function register()
     {
-        $this->app->singleton(EasyWeChatApplication::class, function ($laravelApp) {
-            $app = new EasyWeChatApplication(config('wechat'));
-            if (config('wechat.use_laravel_cache')) {
-                $app->cache = new CacheBridge();
-            }
-            $app->server->setRequest($laravelApp['request']);
-
-            return $app;
-        });
         $this->commands($this->commands);
 
+        $this->registerRouteMiddleware();
 
-        $this->app->alias(EasyWeChatApplication::class, 'wechat');
-        $this->app->alias(EasyWeChatApplication::class, 'easywechat');
 
-    }
+        $this->setupConfig();
+        $apps = [
+            'official_account' => OfficialAccount::class,
+            'work'             => Work::class,
+            'mini_program'     => MiniProgram::class,
+            'payment'          => Payment::class,
+            'open_platform'    => OpenPlatform::class,
+        ];
 
-    /**
-     * 提供的服务
-     *
-     * @return array
-     */
-    public function provides()
-    {
-        return ['wechat', EasyWeChatApplication::class];
-    }
+        foreach ($apps as $name => $class) {
+            if (empty(config('wechat.'.$name))) {
+                continue;
+            }
 
-    /**
-     * 创建模拟登录.
-     */
-    protected function setUpMockAuthUser()
-    {
-        $user = config('wechat.mock_user');
 
-        if (is_array($user) && !empty($user['openid']) && config('wechat.enable_mock')) {
-            $user = new SocialiteUser([
-                'id'       => array_get($user, 'openid'),
-                'name'     => array_get($user, 'nickname'),
-                'nickname' => array_get($user, 'nickname'),
-                'avatar'   => array_get($user, 'headimgurl'),
-                'email'    => null,
-                'original' => array_merge($user, ['privilege' => []]),
-            ]);
+            if ($config = config('wechat.route.'.$name)) {
+                $this->getRouter()->group($config['attributes'], function ($router) use ($config) {
+                    $router->any($config['uri'], $config['action']);
+                });
+            }
+            if (!empty(config('wechat.'.$name.'.app_id'))) {
+                $accounts = [
+                    'default' => config('wechat.'.$name),
+                ];
+                config(['wechat.'.$name.'.default' => $accounts['default']]);
+            } else {
+                $accounts = config('wechat.'.$name);
+            }
+            foreach ($accounts as $account => $config) {
+                $this->app->singleton("wechat.{$name}.{$account}",
+                    function ($laravelApp) use ($name, $account, $config, $class) {
+                        $app = new $class(array_merge(config('wechat.defaults', []), $config));
+                        if (config('wechat.defaults.use_laravel_cache')) {
+                            $app['cache'] = new CacheBridge($laravelApp['cache.store']);
+                        }
+                        $app['request'] = $laravelApp['request'];
 
-            session(['wechat.oauth_user' => $user]);
+                        return $app;
+                    });
+            }
+            $this->app->alias("wechat.{$name}.default", 'wechat.'.$name);
+            $this->app->alias("wechat.{$name}.default", 'easywechat.'.$name);
+            $this->app->alias('wechat.'.$name, $class);
+            $this->app->alias('easywechat.'.$name, $class);
         }
     }
 
-    /**
-     * Get config value by key
-     *
-     * @return \Illuminate\Config\Repository
-     */
-    private function config()
+    protected function getRouter()
     {
-        return $this->app['config'];
+        if ($this->app instanceof LumenApplication && !class_exists('Laravel\Lumen\Routing\Router')) {
+            return $this->app;
+        }
+
+        return $this->app->router;
     }
 
+    /**
+     * Register the route middleware.
+     *
+     * @return void
+     */
+    protected function registerRouteMiddleware()
+    {
+        // register middleware group.
+        foreach ($this->middlewareGroups as $key => $middleware) {
+            app('router')->middlewareGroup($key, $middleware);
+        }
 
+        // register route middleware.
+        foreach ($this->routeMiddleware as $key => $middleware) {
+            app('router')->aliasMiddleware($key, $middleware);
+        }
+    }
 }

@@ -1,42 +1,21 @@
 <?php
-
-namespace Overtrue\LaravelWechat\Middleware;
-
+/*
+ * This file is part of the overtrue/laravel-wechat.
+ *
+ * (c) overtrue <i@overtrue.me>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+namespace Overtrue\LaravelWeChat\Middleware;
 use Closure;
-use EasyWeChat\Foundation\Application;
 use Event;
-use Log;
-use Overtrue\LaravelWechat\Events\WeChatUserAuthorized;
-use Overtrue\LaravelWechat\Model\WechatUserInfoRepository;
-
+use Overtrue\LaravelWeChat\Events\WeChatUserAuthorized;
 /**
  * Class OAuthAuthenticate.
  */
 class OAuthAuthenticate
 {
-
-    /**
-     * Use Service Container would be much artisan.
-     */
-    private $wechat;
-
-    private $userInfoRepository;
-
-
-    /**
-     * Inject the wechat service.
-     *
-     * @param Application $wechat
-     * @param WechatUserInfoRepository $userInfoRepository
-     */
-    public function __construct(
-        Application $wechat,
-        WechatUserInfoRepository $userInfoRepository
-    ) {
-        $this->wechat = $wechat;
-        $this->userInfoRepository = $userInfoRepository;
-    }
-
     /**
      * Handle an incoming request.
      *
@@ -46,47 +25,35 @@ class OAuthAuthenticate
      *
      * @return mixed
      */
-    public function handle($request, Closure $next, $scopes = null)
+    public function handle($request, Closure $next, $account = 'default', $scopes = null)
     {
-        $isNewSession = false;
-        $onlyRedirectInWeChatBrowser = config('wechat.oauth.only_wechat_browser', false);
-
-        if ($onlyRedirectInWeChatBrowser && !$this->isWeChatBrowser($request)) {
-            if (config('debug')) {
-                Log::debug('[not wechat browser] skip wechat oauth redirect.');
-            }
-
-            return $next($request);
+        // $account 与 $scopes 写反的情况
+        if (is_array($scopes) || (\is_string($account) && str_is('snsapi_*', $account))) {
+            list($account, $scopes) = [$scopes, $account];
+            $account || $account = 'default';
         }
-
-        $scopes = $scopes ?: config('wechat.oauth.scopes', ['snsapi_base']);
-
+        $isNewSession = false;
+        $sessionKey = \sprintf('wechat.oauth_user.%s', $account);
+        $config = config(\sprintf('wechat.official_account.%s', $account), []);
+        $officialAccount = app(\sprintf('wechat.official_account.%s', $account));
+        $scopes = $scopes ?: array_get($config, 'oauth.scopes', ['snsapi_base']);
         if (is_string($scopes)) {
             $scopes = array_map('trim', explode(',', $scopes));
         }
-
-        if (!session('wechat.oauth_user') || $this->needReauth($scopes)) {
+        $session = session($sessionKey, []);
+        if (!$session) {
             if ($request->has('code')) {
-                session(['wechat.oauth_user' => $this->wechat->oauth->user()]);
+                session([$sessionKey => $officialAccount->oauth->user() ?? []]);
                 $isNewSession = true;
-
-                Event::fire(new WeChatUserAuthorized(session('wechat.oauth_user'), $isNewSession));
-
+                Event::fire(new WeChatUserAuthorized(session($sessionKey), $isNewSession, $account));
                 return redirect()->to($this->getTargetUrl($request));
             }
-
-            session()->forget('wechat.oauth_user');
-
-            return $this->wechat->oauth->scopes($scopes)->redirect($request->fullUrl());
+            session()->forget($sessionKey);
+            return $officialAccount->oauth->scopes($scopes)->redirect($request->fullUrl());
         }
-
-        $this->userInfoRepository->createOrUpdate(session('wechat.oauth_user'));
-
-        Event::fire(new WeChatUserAuthorized(session('wechat.oauth_user'), $isNewSession));
-
+        Event::fire(new WeChatUserAuthorized(session($sessionKey), $isNewSession, $account));
         return $next($request);
     }
-
     /**
      * Build the target business url.
      *
@@ -97,30 +64,6 @@ class OAuthAuthenticate
     protected function getTargetUrl($request)
     {
         $queries = array_except($request->query(), ['code', 'state']);
-
         return $request->url().(empty($queries) ? '' : '?'.http_build_query($queries));
-    }
-
-    /**
-     * Is different scopes.
-     *
-     * @param  array $scopes
-     *
-     * @return bool
-     */
-    protected function needReauth($scopes)
-    {
-        return session('wechat.oauth_user.original.scope') == 'snsapi_base' && in_array("snsapi_userinfo", $scopes);
-    }
-
-    /**
-     * Detect current user agent type.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return bool
-     */
-    protected function isWeChatBrowser($request)
-    {
-        return strpos($request->header('user_agent'), 'MicroMessenger') !== false;
     }
 }

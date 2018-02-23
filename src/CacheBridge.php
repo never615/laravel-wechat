@@ -2,134 +2,101 @@
 
 namespace Overtrue\LaravelWechat;
 
-use Doctrine\Common\Cache\Cache as CacheInterface;
-use Illuminate\Support\Facades\Cache;
+use Illuminate\Cache\Repository;
 use Overtrue\LaravelWechat\Model\WechatPlatformConfig;
+use Psr\SimpleCache\CacheInterface;
 
 /**
+ * 在缓存中把开放平台的ticket存储到数据库中,以避免缓存清除,微信服务不可用
+ *
  * Cache bridge for laravel.
  */
 class CacheBridge implements CacheInterface
 {
+    //在缓存中把开放平台的ticket存储到数据库中,以避免缓存清除,微信服务不可用
+    const COMPONENT_VERIFY_TICKET = 'easywechat.open_platform.verify_ticket.';
 
-    const COMPONENT_VERIFY_TICKET = 'easywechat.open_platform.component_verify_ticket.';
-    const SUIT_TICKET = 'easywechat.corp_server.suite_ticket.';
 
     /**
-     * Fetches an entry from the cache.
-     *
-     * @param string $id The id of the cache entry to fetch.
-     *
-     * @return mixed The cached data or FALSE, if no cache entry exists for the given id.
+     * @var \Illuminate\Cache\Repository
      */
-    public function fetch($id)
+    protected $repository;
+
+    /**
+     * @param \Illuminate\Cache\Repository $repository
+     */
+    public function __construct(Repository $repository)
     {
-        $data = Cache::get($id);
-        if ($data) {
-            return $data;
+        $this->repository = $repository;
+    }
+
+    public function get($key, $default = null)
+    {
+        $value = $this->repository->get($key, $default);
+        if ($value) {
+            return $value;
         } else {
-            if (strpos($id, self::COMPONENT_VERIFY_TICKET) === 0) {
+            if (strpos($key, self::COMPONENT_VERIFY_TICKET) === 0) {
                 $config = WechatPlatformConfig::first();
                 if ($config) {
                     return $config->component_verify_ticket;
                 } else {
-                    return $data;
-                }
-            } elseif (strpos($id, self::SUIT_TICKET) === 0) {
-                $config = WechatPlatformConfig::first();
-                if ($config) {
-                    $appId = str_replace(self::SUIT_TICKET, "", $id);
-
-                    return $config->suite_ticket["$appId"];
-                } else {
-                    return $data;
+                    return $value;
                 }
             } else {
-                return $data;
+                return $value;
             }
         }
     }
 
-    /**
-     * Tests if an entry exists in the cache.
-     *
-     * @param string $id The cache id of the entry to check for.
-     *
-     * @return bool TRUE if a cache entry exists for the given cache id, FALSE otherwise.
-     */
-    public function contains($id)
+    public function set($key, $value, $ttl = null)
     {
-        return Cache::has($id);
-    }
-
-    /**
-     * Puts data into the cache.
-     *
-     * If a cache entry with the given id already exists, its data will be replaced.
-     *
-     * @param string $id       The cache id.
-     * @param mixed  $data     The cache entry/data.
-     * @param int    $lifeTime The lifetime in number of seconds for this cache entry.
-     *                         If zero (the default), the entry never expires (although it may be deleted from the cache
-     *                         to make place for other entries).
-     *
-     * @return bool TRUE if the entry was successfully stored in the cache, FALSE otherwise.
-     */
-    public function save($id, $data, $lifeTime = 0)
-    {
-        if (strpos($id, self::COMPONENT_VERIFY_TICKET) === 0) {
+        if (strpos($key, self::COMPONENT_VERIFY_TICKET) === 0) {
             //在保存ticket,为了保证安全,在数据库在保存一份
             $platformConfig = WechatPlatformConfig::first();
             if ($platformConfig) {
-                $platformConfig->component_verify_ticket = $data;
+                $platformConfig->component_verify_ticket = $value;
                 $platformConfig->save();
             } else {
                 WechatPlatformConfig::create([
-                    "component_verify_ticket" => $data,
-                ]);
-            }
-        } elseif (strpos($id, self::SUIT_TICKET) === 0) {
-            $appId = str_replace(self::SUIT_TICKET, "", $id);
-            //在保存ticket,为了保证安全,在数据库在保存一份
-            $platformConfig = WechatPlatformConfig::first();
-            if ($platformConfig) {
-                $suiteTicke = $platformConfig->suite_ticket;
-                $suiteTicke[$appId] = $data;
-                $platformConfig->suite_ticket = $suiteTicke;
-                $platformConfig->save();
-            } else {
-                WechatPlatformConfig::create([
-                    "suite_ticket" => [$appId => $data],
+                    "component_verify_ticket" => $value,
                 ]);
             }
         }
 
-        if ($lifeTime == 0) {
-            return Cache::forever($id, $data);
+        return $this->repository->put($key, $value, $this->toMinutes($ttl));
+    }
+
+    public function delete($key)
+    {
+    }
+
+    public function clear()
+    {
+    }
+
+    public function getMultiple($keys, $default = null)
+    {
+    }
+
+    public function setMultiple($values, $ttl = null)
+    {
+    }
+
+    public function deleteMultiple($keys)
+    {
+    }
+
+    public function has($key)
+    {
+        return $this->repository->has($key);
+    }
+
+    protected function toMinutes($ttl = null)
+    {
+        if (!is_null($ttl)) {
+            return $ttl / 60;
         }
-
-        return Cache::put($id, $data, $lifeTime / 60);
     }
 
-    /**
-     * Deletes a cache entry.
-     *
-     * @param string $id The cache id.
-     *
-     * @return bool TRUE if the cache entry was successfully deleted, FALSE otherwise.
-     *              Deleting a non-existing entry is considered successful.
-     */
-    public function delete($id)
-    {
-        return Cache::forget($id);
-    }
-
-    /**
-     * Retrieves cached information from the data store.
-     *
-     * @return array|null An associative array with server's statistics if available, NULL otherwise.
-     */
-    public function getStats()
-    {
-    }
 }
