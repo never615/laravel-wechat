@@ -63,7 +63,7 @@ class WechatUtils
      *
      * @param      $openPlatform
      * @param null $uuid
-     * @return array
+     * @return array|bool
      */
     public function createAppFromOpenPlatform($openPlatform, $uuid = null)
     {
@@ -75,8 +75,8 @@ class WechatUtils
             $wechatAuthInfo = WechatAuthInfo::where("uuid", $uuid)->first();
             if ($wechatAuthInfo) {
                 $appId = $wechatAuthInfo->authorizer_appid;
-
-                return $openPlatform->createAuthorizerApplication($appId, $wechatAuthInfo->authorizer_refresh_token);
+                $officialAccount = $openPlatform->officialAccount($appId, $wechatAuthInfo->authorizer_refresh_token);
+                return $officialAccount;
             } else {
                 return false;
             }
