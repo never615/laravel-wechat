@@ -38,15 +38,17 @@ class AccessTokenUsecase
 
         WechatAuthInfo::chunk(1, function ($auths) use ($openPlatform) {
             foreach ($auths as $auth) {
-                $officialAccount = $openPlatform->officialAccount($auth->authorizer_appid,$auth->authorizer_refresh_token);
+                $officialAccount = $openPlatform->officialAccount($auth->authorizer_appid,
+                    $auth->authorizer_refresh_token);
 
                 $accessToken = $officialAccount->access_token;
                 try {
-                    $token = $accessToken->getToken(true);
+                    $accessToken->refresh();
 //                    \Log::warning("重新刷新token");
 //                    \Log::warning($auth);
 //                    \Log::warning($token);
                 } catch (\Exception $exception) {
+                    \Log::error("刷新token失败");
                 }
 
             }
