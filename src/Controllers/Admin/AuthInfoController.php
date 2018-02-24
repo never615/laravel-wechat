@@ -3,7 +3,7 @@ namespace Overtrue\LaravelWeChat\Controllers\Admin;
 
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
-use Overtrue\LaravelWechat\Model\WechatAuthInfo;
+use Overtrue\LaravelWeChat\Model\WechatAuthInfo;
 
 /**
  * Created by PhpStorm.

@@ -2,14 +2,12 @@
 
 namespace Overtrue\LaravelWeChat;
 
-use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Request;
 use Mallto\Tool\Exception\InvalidParamException;
-use Mallto\Tool\Exception\ResourceException;
 use Mallto\Tool\Utils\SubjectUtils;
-use Overtrue\LaravelWechat\Model\WechatAuthInfo;
-use Overtrue\LaravelWechat\Model\WechatAuthInfoRepository;
-use Overtrue\LaravelWechat\Model\WechatCorpAuth;
+use Overtrue\LaravelWeChat\Model\WechatAuthInfo;
+use Overtrue\LaravelWeChat\Model\WechatAuthInfoRepository;
+use Overtrue\LaravelWeChat\Model\WechatCorpAuth;
 
 /**
  * Created by PhpStorm.

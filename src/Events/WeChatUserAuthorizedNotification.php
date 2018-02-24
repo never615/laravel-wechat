@@ -11,7 +11,7 @@
 
 namespace Overtrue\LaravelWeChat\Events;
 
-use Overtrue\LaravelWechat\Model\WechatUserInfoRepository;
+use Overtrue\LaravelWeChat\Model\WechatUserInfoRepository;
 
 class WeChatUserAuthorizedNotification
 {

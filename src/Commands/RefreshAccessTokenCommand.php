@@ -7,7 +7,7 @@ namespace Overtrue\LaravelWeChat\Commands;
 
 
 use Illuminate\Console\Command;
-use Overtrue\LaravelWechat\Domain\AccessTokenUsecase;
+use Overtrue\LaravelWeChat\Domain\AccessTokenUsecase;
 
 class RefreshAccessTokenCommand extends Command
 {

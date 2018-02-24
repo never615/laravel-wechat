@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
 use Mallto\Tool\Exception\ResourceException;
 use Mallto\Tool\Utils\ResponseUtils;
-use Overtrue\LaravelWechat\WechatUtils;
+use Overtrue\LaravelWeChat\WechatUtils;
 
 /**
  * Created by PhpStorm.

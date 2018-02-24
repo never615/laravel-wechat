@@ -7,8 +7,8 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Request;
 use Mallto\Tool\Exception\ResourceException;
-use Overtrue\LaravelWechat\Model\WechatAuthInfo;
-use Overtrue\LaravelWechat\WechatUtils;
+use Overtrue\LaravelWeChat\Model\WechatAuthInfo;
+use Overtrue\LaravelWeChat\WechatUtils;
 
 /**
  * Created by PhpStorm.

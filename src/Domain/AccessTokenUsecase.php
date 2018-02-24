@@ -9,8 +9,8 @@
 namespace Overtrue\LaravelWeChat\Domain;
 
 
-use Overtrue\LaravelWechat\Model\WechatAuthInfo;
-use Overtrue\LaravelWechat\WechatUtils;
+use Overtrue\LaravelWeChat\Model\WechatAuthInfo;
+use Overtrue\LaravelWeChat\WechatUtils;
 
 class AccessTokenUsecase
 {

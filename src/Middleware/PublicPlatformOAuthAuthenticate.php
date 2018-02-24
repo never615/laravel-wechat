@@ -6,8 +6,8 @@ namespace Overtrue\LaravelWeChat\Middleware;
 use Closure;
 use Illuminate\Support\Facades\Event;
 use Mallto\Tool\Utils\SubjectUtils;
-use Overtrue\LaravelWechat\Events\WeChatUserAuthorized;
-use Overtrue\LaravelWechat\WechatUtils;
+use Overtrue\LaravelWeChat\Events\WeChatUserAuthorized;
+use Overtrue\LaravelWeChat\WechatUtils;
 
 /**
  * 微信开放平台

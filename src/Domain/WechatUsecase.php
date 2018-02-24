@@ -10,8 +10,8 @@ namespace Overtrue\LaravelWeChat\Domain;
 
 
 use Mallto\Tool\Exception\PermissionDeniedException;
-use Overtrue\LaravelWechat\Model\WechatAuthInfo;
-use Overtrue\LaravelWechat\Model\WechatUserInfo;
+use Overtrue\LaravelWeChat\Model\WechatAuthInfo;
+use Overtrue\LaravelWeChat\Model\WechatUserInfo;
 
 class WechatUsecase
 {

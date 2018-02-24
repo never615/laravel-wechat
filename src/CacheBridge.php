@@ -3,7 +3,7 @@
 namespace Overtrue\LaravelWeChat;
 
 use Illuminate\Cache\Repository;
-use Overtrue\LaravelWechat\Model\WechatPlatformConfig;
+use Overtrue\LaravelWeChat\Model\WechatPlatformConfig;
 use Psr\SimpleCache\CacheInterface;
 
 /**
