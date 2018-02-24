@@ -6,7 +6,7 @@
  * Time: 5:43 PM
  */
 
-namespace Overtrue\LaravelWechat\Domain;
+namespace Overtrue\LaravelWeChat\Domain;
 
 
 use Overtrue\LaravelWechat\Model\WechatAuthInfo;

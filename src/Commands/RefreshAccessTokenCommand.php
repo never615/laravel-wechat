@@ -3,7 +3,7 @@
  * Copyright (c) 2017. Mallto.Co.Ltd.<mall-to.com> All rights reserved.
  */
 
-namespace Overtrue\LaravelWechat\Commands;
+namespace Overtrue\LaravelWeChat\Commands;
 
 
 use Illuminate\Console\Command;

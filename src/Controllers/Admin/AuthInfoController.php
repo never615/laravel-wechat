@@ -1,5 +1,5 @@
 <?php
-namespace Overtrue\LaravelWechat\Controllers\Admin;
+namespace Overtrue\LaravelWeChat\Controllers\Admin;
 
 use Encore\Admin\Form;
 use Encore\Admin\Grid;

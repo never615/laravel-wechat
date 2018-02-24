@@ -1,6 +1,6 @@
 <?php
 
-namespace Overtrue\LaravelWechat\Controllers;
+namespace Overtrue\LaravelWeChat\Controllers;
 
 use EasyWeChat\Foundation\Application;
 use Illuminate\Http\Request;

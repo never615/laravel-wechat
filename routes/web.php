@@ -30,31 +30,29 @@ Route::group($attributes, function ($router) {
     Route::group(['prefix' => "wechat"], function () {
 
 //        开放平台回调,接收component_ticket等
-//        Route::any('/platform/callback', '\Overtrue\LaravelWechat\Controllers\WechatOpenPlatformController@serve');
+//        Route::any('/platform/callback', 'WechatOpenPlatformController@serve');
 
 
         //第三方公众号请求授权
-        Route::get('/platform/auth', '\Overtrue\LaravelWechat\Controllers\WechatOpenPlatformController@auth');
+        Route::get('/platform/auth', 'WechatOpenPlatformController@auth');
         //第三方公众号请求授权回调
-        Route::get('/platform/auth/callback',
-            '\Overtrue\LaravelWechat\Controllers\WechatOpenPlatformController@authCallback');
+        Route::get('/platform/auth/callback', 'WechatOpenPlatformController@authCallback');
 
 
-        Route::post('{appid}/callback',
-            '\Overtrue\LaravelWechat\Controllers\WechatOpenPlatformController@wechatCallback');
+        Route::post('{appid}/callback', 'WechatOpenPlatformController@wechatCallback');
 
         //jsconfig
-        Route::get('/jsconfig', '\Overtrue\LaravelWechat\Controllers\WechatOpenPlatformController@jsConfig');
+        Route::get('/jsconfig', 'WechatOpenPlatformController@jsConfig');
 
 
         Route::group(['middleware' => ['wechat.open_platform_oauth']], function ($route) {
 
             //微信授权中心,获取微信用户授权的信息
             //获得openid
-            Route::get("oauth", '\Overtrue\LaravelWechat\Controllers\WechatOAuthController@oauth');
-            Route::get("oauth/info", '\Overtrue\LaravelWechat\Controllers\WechatOAuthController@oauth');
+            Route::get("oauth", 'WechatOAuthController@oauth');
+            Route::get("oauth/info", 'WechatOAuthController@oauth');
             //test
-            Route::get('/user1', '\Overtrue\LaravelWechat\Controllers\WechatOAuthController@userTest');
+            Route::get('/user1', 'WechatOAuthController@userTest');
         });
     });
     //----------------------------------------  微信结束   -----------------------------------------------

@@ -1,6 +1,6 @@
 <?php
 
-namespace Overtrue\LaravelWechat\Controllers;
+namespace Overtrue\LaravelWeChat\Controllers;
 
 use Illuminate\Support\Facades\Log;
 use Mallto\Tool\Utils\ResponseUtils;

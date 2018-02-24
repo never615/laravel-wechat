@@ -1,6 +1,6 @@
 <?php
 
-namespace Overtrue\LaravelWechat\Commands;
+namespace Overtrue\LaravelWeChat\Commands;
 
 use Illuminate\Console\Command;
 

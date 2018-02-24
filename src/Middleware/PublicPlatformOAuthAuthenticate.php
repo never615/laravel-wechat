@@ -1,6 +1,6 @@
 <?php
 
-namespace Overtrue\LaravelWechat\Middleware;
+namespace Overtrue\LaravelWeChat\Middleware;
 
 
 use Closure;

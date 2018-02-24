@@ -35,9 +35,9 @@ class ServiceProvider extends LaravelServiceProvider
      * @var array
      */
     protected $commands = [
-        'Overtrue\LaravelWechat\Commands\InstallCommand',
-        'Overtrue\LaravelWechat\Commands\UpdateCommand',
-        'Overtrue\LaravelWechat\Commands\RefreshAccessTokenCommand',
+        'Overtrue\LaravelWeChat\Commands\InstallCommand',
+        'Overtrue\LaravelWeChat\Commands\UpdateCommand',
+        'Overtrue\LaravelWeChat\Commands\RefreshAccessTokenCommand',
     ];
 
     /**
@@ -46,7 +46,7 @@ class ServiceProvider extends LaravelServiceProvider
      * @var array
      */
     protected $routeMiddleware = [
-        "wechat.open_platform_oauth" => \Overtrue\LaravelWechat\Middleware\PublicPlatformOAuthAuthenticate::class,
+        "wechat.open_platform_oauth" => \Overtrue\LaravelWeChat\Middleware\PublicPlatformOAuthAuthenticate::class,
         'wechat.oauth' => \Overtrue\LaravelWeChat\Middleware\OAuthAuthenticate::class,
     ];
 

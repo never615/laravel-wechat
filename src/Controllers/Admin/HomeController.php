@@ -1,6 +1,6 @@
 <?php
 
-namespace Overtrue\LaravelWechat\Controllers\Admin;
+namespace Overtrue\LaravelWeChat\Controllers\Admin;
 
 
 

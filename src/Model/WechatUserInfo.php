@@ -1,6 +1,6 @@
 <?php
 
-namespace Overtrue\LaravelWechat\Model;
+namespace Overtrue\LaravelWeChat\Model;
 
 
 use Illuminate\Database\Eloquent\Model;
@@ -14,7 +14,7 @@ class WechatUserInfo extends Model
 
     ];
 
-    
+
     public function auth(){
         return $this->belongsTo(WechatAuthInfo::class);
     }

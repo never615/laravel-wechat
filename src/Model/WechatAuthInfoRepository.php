@@ -1,5 +1,5 @@
 <?php
-namespace Overtrue\LaravelWechat\Model;
+namespace Overtrue\LaravelWeChat\Model;
 
 use Mallto\Tool\Exception\PermissionDeniedException;
 
@@ -30,7 +30,7 @@ class WechatAuthInfoRepository
         return $wechatAuthInfo->authorizer_refresh_token;
     }
 
-    
-    
-    
+
+
+
 }
