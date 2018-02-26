@@ -16,7 +16,7 @@
 use Illuminate\Support\Facades\Route;
 
 $attributes = [
-    'namespace'  => 'Overtrue\LaravelWeChat\Controller\Api',
+    'namespace'  => 'Overtrue\LaravelWeChat\Controllers\Api',
     'prefix'     => 'api',
     'middleware' => ['api'],
 ];
@@ -24,21 +24,29 @@ $attributes = [
 Route::group($attributes, function ($router) {
 
 
+    Route::get("ttt",'emplateMsgController@send');
+
     /**
      * 需要经过验证
      */
     Route::group(['middleware' => ['requestCheck']], function () {
 
 
-        /**
-         * 需要经过签名校验
-         */
-        Route::group(["middleware" => ['third_api']], function () {
-            Route::group(['middleware' => ['authSign'], 'namespace' => "Park"], function () {
 
+        Route::group(["middleware" => ['third_api']], function () {
+            /**
+             * 需要经过签名校验
+             */
+            Route::group(['middleware' => ['authSign']], function () {
             });
         });
 
+        /**
+         * 需要经过签名校验
+         */
+        Route::group(['middleware' => ['authSign']], function () {
+            Route::post("template_msg", 'TemplateMsgController@send');
+        });
 
         /**
          * 需要经过授权
