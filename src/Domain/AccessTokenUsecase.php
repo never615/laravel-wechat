@@ -46,10 +46,11 @@ class AccessTokenUsecase
                     $accessToken->refresh();
 //                    \Log::warning("重新刷新token");
 //                    \Log::warning($auth);
-//                    \Log::warning($token);
                 } catch (\Exception $exception) {
                     \Log::error("刷新token失败");
                     \Log::warning($exception->getMessage());
+                    \Log::warning($exception->getTraceAsString());
+                    \Log::warning($auth);
                 }
 
             }

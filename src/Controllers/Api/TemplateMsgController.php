@@ -58,7 +58,9 @@ class TemplateMsgController extends \Illuminate\Routing\Controller
 
 
         } catch (HttpException $exception) {
+
             \Log::error("模板消息发送失败:".$exception->getMessage());
+            \Log::warning($exception->getTraceAsString());
 
             return response()->json([
                     "code" => 0,

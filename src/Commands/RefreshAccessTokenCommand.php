@@ -57,10 +57,7 @@ class RefreshAccessTokenCommand extends Command
      */
     public function fire()
     {
-        \Log::warning("refresh command");
-
         $this->accessTokenUsecase->refreshAccessToken();
-
     }
 
 
