@@ -9,6 +9,7 @@
 namespace Overtrue\LaravelWeChat\Domain;
 
 
+use Exception;
 use Mallto\Tool\Exception\PermissionDeniedException;
 use Overtrue\LaravelWeChat\Model\WechatAuthInfo;
 use Overtrue\LaravelWeChat\Model\WechatUserInfo;
@@ -42,7 +43,8 @@ class WechatUsecase
 
         if (!$wechatUserInfo) {
             \Log::error("无法获取微信信息:".$openid.",".$uuid);
-
+            $exception=new Exception();
+            \Log::warning($exception->getTraceAsString());
             throw new PermissionDeniedException("openid未找到,请在微信内打开");
         }
 
