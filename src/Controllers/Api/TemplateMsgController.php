@@ -5,6 +5,9 @@ namespace Overtrue\LaravelWeChat\Controllers\Api;
 use EasyWeChat\Kernel\Exceptions\HttpException;
 use GuzzleHttp\Exception\ConnectException;
 use Illuminate\Http\Request;
+use Mallto\Tool\Utils\AppUtils;
+use Mallto\Tool\Utils\SubjectUtils;
+use Mockery\Exception;
 use Overtrue\LaravelWeChat\WechatUtils;
 
 
@@ -28,7 +31,7 @@ class TemplateMsgController extends \Illuminate\Routing\Controller
     {
         $openPlatform = \EasyWeChat::openPlatform(); // 开放平台
 
-        $uuid = $request->uuid;
+        $uuid = SubjectUtils::getUUID();
 
         $officalAccount = $wechatUtils->createAppFromOpenPlatform($openPlatform, $uuid);
         $template_message = $officalAccount->template_message;
@@ -55,11 +58,9 @@ class TemplateMsgController extends \Illuminate\Routing\Controller
                     ]
                 );
             }
-
-
         } catch (HttpException $exception) {
 
-            \Log::error("模板消息发送失败:".$exception->getMessage());
+            \Log::error("模板消息发送失败1:".$exception->getMessage());
             \Log::warning($exception->getTraceAsString());
 
             return response()->json([
@@ -68,7 +69,15 @@ class TemplateMsgController extends \Illuminate\Routing\Controller
                 ]
             );
         } catch (ConnectException $exception) {
-            \Log::error("微信模板消息发送异常:".$exception->getMessage());
+            \Log::error("微信模板消息发送异常2:".$exception->getMessage());
+
+            return response()->json([
+                    "code" => 0,
+                    'msg'  => '模板消息发送失败',
+                ]
+            );
+        }catch (Exception $exception){
+            \Log::error("微信模板消息发送异常3:".$exception->getMessage());
 
             return response()->json([
                     "code" => 0,
