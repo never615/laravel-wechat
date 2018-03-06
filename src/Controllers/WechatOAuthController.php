@@ -45,9 +45,13 @@ class WechatOAuthController extends \Illuminate\Routing\Controller
         $sessionKey = \sprintf('wechat.oauth_user.%s.%s', 'default', $uuid);
         $wechatUser = session($sessionKey);
 
-        $cryptOpenId = encrypt($wechatUser->id);
+        $openid=$wechatUser->id.'|||'.time();
+        $cryptOpenId = encrypt($openid);
 
-        return ResponseUtils::responseBasicByRedirect($redirectUrl, ["openid" => $cryptOpenId]);
+        return ResponseUtils::responseBasicByRedirect($redirectUrl, [
+            "openid" => $cryptOpenId,
+
+        ]);
     }
 
 //    /**
