@@ -3,8 +3,8 @@
 namespace Overtrue\LaravelWeChat;
 
 use Illuminate\Support\Facades\Request;
+use Mallto\Admin\SubjectUtils;
 use Mallto\Tool\Exception\InvalidParamException;
-use Mallto\Tool\Utils\SubjectUtils;
 use Overtrue\LaravelWeChat\Model\WechatAuthInfo;
 use Overtrue\LaravelWeChat\Model\WechatAuthInfoRepository;
 use Overtrue\LaravelWeChat\Model\WechatCorpAuth;

@@ -60,13 +60,10 @@ Route::group($attributes, function ($router) {
 //----------------------------------------  管理端开始  -----------------------------------------------
 
 
-    Route::group(['prefix' => config('admin.prefix'), "middleware" => ["admin"]], function ($router) {
+    Route::group(['prefix' => config('admin.prefix'), "middleware" => ["adminE"]], function ($router) {
 
-        $router->get('/', 'Admin\HomeController@index')->name("dashboard");
+        $router->get('log', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index')->name("log");
 
-        Route::group(["middleware" => ['admin.permission:allow,owner']], function ($router) {
-            $router->get('log', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index')->name("log");
-        });
         $router->resource("wechat_auth_infos", 'Admin\AuthInfoController');
         $router->resource("wechat_user_infos", 'Admin\UserInfoController');
     });

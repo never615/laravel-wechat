@@ -5,8 +5,7 @@ namespace Overtrue\LaravelWeChat\Controllers\Api;
 use EasyWeChat\Kernel\Exceptions\HttpException;
 use GuzzleHttp\Exception\ConnectException;
 use Illuminate\Http\Request;
-use Mallto\Tool\Utils\AppUtils;
-use Mallto\Tool\Utils\SubjectUtils;
+use Mallto\Admin\SubjectUtils;
 use Mockery\Exception;
 use Overtrue\LaravelWeChat\WechatUtils;
 
@@ -76,7 +75,7 @@ class TemplateMsgController extends \Illuminate\Routing\Controller
                     'msg'  => '模板消息发送失败',
                 ]
             );
-        }catch (Exception $exception){
+        } catch (Exception $exception) {
             \Log::error("微信模板消息发送异常3:".$exception->getMessage());
 
             return response()->json([
