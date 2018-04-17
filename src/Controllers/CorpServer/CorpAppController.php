@@ -7,7 +7,7 @@ use EasyWeChat\Foundation\Application;
 use Encore\Admin\Auth\Database\Administrator;
 use Encore\Admin\Auth\Database\Permission;
 use Encore\Admin\Auth\Database\Role;
-use Encore\Admin\Auth\Database\Subject;
+use Mallto\Admin\Data\Subject;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;

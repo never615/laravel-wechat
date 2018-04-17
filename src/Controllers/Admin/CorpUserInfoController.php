@@ -1,12 +1,12 @@
 <?php
+
 namespace Overtrue\LaravelWechat\Controllers\Admin;
 
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
-use Overtrue\LaravelWechat\Model\WechatAuthInfo;
+use Mallto\Admin\Controllers\Base\AdminCommonController;
 use Overtrue\LaravelWechat\Model\WechatCorpAuth;
 use Overtrue\LaravelWechat\Model\WechatCorpUserInfo;
-use Overtrue\LaravelWechat\Model\WechatUserInfo;
 
 /**
  * Created by PhpStorm.
@@ -14,7 +14,7 @@ use Overtrue\LaravelWechat\Model\WechatUserInfo;
  * Date: 25/04/2017
  * Time: 4:32 PM
  */
-class CorpUserInfoController extends \Encore\Admin\Controllers\Base\AdminCommonController
+class CorpUserInfoController extends AdminCommonController
 {
 
     /**
@@ -49,14 +49,15 @@ class CorpUserInfoController extends \Encore\Admin\Controllers\Base\AdminCommonC
         $grid->mobile();
         $grid->email();
         $grid->corp_id();
-        $grid->corp_name("企业号")->display(function(){
-            $corpId=$this->corp_id;
-            $info=WechatCorpAuth::where("corp_id",$corpId)->first();
+        $grid->corp_name("企业号")->display(function () {
+            $corpId = $this->corp_id;
+            $info = WechatCorpAuth::where("corp_id", $corpId)->first();
+
             return $info->corp_name;
         });
 
-        $grid->filter(function($filter){
-            $filter->like("app_id","app_id");
+        $grid->filter(function ($filter) {
+            $filter->like("app_id", "app_id");
         });
 
     }
@@ -66,7 +67,7 @@ class CorpUserInfoController extends \Encore\Admin\Controllers\Base\AdminCommonC
         $form->display("user_id");
         $form->display("name");
         $form->display("gender");
-        $form->display("department")->with(function($value){
+        $form->display("department")->with(function ($value) {
             return \GuzzleHttp\json_encode($value);
         });
 

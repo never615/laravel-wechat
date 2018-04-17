@@ -3,6 +3,7 @@ namespace Overtrue\LaravelWechat\Controllers\Admin;
 
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
+use Mallto\Admin\Controllers\Base\AdminCommonController;
 use Overtrue\LaravelWechat\Model\WechatAuthInfo;
 use Overtrue\LaravelWechat\Model\WechatUserInfo;
 
@@ -12,7 +13,7 @@ use Overtrue\LaravelWechat\Model\WechatUserInfo;
  * Date: 25/04/2017
  * Time: 4:32 PM
  */
-class UserInfoController extends \Encore\Admin\Controllers\Base\AdminCommonController
+class UserInfoController extends AdminCommonController
 {
 
     /**

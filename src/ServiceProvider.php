@@ -4,10 +4,8 @@ namespace Overtrue\LaravelWechat;
 
 use EasyWeChat\Foundation\Application as EasyWeChatApplication;
 use Illuminate\Foundation\Application as LaravelApplication;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider as LaravelServiceProvider;
 use Laravel\Lumen\Application as LumenApplication;
-use Overtrue\LaravelWechat\ServiceProviders\RouteServiceProvider;
 use Overtrue\Socialite\User as SocialiteUser;
 
 class ServiceProvider extends LaravelServiceProvider

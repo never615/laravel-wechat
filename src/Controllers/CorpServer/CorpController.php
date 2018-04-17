@@ -5,7 +5,7 @@ namespace Overtrue\LaravelWechat\Controllers\CorpServer;
 
 use EasyWeChat\Foundation\Application;
 use Encore\Admin\Auth\Database\Permission;
-use Encore\Admin\Auth\Database\Subject;
+use Mallto\Admin\Data\Subject;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Input;
