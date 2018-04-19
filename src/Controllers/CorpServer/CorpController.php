@@ -252,7 +252,7 @@ class CorpController extends Controller
                     $waitAddPermissionIds = array_merge($waitAddPermissionIds, $qaPermissionIds);
                     break;
                 case 2: //党建应用
-                    $this->generateDjMenu($corpId, $permanentCode);
+//                    $this->generateDjMenu($corpId, $permanentCode);
                     //分配党校模块相关已购功能
                     //和进行配置
                     //{"dangjian_statistics":1}
@@ -303,13 +303,8 @@ class CorpController extends Controller
         $app = $this->corp_server_qa->createAuthorizerApplication($corpId, $permanentCode);
         $agentId = $this->wechatCorpAuthRepository->getAgentId($corpId, 1);
 
-        if (config("app.debug")) {
-            $env = "staging";
-            $url = "https://test-qy.mall-to.com";
-        } else {
-            $env = "production";
-            $url = "https://qy.mall-to.com";
-        }
+        $env=config('app.env');
+        $url=config("app.url");
         $app->menu->add([
             [
                 "type" => "view",
@@ -325,13 +320,8 @@ class CorpController extends Controller
         $app = $this->corp_server_qa->createAuthorizerApplication($corpId, $permanentCode);
         $agentId = $this->wechatCorpAuthRepository->getAgentId($corpId, 2);
 
-        if (config("app.debug")) {
-            $env = "staging";
-            $url = "https://test-qy.mall-to.com";
-        } else {
-            $env = "production";
-            $url = "https://qy.mall-to.com";
-        }
+        $env=config('app.env');
+        $url=config("app.url");
         $app->menu->add([
             [
                 "type" => "view",
@@ -342,3 +332,4 @@ class CorpController extends Controller
     }
 
 }
+//https://test-qy.mall-to.com/wechat_page/test/work/learn/index.html?uuid=$CORPID$&agent_id=$AGENTID$

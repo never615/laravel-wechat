@@ -4,16 +4,16 @@ namespace Overtrue\LaravelWechat\Controllers\CorpServer;
 
 
 use EasyWeChat\Foundation\Application;
-use Encore\Admin\Auth\Database\Administrator;
-use Encore\Admin\Auth\Database\Permission;
-use Encore\Admin\Auth\Database\Role;
-use Mallto\Admin\Data\Subject;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
+use Mallto\Admin\Data\Administrator;
+use Mallto\Admin\Data\Permission;
+use Mallto\Admin\Data\Role;
+use Mallto\Admin\Data\Subject;
 use Mallto\Dangjian\Data\RegisterVerifyInfo;
 use Mallto\Tool\Exception\PermissionDeniedException;
 use Overtrue\LaravelWechat\Model\WechatCorpAuth;
@@ -206,9 +206,9 @@ class CorpAppController extends Controller
             'password' => $admin->username.config('app.salt'),
         ])
         ) {
-            admin_toastr(trans('admin::lang.login_successful'));
+            admin_toastr(trans('admin.login_successful'));
 
-            return redirect(config('admin.prefix'));
+            return redirect(config('admin.route.prefix'));
         }
 
         Log::info("跳转到服务商管理端失败".$this->getFailedLoginMessage());
@@ -241,8 +241,6 @@ class CorpAppController extends Controller
      */
     private function createAdmin($subject, $userInfo, $agentIds, $wechatCorpAuth)
     {
-
-
         $name = "创建者";
 
         if (isset($userInfo["user_info"]['email'])) {
@@ -279,6 +277,7 @@ class CorpAppController extends Controller
         if ($registerInfo) {
             $tempSubjectId = $registerInfo->subject_id;
         }
+
 
         //拥有党建应用权限的人,必须有注册核对信息,必须注册微信用户,否则就不能创建
         if ($this->hasAppPermission($agentIds, $wechatCorpAuth, 2)) {

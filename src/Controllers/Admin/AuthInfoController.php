@@ -49,8 +49,8 @@ class AuthInfoController extends AdminCommonController
         $this->formOption($form);
 //
 
-        $form->display('created_at', trans('admin::lang.created_at'));
-        $form->display('updated_at', trans('admin::lang.updated_at'));
+        $form->display('created_at', trans('admin.created_at'));
+        $form->display('updated_at', trans('admin.updated_at'));
     }
 
     protected function formOption(Form $form)
