@@ -72,6 +72,17 @@ class WechatCorpUserInfoRepository
 
     private function makeUserArr($wechatInfoArr, $app_id, $authId)
     {
+//        array (
+//            'errcode' => 0,
+//            'errmsg' => 'ok',
+//            'userid' => 'never615',
+//            'name' => '王荣1',
+//            'mobile' => '17620358615',
+//            'gender' => '0',
+//            'email' => 'never615@gmail.com',
+//            'avatar' => 'http://p.qlogo.cn/bizmail/45xI70LEdn25YA8fiay75OmrLgv0qfPj47axjibWtHaSRlDjEubibcWnA/0',
+//            'qr_code' => 'https://open.work.weixin.qq.com/wwopen/userQRCode?vcode=vcda879f9238687310',
+//        )
 
         $mobile = "";
         $email = "";
@@ -91,7 +102,7 @@ class WechatCorpUserInfoRepository
             'user_id'             => $wechatInfoArr['userid'],
             'name'                => $wechatInfoArr['name'],
             'gender'              => $wechatInfoArr['gender'],
-            'department'          => $wechatInfoArr['department'],
+//            'department'          => $wechatInfoArr['department'],
             'position'            => $position,
             'avatar'              => $wechatInfoArr['avatar'],
             'mobile'              => $mobile,
