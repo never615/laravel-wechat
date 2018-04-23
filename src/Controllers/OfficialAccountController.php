@@ -41,6 +41,10 @@ class OfficialAccountController extends \Illuminate\Routing\Controller
     {
 
         $redirectUrl = $request->redirect_url;
+
+        $account = 'default';
+        $sessionKey = \sprintf('wechat.oauth_user.%s', $account);
+
         $wechatUser = session('wechat.oauth_user');
 
         $cryptOpenId = encrypt($wechatUser->id);

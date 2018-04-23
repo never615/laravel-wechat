@@ -9,7 +9,8 @@
  */
 return [
 
-    'mode'=>'official_account',
+    //official_account    open_platform
+    'mode'=>'open_platform',
 
     /*
      * 默认配置，将会合并到各模块中

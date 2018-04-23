@@ -19,6 +19,9 @@ class WechatUsecase
     /**
      * 获取微信用户的信息
      *
+     * @deprecated 使用WechatUserInfoRepository中的 getWechatUserInfo
+     *
+     *
      * @param      $uuid
      * @param      $openid
      * @return WechatUserInfo
@@ -36,6 +39,7 @@ class WechatUsecase
                 ->where("app_id", $wechatAuthInfo->authorizer_appid)
                 ->first();
         } else {
+            //todo 公众号模式下多公众号支持
             $wechatUserInfo = WechatUserInfo::where("openid", $openid)
                 ->first();
         }
