@@ -1,10 +1,10 @@
 <?php
-namespace Overtrue\LaravelWechat\Controllers\Admin;
+namespace Overtrue\LaravelWeChat\Controllers\Admin;
 
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Mallto\Admin\Controllers\Base\AdminCommonController;
-use Overtrue\LaravelWechat\Model\WechatAuthInfo;
+use Overtrue\LaravelWeChat\Model\WechatAuthInfo;
 
 /**
  * Created by PhpStorm.

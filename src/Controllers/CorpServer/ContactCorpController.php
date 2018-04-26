@@ -1,15 +1,15 @@
 <?php
 
-namespace Overtrue\LaravelWechat\Controllers\CorpServer;
+namespace Overtrue\LaravelWeChat\Controllers\CorpServer;
 
 
 use EasyWeChat\Foundation\Application;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Log;
-use Overtrue\LaravelWechat\Model\WechatCorpAuth;
-use Overtrue\LaravelWechat\Model\WechatCorpAuthRepository;
-use Overtrue\LaravelWechat\WechatUtils;
+use Overtrue\LaravelWeChat\Model\WechatCorpAuth;
+use Overtrue\LaravelWeChat\Model\WechatCorpAuthRepository;
+use Overtrue\LaravelWeChat\WechatUtils;
 
 /**
  * 通讯录套件
@@ -220,26 +220,26 @@ class ContactCorpController extends Controller
     }
 
 
-    /**
-     * 生成问答菜单
-     *
-     * @param $corpId
-     * @param $permanentCode
-     */
-    private function generateQaMenu($corpId, $permanentCode)
-    {
-        //授权处理自动生成菜单
-        $app = $this->corp_server_contact->createAuthorizerApplication($corpId, $permanentCode);
-        $agentId = $this->wechatCorpAuthRepository->getAgentId($corpId, 1);
-
-        $env = config("app.debug") ? "staging" : "production";
-        $app->menu->add([
-            [
-                "type" => "view",
-                "name" => "微问答",
-//                "url"  => "https://qy.mall-to.com/wechat/qa/user?uuid=".$corpId,
-                "url"  => "https://qy.mall-to.com/wechat_page/$env/avic/index.html?uuid=".$corpId,
-            ],
-        ], $agentId);
-    }
+//    /**
+//     * 生成问答菜单
+//     *
+//     * @param $corpId
+//     * @param $permanentCode
+//     */
+//    private function generateQaMenu($corpId, $permanentCode)
+//    {
+//        //授权处理自动生成菜单
+//        $app = $this->corp_server_contact->createAuthorizerApplication($corpId, $permanentCode);
+//        $agentId = $this->wechatCorpAuthRepository->getAgentId($corpId, 1);
+//
+//        $env = config("app.debug") ? "staging" : "production";
+//        $app->menu->add([
+//            [
+//                "type" => "view",
+//                "name" => "微问答",
+////                "url"  => "https://qy.mall-to.com/wechat/qa/user?uuid=".$corpId,
+//                "url"  => "https://qy.mall-to.com/wechat_page/$env/avic/index.html?uuid=".$corpId,
+//            ],
+//        ], $agentId);
+//    }
 }

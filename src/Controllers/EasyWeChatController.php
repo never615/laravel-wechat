@@ -1,12 +1,12 @@
 <?php
 
-namespace Overtrue\LaravelWechat\Controllers;
+namespace Overtrue\LaravelWeChat\Controllers;
 
 use EasyWeChat\Foundation\Application;
 use EasyWeChat\Support\Arr;
 use Illuminate\Support\Facades\Event;
 use App\Http\Controllers\Controller as LaravelController;
-use Overtrue\LaravelWechat\Events\OpenPlatform as Events;
+use Overtrue\LaravelWeChat\Events\OpenPlatform as Events;
 
 class EasyWeChatController extends LaravelController
 {

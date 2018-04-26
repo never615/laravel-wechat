@@ -1,6 +1,6 @@
 <?php
 
-namespace Overtrue\LaravelWechat\Events\OpenPlatform;
+namespace Overtrue\LaravelWeChat\Events\OpenPlatform;
 
 use EasyWeChat\Support\Collection;
 use Illuminate\Queue\SerializesModels;

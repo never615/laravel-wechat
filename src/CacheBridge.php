@@ -1,10 +1,10 @@
 <?php
 
-namespace Overtrue\LaravelWechat;
+namespace Overtrue\LaravelWeChat;
 
 use Doctrine\Common\Cache\Cache as CacheInterface;
 use Illuminate\Support\Facades\Cache;
-use Overtrue\LaravelWechat\Model\WechatPlatformConfig;
+use Overtrue\LaravelWeChat\Model\WechatPlatformConfig;
 
 /**
  * Cache bridge for laravel.

@@ -1,6 +1,6 @@
 <?php
 
-namespace Overtrue\LaravelWechat\ServiceProviders;
+namespace Overtrue\LaravelWeChat\ServiceProviders;
 
 use Illuminate\Contracts\Routing\Registrar as Router;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as LaravelRouteServiceProvider;
@@ -15,7 +15,7 @@ class RouteServiceProvider extends LaravelRouteServiceProvider
     public function map(Router $router)
     {
         $router->group([
-            'namespace' => 'Overtrue\LaravelWechat\Controllers'
+            'namespace' => 'Overtrue\LaravelWeChat\Controllers'
         ], function (Router $router) {
             $router->post(config('wechat.open_platform.serve_url'), 'EasyWeChatController@openPlatformServe');
         });

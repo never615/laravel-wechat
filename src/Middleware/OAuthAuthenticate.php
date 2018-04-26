@@ -1,12 +1,12 @@
 <?php
 
-namespace Overtrue\LaravelWechat\Middleware;
+namespace Overtrue\LaravelWeChat\Middleware;
 
 use Closure;
 use EasyWeChat\Foundation\Application;
 use Event;
 use Log;
-use Overtrue\LaravelWechat\Events\WeChatUserAuthorized;
+use Overtrue\LaravelWeChat\Events\WeChatUserAuthorized;
 
 /**
  * Class OAuthAuthenticate.

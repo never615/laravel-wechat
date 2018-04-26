@@ -1,6 +1,6 @@
 <?php
 
-namespace Overtrue\LaravelWechat;
+namespace Overtrue\LaravelWeChat;
 
 use EasyWeChat\Foundation\Application as EasyWeChatApplication;
 use Illuminate\Foundation\Application as LaravelApplication;
@@ -21,7 +21,7 @@ class ServiceProvider extends LaravelServiceProvider
      * @var array
      */
     protected $commands = [
-        'Overtrue\LaravelWechat\Commands\InstallCommand',
+        'Overtrue\LaravelWeChat\Commands\InstallCommand',
     ];
 
     /**

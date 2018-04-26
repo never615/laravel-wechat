@@ -29,13 +29,13 @@
 1. 注册 `ServiceProvider`:
 
   ```php
-  Overtrue\LaravelWechat\ServiceProvider::class,
+  Overtrue\LaravelWeChat\ServiceProvider::class,
   ```
 
 2. 创建配置文件：
 
   ```shell
-  php artisan vendor:publish --provider="Overtrue\LaravelWechat\ServiceProvider"
+  php artisan vendor:publish --provider="Overtrue\LaravelWeChat\ServiceProvider"
   ```
 
 3. 请修改应用根目录下的 `config/wechat.php` 中对应的项即可；
@@ -43,7 +43,7 @@
 4. （可选）添加外观到 `config/app.php` 中的 `aliases` 部分:
 
   ```php
-  'EasyWeChat' => Overtrue\LaravelWechat\Facade::class,
+  'EasyWeChat' => Overtrue\LaravelWeChat\Facade::class,
   ```
 
 ### Lumen 应用
@@ -51,7 +51,7 @@
 1. 在 `bootstrap/app.php` 中 82 行左右：
 
   ```php
-  $app->register(Overtrue\LaravelWechat\ServiceProvider::class);
+  $app->register(Overtrue\LaravelWeChat\ServiceProvider::class);
   ```
 
 2. ENV 中支持以下配置：
@@ -168,7 +168,7 @@ class WechatController extends Controller
 在 `config/app.php` 中 `alias` 部分添加外观别名：
 
 ```php
-'EasyWeChat' => Overtrue\LaravelWechat\Facade::class,
+'EasyWeChat' => Overtrue\LaravelWeChat\Facade::class,
 ```
 
 然后就可以在任何地方使用外观方式调用 SDK 对应的服务了：
@@ -189,7 +189,7 @@ class WechatController extends Controller
 ```php
 protected $routeMiddleware = [
     // ...
-    'wechat.oauth' => \Overtrue\LaravelWechat\Middleware\OAuthAuthenticate::class,
+    'wechat.oauth' => \Overtrue\LaravelWeChat\Middleware\OAuthAuthenticate::class,
 ];
 ```
 
@@ -251,7 +251,7 @@ Route::group(['middleware' => ['web', 'wechat.oauth:snsapi_userinfo']], function
 
 ## 授权事件
 
-每次授权均会触发 `Overtrue\LaravelWechat\Events\WeChatUserAuthorized`，你可以监听该事件，该事件有两个属性：
+每次授权均会触发 `Overtrue\LaravelWeChat\Events\WeChatUserAuthorized`，你可以监听该事件，该事件有两个属性：
 
 ```php
 $event->user; // 同 session('wechat.oauth_user') 一样

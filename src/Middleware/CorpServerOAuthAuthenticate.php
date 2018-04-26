@@ -1,6 +1,6 @@
 <?php
 
-namespace Overtrue\LaravelWechat\Middleware;
+namespace Overtrue\LaravelWeChat\Middleware;
 
 
 use Cache;
@@ -9,10 +9,10 @@ use EasyWeChat\Foundation\Application;
 use Event;
 use Illuminate\Support\Facades\Request;
 use Log;
-use Overtrue\LaravelWechat\Events\WeChatUserAuthorized;
-use Overtrue\LaravelWechat\Model\WechatCorpAuthRepository;
-use Overtrue\LaravelWechat\Model\WechatCorpUserInfoRepository;
-use Overtrue\LaravelWechat\WechatUtils;
+use Overtrue\LaravelWeChat\Events\WeChatUserAuthorized;
+use Overtrue\LaravelWeChat\Model\WechatCorpAuthRepository;
+use Overtrue\LaravelWeChat\Model\WechatCorpUserInfoRepository;
+use Overtrue\LaravelWeChat\WechatUtils;
 
 /**
  * 微信企业号套件

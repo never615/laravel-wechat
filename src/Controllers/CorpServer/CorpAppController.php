@@ -1,6 +1,6 @@
 <?php
 
-namespace Overtrue\LaravelWechat\Controllers\CorpServer;
+namespace Overtrue\LaravelWeChat\Controllers\CorpServer;
 
 
 use EasyWeChat\Foundation\Application;
@@ -16,9 +16,9 @@ use Mallto\Admin\Data\Role;
 use Mallto\Admin\Data\Subject;
 use Mallto\Dangjian\Data\RegisterVerifyInfo;
 use Mallto\Tool\Exception\PermissionDeniedException;
-use Overtrue\LaravelWechat\Model\WechatCorpAuth;
-use Overtrue\LaravelWechat\Model\WechatCorpAuthRepository;
-use Overtrue\LaravelWechat\WechatUtils;
+use Overtrue\LaravelWeChat\Model\WechatCorpAuth;
+use Overtrue\LaravelWeChat\Model\WechatCorpAuthRepository;
+use Overtrue\LaravelWeChat\WechatUtils;
 use Symfony\Component\HttpFoundation\Request;
 
 /**

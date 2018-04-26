@@ -1,6 +1,6 @@
 <?php
 
-namespace Overtrue\LaravelWechat;
+namespace Overtrue\LaravelWeChat;
 
 use Illuminate\Support\Facades\Facade as LaravelFacade;
 

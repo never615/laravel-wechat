@@ -4,12 +4,12 @@
  Route::group(['prefix' => "wechat"], function () {
 
         //开放平台回调,接收component_ticket等
-        Route::any('/platform/callback', '\Overtrue\LaravelWechat\Controllers\WechatOpenPlatformController@serve');
+        Route::any('/platform/callback', '\Overtrue\LaravelWeChat\Controllers\WechatOpenPlatformController@serve');
         //第三方公众号请求授权
-        Route::get('/platform/auth', '\Overtrue\LaravelWechat\Controllers\WechatOpenPlatformController@auth');
+        Route::get('/platform/auth', '\Overtrue\LaravelWeChat\Controllers\WechatOpenPlatformController@auth');
         //第三方公众号请求授权回调
         Route::get('/platform/auth/callback',
-            '\Overtrue\LaravelWechat\Controllers\WechatOpenPlatformController@authCallback');
+            '\Overtrue\LaravelWeChat\Controllers\WechatOpenPlatformController@authCallback');
 
         Route::group(['middleware' => ['wechat.public_oauth']], function ($route) {
 
@@ -26,11 +26,11 @@
 
  Route::group(['prefix' => config('admin.route.prefix'), "middleware" => ["admin"]], function ($router) {
         //corp
-         $router->resource("corp_auth_infos", '\Overtrue\LaravelWechat\Controllers\Admin\CorpAuthInfoController');
-                $router->resource("corp_user_infos", '\Overtrue\LaravelWechat\Controllers\Admin\CorpUserInfoController');
+         $router->resource("corp_auth_infos", '\Overtrue\LaravelWeChat\Controllers\Admin\CorpAuthInfoController');
+                $router->resource("corp_user_infos", '\Overtrue\LaravelWeChat\Controllers\Admin\CorpUserInfoController');
 
-        $router->resource("wechat_auth_infos", '\Overtrue\LaravelWechat\Controllers\Admin\AuthInfoController');
-        $router->resource("wechat_user_infos", '\Overtrue\LaravelWechat\Controllers\Admin\UserInfoController');
+        $router->resource("wechat_auth_infos", '\Overtrue\LaravelWeChat\Controllers\Admin\AuthInfoController');
+        $router->resource("wechat_user_infos", '\Overtrue\LaravelWeChat\Controllers\Admin\UserInfoController');
  });
 
 ```

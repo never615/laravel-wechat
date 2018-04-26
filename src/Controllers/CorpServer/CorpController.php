@@ -1,6 +1,6 @@
 <?php
 
-namespace Overtrue\LaravelWechat\Controllers\CorpServer;
+namespace Overtrue\LaravelWeChat\Controllers\CorpServer;
 
 
 use EasyWeChat\Foundation\Application;
@@ -11,9 +11,9 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Log;
 use Mallto\Tool\Exception\ResourceException;
-use Overtrue\LaravelWechat\Model\WechatCorpAuth;
-use Overtrue\LaravelWechat\Model\WechatCorpAuthRepository;
-use Overtrue\LaravelWechat\WechatUtils;
+use Overtrue\LaravelWeChat\Model\WechatCorpAuth;
+use Overtrue\LaravelWeChat\Model\WechatCorpAuthRepository;
+use Overtrue\LaravelWeChat\WechatUtils;
 
 /**
  * Created by PhpStorm.
@@ -241,7 +241,7 @@ class CorpController extends Controller
         foreach ($agents as $agent) {
             switch ($agent["appid"]) {
                 case 1: //问答应用
-                    $this->generateQaMenu($corpId, $permanentCode);
+//                    $this->generateQaMenu($corpId, $permanentCode);
                     //分配问答模块相关已购功能
                     $qaPermissionIds = Permission::whereIn("slug", [
                         'page',
