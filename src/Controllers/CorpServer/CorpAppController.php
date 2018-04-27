@@ -243,14 +243,8 @@ class CorpAppController extends Controller
     {
         $name = "创建者";
 
-        if (isset($userInfo["user_info"]['email'])) {
-            $username = $userInfo["user_info"]['email'];
-            if (isset($userInfo["user_info"]['name'])) {
-                $name = $userInfo["user_info"]['name'];
-            } else {
-                $name = $userInfo["user_info"]['email'];
-            }
-        } elseif (isset($userInfo["user_info"]['userid'])) {
+
+        if (isset($userInfo["user_info"]['userid'])) {
             $username = $userInfo["user_info"]['userid'];
             if (isset($userInfo["user_info"]['name'])) {
                 $name = $userInfo["user_info"]['name'];
@@ -293,8 +287,20 @@ class CorpAppController extends Controller
         //不需要管,结果就是一个人可能会有多个账号,但是旧的用不到了
 
 
+        //-------------------- 升级临时代码: -----------
         $admin = Administrator::where("username", $username.'_'.$tempSubjectId)
             ->where('subject_id', $tempSubjectId)->first();
+
+        if ($admin) {
+            $admin->username = $username.'_'.$subject->id;
+            $admin->password = bcrypt($username.'_'.$subject->id);
+            $admin->save();
+//            $admin=Administrator::where("username", $username.'_'.$subject->id)->first();
+        } else {
+            $admin = Administrator::where("username", $username.'_'.$subject->id)->first();
+        }
+
+        //-------------------- 升级临时代码 -----------
 
 
         if (!$admin) {
@@ -304,8 +310,8 @@ class CorpAppController extends Controller
             }
 
             $admin = Administrator::create([
-                'username'       => $username.'_'.$tempSubjectId,
-                'password'       => bcrypt($username.'_'.$tempSubjectId.config('app.salt')),
+                'username'       => $username.'_'.$subject->id,
+                'password'       => bcrypt($username.'_'.$subject->id),
                 'name'           => $name,
                 "subject_id"     => $tempSubjectId,
                 "adminable_id"   => $tempSubjectId,
