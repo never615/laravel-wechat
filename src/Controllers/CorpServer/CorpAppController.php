@@ -197,13 +197,13 @@ class CorpAppController extends Controller
         } else {
             //不分配任何角色
             \Log::error("不分配任何角色");
-            throw new PermissionDeniedException("权限不足");
+            throw new PermissionDeniedException("权限不足,该分级管理员没有设置任何应用权限");
         }
 
 
         if (Auth::guard('admin')->attempt([
             'username' => $admin->username,
-            'password' => $admin->username.config('app.salt'),
+            'password' => $admin->username,
         ])
         ) {
             admin_toastr(trans('admin.login_successful'));
@@ -235,7 +235,7 @@ class CorpAppController extends Controller
      *
      * @param $subject
      * @param $userInfo
-     * @param $agentIds
+     * @param $agentIds,账号可以查看的应用范围
      * @param $wechatCorpAuth
      * @return Administrator
      */
@@ -255,7 +255,7 @@ class CorpAppController extends Controller
         }
 
 
-        $tempSubjectId = $subject->id;
+
 
         //去注册信息表查改用户对应的主体id,即:所属党支部
         $registerInfo = null;
@@ -268,15 +268,25 @@ class CorpAppController extends Controller
                 ->first();
         }
 
-        if ($registerInfo) {
-            $tempSubjectId = $registerInfo->subject_id;
-        }
 
+        if ($agentIds == 'all') {
+            //超级管理员,管理端的账号所属主体为中航
+            $tempSubjectId = $subject->id;
+        } else {
+            //非超级管理员,目前只有分级管理员,如果有注册核对信息,则分配账号所属主体为具体主体
+            //即只拥有对应主体的数据查看范围,没有的话还是设置为中航的主体
+            if ($registerInfo) {
+                $tempSubjectId = $registerInfo->subject_id;
+            }else{
+                $tempSubjectId = $subject->id;
+            }
+
+        }
 
         //拥有党建应用权限的人,必须有注册核对信息,必须注册微信用户,否则就不能创建
         if ($this->hasAppPermission($agentIds, $wechatCorpAuth, 2)) {
             if (!$registerInfo || !$registerInfo->is_register) {
-                throw new PermissionDeniedException("未在e党校注册,无法进入后台");
+                throw new PermissionDeniedException("未在先锋课堂注册,无法进入后台");
             }
         }
 
@@ -287,20 +297,22 @@ class CorpAppController extends Controller
         //不需要管,结果就是一个人可能会有多个账号,但是旧的用不到了
 
 
-        //-------------------- 升级临时代码: -----------
-        $admin = Administrator::where("username", $username.'_'.$tempSubjectId)
-            ->where('subject_id', $tempSubjectId)->first();
+        $admin = Administrator::where("username", $username.'_'.$subject->id)->first();
 
-        if ($admin) {
-            $admin->username = $username.'_'.$subject->id;
-            $admin->password = bcrypt($username.'_'.$subject->id);
-            $admin->save();
-//            $admin=Administrator::where("username", $username.'_'.$subject->id)->first();
-        } else {
-            $admin = Administrator::where("username", $username.'_'.$subject->id)->first();
-        }
-
-        //-------------------- 升级临时代码 -----------
+//        //-------------------- 升级临时代码: -----------
+//        $admin = Administrator::where("username", $username.'_'.$tempSubjectId)
+//            ->where('subject_id', $tempSubjectId)->first();
+//
+//        if ($admin) {
+//            $admin->username = $username.'_'.$subject->id;
+//            $admin->password = bcrypt($username.'_'.$subject->id);
+//            $admin->save();
+////            $admin=Administrator::where("username", $username.'_'.$subject->id)->first();
+//        } else {
+//            $admin = Administrator::where("username", $username.'_'.$subject->id)->first();
+//        }
+//
+//        //-------------------- 升级临时代码 -----------
 
 
         if (!$admin) {
