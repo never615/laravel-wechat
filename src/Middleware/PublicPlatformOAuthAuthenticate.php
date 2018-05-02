@@ -69,13 +69,22 @@ class PublicPlatformOAuthAuthenticate
             $scopes = array_map('trim', explode(',', $scopes));
         }
 
-
         $session = session($sessionKey, []);
 
 
-        if (!$session || $this->needReauth($scopes,$sessionKey)) {
+        if (!$session || $this->needReauth($scopes, $sessionKey)) {
             if ($request->has('code')) {
-                session([$sessionKey => $officialAccount->oauth->user() ?? []]);
+                $user = $officialAccount->oauth->user();
+
+                if (!$user || is_null($user->id)) {
+                    \Log::error("微信授权失败,没有正确获取用户信息");
+                    \Log::warning(\Qiniu\json_decode(\GuzzleHttp\json_encode($user), true));
+                    session()->forget($sessionKey);
+
+                    return $officialAccount->oauth->scopes($scopes)->redirect($request->fullUrl());
+                }
+
+                session([$sessionKey => $user ?? []]);
                 $isNewSession = true;
                 Event::fire(new WeChatUserAuthorized(session($sessionKey), $isNewSession, $account, $appId));
 
@@ -113,7 +122,7 @@ class PublicPlatformOAuthAuthenticate
      * @param       $sessionKey
      * @return bool
      */
-    protected function needReauth($scopes,$sessionKey)
+    protected function needReauth($scopes, $sessionKey)
     {
         return 'snsapi_base' == session($sessionKey.'.original.scope') && in_array('snsapi_userinfo', $scopes);
     }
