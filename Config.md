@@ -24,7 +24,7 @@
     });
 
 
- Route::group(['prefix' => config('admin.prefix'), "middleware" => ["admin"]], function ($router) {
+ Route::group(['prefix' => config('admin.route.prefix'), "middleware" => ["admin"]], function ($router) {
         //corp
          $router->resource("corp_auth_infos", '\Overtrue\LaravelWeChat\Controllers\Admin\CorpAuthInfoController');
                 $router->resource("corp_user_infos", '\Overtrue\LaravelWeChat\Controllers\Admin\CorpUserInfoController');

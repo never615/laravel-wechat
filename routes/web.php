@@ -78,7 +78,7 @@ Route::group($attributes, function ($router) {
 //----------------------------------------  管理端开始  -----------------------------------------------
 
 
-    Route::group(['prefix' => config('admin.prefix'), "middleware" => ["adminE"]], function ($router) {
+    Route::group(['prefix' => config('admin.route.prefix'), "middleware" => ["adminE"]], function ($router) {
 
         $router->get('log', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index')->name("log");
 

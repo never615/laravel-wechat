@@ -23,23 +23,11 @@ $attributes = [
 
 Route::group($attributes, function ($router) {
 
-
-    Route::get("ttt",'emplateMsgController@send');
-
     /**
      * 需要经过验证
      */
     Route::group(['middleware' => ['requestCheck']], function () {
 
-
-
-        Route::group(["middleware" => ['third_api']], function () {
-            /**
-             * 需要经过签名校验
-             */
-            Route::group(['middleware' => ['authSign']], function () {
-            });
-        });
 
         /**
          * 需要经过签名校验
@@ -62,9 +50,6 @@ Route::group($attributes, function ($router) {
 
 
             });
-
-
         });
-
     });
 });
