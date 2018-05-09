@@ -11,11 +11,10 @@ use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Mallto\Admin\Data\Administrator;
-use Mallto\Admin\Data\Permission;
-use Mallto\Admin\Data\Role;
 use Mallto\Admin\Data\Subject;
 use Mallto\Dangjian\Data\RegisterVerifyInfo;
 use Mallto\Tool\Exception\PermissionDeniedException;
+use Overtrue\LaravelWeChat\Controllers\CorpServer\Traits\RoleTrait;
 use Overtrue\LaravelWeChat\Model\WechatCorpAuth;
 use Overtrue\LaravelWeChat\Model\WechatCorpAuthRepository;
 use Overtrue\LaravelWeChat\WechatUtils;
@@ -29,6 +28,8 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class CorpAppController extends Controller
 {
+
+    use RoleTrait;
 
     private $wechat;
     private $corp_server_qa;
@@ -190,6 +191,7 @@ class CorpAppController extends Controller
             //分配已有所有角色
             $this->qaRole($subject, $admin);
             $this->djRole($subject, $admin);
+            $this->sdjRole($subject, $admin);
         } elseif (is_array($agentIds)) {
             foreach ($agentIds as $agentId) {
                 $this->roleByAgent($agentId, $wechatCorpAuth, $admin, $subject);
@@ -235,7 +237,7 @@ class CorpAppController extends Controller
      *
      * @param $subject
      * @param $userInfo
-     * @param $agentIds,账号可以查看的应用范围
+     * @param $agentIds ,账号可以查看的应用范围
      * @param $wechatCorpAuth
      * @return Administrator
      */
@@ -253,8 +255,6 @@ class CorpAppController extends Controller
             \Log::error("获取不到用户标识用做管理端登录名");
             throw new PermissionDeniedException("权限不足,无法获取用户标识");
         }
-
-
 
 
         //去注册信息表查改用户对应的主体id,即:所属党支部
@@ -277,7 +277,7 @@ class CorpAppController extends Controller
             //即只拥有对应主体的数据查看范围,没有的话还是设置为中航的主体
             if ($registerInfo) {
                 $tempSubjectId = $registerInfo->subject_id;
-            }else{
+            } else {
                 $tempSubjectId = $subject->id;
             }
 
@@ -289,31 +289,8 @@ class CorpAppController extends Controller
                 throw new PermissionDeniedException("未在先锋课堂注册,无法进入后台");
             }
         }
-
-
         //如果已经是管理员,但是权限改变,如:是问答分级管理员或者超级管理员->党建管理员
-
-        //admin不存在,也有可能是已经是管理员了,但是所属主体变了,需要处理
-        //不需要管,结果就是一个人可能会有多个账号,但是旧的用不到了
-
-
         $admin = Administrator::where("username", $username.'_'.$subject->id)->first();
-
-//        //-------------------- 升级临时代码: -----------
-//        $admin = Administrator::where("username", $username.'_'.$tempSubjectId)
-//            ->where('subject_id', $tempSubjectId)->first();
-//
-//        if ($admin) {
-//            $admin->username = $username.'_'.$subject->id;
-//            $admin->password = bcrypt($username.'_'.$subject->id);
-//            $admin->save();
-////            $admin=Administrator::where("username", $username.'_'.$subject->id)->first();
-//        } else {
-//            $admin = Administrator::where("username", $username.'_'.$subject->id)->first();
-//        }
-//
-//        //-------------------- 升级临时代码 -----------
-
 
         if (!$admin) {
             $extra = null;
@@ -330,26 +307,23 @@ class CorpAppController extends Controller
                 "adminable_type" => "subject",
                 'extra'          => $extra,
             ]);
-            if ($agentIds == 'all') {
-                //超级管理员分配全部数据查看范围
-                $admin->manager_subject_ids = ["$subject->id"];
-                $admin->save();
-            }
+//            if ($agentIds == 'all') {
+//                //超级管理员分配全部数据查看范围
+//                $admin->manager_subject_ids = ["$subject->id"];
+//                $admin->save();
+//            }
         } else {
             $tempExtra = $admin->extra;
             if (isset($userInfo["user_info"]['userid'])) {
                 $tempExtra['qy_userid'] = $userInfo["user_info"]['userid'];
             }
-
             $admin->extra = $tempExtra;
-
-
-            if ($agentIds == 'all') {
-                //超级管理员分配全部数据查看范围
-                $admin->manager_subject_ids = ["$subject->id"];
-            } else {
-//                $admin->manager_subject_ids = null;
-            }
+//            if ($agentIds == 'all') {
+//                //超级管理员分配全部数据查看范围
+////                $admin->manager_subject_ids = ["$subject->id"];
+//            } else {
+////                $admin->manager_subject_ids = null;
+//            }
             $admin->save();
         }
 
@@ -421,191 +395,13 @@ class CorpAppController extends Controller
                 case 2: //党建应用
                     $this->djRole($subject, $admin, true);
                     break;
+                case 3: //晒党建
+                    $this->sdjRole($subject, $admin);
+                    break;
                 default:
                     break;
             }
         }
     }
-
-
-    /**
-     * 给管理端用户分配问答管理角色
-     *
-     * @param $subject
-     * @param $admin
-     */
-    private function qaRole($subject, $admin)
-    {
-        //分配问答管理员角色
-        $role = Role::where("slug", "qa")
-            ->where("subject_id", $subject->id)
-            ->first();
-
-        if (!$role) {
-            $role = Role::create([
-                "name"       => "问答系统管理员",
-                "slug"       => "qa",
-                "subject_id" => $subject->id,
-            ]);
-
-            $qaPermission = Permission::where("slug", "qa")->first();
-            $bannerPermission = Permission::where("slug", "page_banners")->first();
-
-            $role->permissions()->save($qaPermission);
-            $role->permissions()->save($bannerPermission);
-        }
-
-        $tempRole = $admin->roles()->where("slug", $role->slug)->first();
-        if (!$tempRole) {
-            $admin->roles()->save($role);
-        }
-    }
-
-
-    /**
-     * 给管理端用户分配党建管理角色
-     *
-     * 只分配查看权限,用户相关的,还是有统计
-     *
-     * @param      $subject
-     * @param      $admin
-     * @param bool $isSubAdmin
-     */
-    private function djRole($subject, $admin, $isSubAdmin = false)
-    {
-        if ($isSubAdmin) {
-            //分配查看角色
-            //分配党建管理员角色
-            $viewRole = Role::where("slug", "dangxiao_user_view")
-                ->where("subject_id", $subject->id)
-                ->first();
-
-            if (!$viewRole) {
-                $viewRole = Role::create([
-                    "name"       => "e党校用户相关查看管理员",
-                    "slug"       => "dangxiao_user_view",
-                    "subject_id" => $subject->id,
-                ]);
-
-
-                $userCoursePermission = Permission::where("slug", "user_courses")->first();
-                $userExamPermission = Permission::where("slug", "user_exams")->first();
-                $userStudyPermission = Permission::where("slug", "user_online_studies")->first();
-                $userPermission = Permission::where("slug", "users")->first();
-                $studyTimePermission = Permission::where("slug", "user-study-time-records")->first();
-                $statisticsPermission = Permission::where("slug", "dj_subject_statistics")->first();
-                $djConfigPermission = Permission::where("slug", "dj_configs")->first();
-
-                $viewRole->permissions()->save($userCoursePermission);
-                $viewRole->permissions()->save($userExamPermission);
-                $viewRole->permissions()->save($userStudyPermission);
-                $viewRole->permissions()->save($userPermission);
-                $viewRole->permissions()->save($studyTimePermission);
-                $viewRole->permissions()->save($statisticsPermission);
-                $viewRole->permissions()->save($djConfigPermission);
-            }
-
-            $tempRole = $admin->roles()->where("slug", $viewRole->slug)->first();
-            if (!$tempRole) {
-                $admin->roles()->save($viewRole);
-            }
-        } else {
-            //分配党建管理员角色
-            $role = Role::where("slug", "dangxiao")
-                ->where("subject_id", $subject->id)
-                ->first();
-
-            if (!$role) {
-                $role = Role::create([
-                    "name"       => "e党校管理员",
-                    "slug"       => "dangxiao",
-                    "subject_id" => $subject->id,
-                ]);
-
-                $companyPermission = Permission::where("slug", "companies")->first();
-                $partyTagPermission = Permission::where("slug", "party_tags")->first();
-                $verifyInfoPermission = Permission::where("slug", "verify_user_infos")->first();
-                $userPermission = Permission::where("slug", "users")->first();
-                $coursePermission = Permission::where("slug", "course_parent")->first();
-                $examPermission = Permission::where("slug", "exam_parent")->first();
-                $studyPermission = Permission::where("slug", "online_study_parent")->first();
-                $studyTimePermission = Permission::where("slug", "user-study-time-records")->first();
-                $statisticsPermission = Permission::where("slug", "dj_subject_statistics")->first();
-                $djConfigPermission = Permission::where("slug", "dj_configs")->first();
-
-
-                $role->permissions()->save($coursePermission);
-                $role->permissions()->save($examPermission);
-                $role->permissions()->save($studyPermission);
-                $role->permissions()->save($companyPermission);
-                $role->permissions()->save($verifyInfoPermission);
-                $role->permissions()->save($partyTagPermission);
-                $role->permissions()->save($userPermission);
-                $role->permissions()->save($studyTimePermission);
-                $role->permissions()->save($statisticsPermission);
-                $role->permissions()->save($djConfigPermission);
-            }
-            $tempRole = $admin->roles()->where("slug", $role->slug)->first();
-            if (!$tempRole) {
-                $admin->roles()->save($role);
-            }
-        }
-
-
-    }
-
-
-    /**
-     * 分配管理员角色
-     *
-     * @param $subject
-     * @param $admin
-     */
-    private function adminRole($subject, $admin)
-    {
-        //检查该主体是否有总管理角色,没有则创建
-        $adminRole = Role::where("slug", 'admin')
-            ->where('subject_id', $subject->id)
-            ->first();
-
-        if (!$adminRole) {
-            $adminRole = Role::create([
-                "subject_id" => $subject->id,
-                "slug"       => 'admin',
-                "name"       => $subject->name."总管理员",
-            ]);
-
-
-            //分配主体基本权限
-            $subjectPermission = Permission::where("slug", "subjects")->first();
-            $adminPermission = Permission::where("slug", "admins")->first();
-            $rolePermission = Permission::where("slug", "roles")->first();
-            $reportPermission = Permission::where("slug", "reports")->first();
-            $userPermission = Permission::where("slug", "users")->first();
-            $companyPermission = Permission::where("slug", "companies")->first();
-            $verifyInfoPermission = Permission::where("slug", "verify_user_infos")->first();
-            $partyTagPermission = Permission::where("slug", "party_tags")->first();
-
-
-            $adminRole->permissions()->save($subjectPermission);
-            $adminRole->permissions()->save($adminPermission);
-            $adminRole->permissions()->save($rolePermission);
-            $adminRole->permissions()->save($reportPermission);
-
-            $adminRole->permissions()->save($userPermission);
-            $adminRole->permissions()->save($companyPermission);
-            $adminRole->permissions()->save($verifyInfoPermission);
-            $adminRole->permissions()->save($partyTagPermission);
-
-        }
-
-        $tempRole = $admin->roles()->where("slug", $adminRole->slug)->first();
-        if (!$tempRole) {
-            $admin->roles()->save($adminRole);
-        }
-
-
-    }
-
 
 }
