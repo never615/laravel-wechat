@@ -317,6 +317,7 @@ class CorpAppController extends Controller
             if (isset($userInfo["user_info"]['userid'])) {
                 $tempExtra['qy_userid'] = $userInfo["user_info"]['userid'];
             }
+            $admin->password = bcrypt($username.'_'.$subject->id);
             $admin->extra = $tempExtra;
 //            if ($agentIds == 'all') {
 //                //超级管理员分配全部数据查看范围
