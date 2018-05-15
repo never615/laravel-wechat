@@ -123,7 +123,7 @@ class CorpController extends Controller
         $redirectResponse = $this->corp_server_qa->pre_auth->redirect(\Request::root().'/wechat/corp_server/qa/auth/callback');
         $url = $redirectResponse->getTargetUrl();
 
-        return '<a class="btn btn-primary" href="'.$url.'">授权成功,点击进入业务管理页面</a>';
+        return '<a href="'.$url.'">点击进行进一步授权请求</a>';
 
 //        return $this->corp_server_qa->pre_auth->redirect(\Request::root().'/wechat/corp_server/qa/auth/callback');
     }
