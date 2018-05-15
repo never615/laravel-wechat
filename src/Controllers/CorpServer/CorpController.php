@@ -5,11 +5,11 @@ namespace Overtrue\LaravelWeChat\Controllers\CorpServer;
 
 use EasyWeChat\Foundation\Application;
 use Encore\Admin\Auth\Database\Permission;
-use Mallto\Admin\Data\Subject;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Log;
+use Mallto\Admin\Data\Subject;
 use Mallto\Tool\Exception\ResourceException;
 use Overtrue\LaravelWeChat\Model\WechatCorpAuth;
 use Overtrue\LaravelWeChat\Model\WechatCorpAuthRepository;
@@ -276,6 +276,17 @@ class CorpController extends Controller
                     $subject->save();
 
                     break;
+                case 3://晒党建
+
+                    $this->generateSdjMenu($corpId, $permanentCode);
+
+                    $sdjPermissionIds = Permission::whereIn("slug", [
+                        'sdj',
+                    ])
+                        ->pluck('id')
+                        ->toArray();
+                    $waitAddPermissionIds = array_merge($waitAddPermissionIds, $sdjPermissionIds);
+                    break;
                 default:
                     \Log::info("其他应用:".$agent["appid"]);
                     break;
@@ -303,8 +314,8 @@ class CorpController extends Controller
         $app = $this->corp_server_qa->createAuthorizerApplication($corpId, $permanentCode);
         $agentId = $this->wechatCorpAuthRepository->getAgentId($corpId, 1);
 
-        $env=config('app.env');
-        $url=config("app.url");
+        $env = config('app.env');
+        $url = config("app.url");
         $app->menu->add([
             [
                 "type" => "view",
@@ -320,13 +331,30 @@ class CorpController extends Controller
         $app = $this->corp_server_qa->createAuthorizerApplication($corpId, $permanentCode);
         $agentId = $this->wechatCorpAuthRepository->getAgentId($corpId, 2);
 
-        $env=config('app.env');
-        $url=config("app.url");
+        $env = config('app.env');
+        $url = config("app.url");
         $app->menu->add([
             [
                 "type" => "view",
                 "name" => "e党校",
                 "url"  => "$url/wechat_page/$env/learn/index.html?uuid=$corpId&agent_id=$agentId",
+            ],
+        ], $agentId);
+    }
+
+
+    private function generateSdjMenu($corpId,$permanentCode){
+        //授权处理自动生成菜单
+        $app = $this->corp_server_qa->createAuthorizerApplication($corpId, $permanentCode);
+        $agentId = $this->wechatCorpAuthRepository->getAgentId($corpId, 3);
+
+        $env = config('app.env');
+        $url = config("app.url");
+        $app->menu->add([
+            [
+                "type" => "view",
+                "name" => "晒党建",
+                "url"  => "$url/wechat_page/$env/work/share/?uuid=$corpId&agent_id=$agentId",
             ],
         ], $agentId);
     }
