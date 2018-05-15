@@ -5,6 +5,7 @@ namespace Overtrue\LaravelWeChat\Controllers\CorpServer;
 
 use EasyWeChat\Foundation\Application;
 use Encore\Admin\Auth\Database\Permission;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Input;
@@ -112,8 +113,18 @@ class CorpController extends Controller
      */
     public function auth()
     {
-        $url = \Request::root().'/wechat/corp_server/qa/auth/callback';
-        return '<a class="btn btn-primary" href="'.$url.'">授权成功,点击进一步管理业务</a>';
+//        $url = \Request::root().'/wechat/corp_server/qa/auth/callback';
+
+//        return '<a class="btn btn-primary" href="'.$url.'">授权成功,点击进入业务管理页面</a>';
+        //RedirectResponse
+        /**
+         * @var RedirectResponse
+         */
+        $redirectResponse = $this->corp_server_qa->pre_auth->redirect(\Request::root().'/wechat/corp_server/qa/auth/callback');
+        $url = $redirectResponse->getTargetUrl();
+
+        return '<a class="btn btn-primary" href="'.$url.'">授权成功,点击进入业务管理页面</a>';
+
 //        return $this->corp_server_qa->pre_auth->redirect(\Request::root().'/wechat/corp_server/qa/auth/callback');
     }
 
