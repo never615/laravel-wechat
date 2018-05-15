@@ -112,7 +112,9 @@ class CorpController extends Controller
      */
     public function auth()
     {
-        return $this->corp_server_qa->pre_auth->redirect(\Request::root().'/wechat/corp_server/qa/auth/callback');
+        $url = \Request::root().'/wechat/corp_server/qa/auth/callback';
+        return '<a class="btn btn-primary" href="'.$url.'">授权成功,点击进一步管理业务</a>';
+//        return $this->corp_server_qa->pre_auth->redirect(\Request::root().'/wechat/corp_server/qa/auth/callback');
     }
 
     /**
@@ -320,7 +322,7 @@ class CorpController extends Controller
             [
                 "type" => "view",
                 "name" => "拜托了!伙伴",
-                "url"  => "$url/wechat_page/$env/avic/index.html?uuid=$corpId&agent_id=$agentId",
+                "url"  => "$url/wechat_page/$env/work/avic/index.html?uuid=$corpId&agent_id=$agentId",
             ],
         ], $agentId);
     }
@@ -337,13 +339,14 @@ class CorpController extends Controller
             [
                 "type" => "view",
                 "name" => "e党校",
-                "url"  => "$url/wechat_page/$env/learn/index.html?uuid=$corpId&agent_id=$agentId",
+                "url"  => "$url/wechat_page/$env/work/learn/index.html?uuid=$corpId&agent_id=$agentId",
             ],
         ], $agentId);
     }
 
 
-    private function generateSdjMenu($corpId,$permanentCode){
+    private function generateSdjMenu($corpId, $permanentCode)
+    {
         //授权处理自动生成菜单
         $app = $this->corp_server_qa->createAuthorizerApplication($corpId, $permanentCode);
         $agentId = $this->wechatCorpAuthRepository->getAgentId($corpId, 3);
