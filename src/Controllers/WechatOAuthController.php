@@ -4,7 +4,9 @@ namespace Overtrue\LaravelWeChat\Controllers;
 
 use Illuminate\Support\Facades\Log;
 use Mallto\Admin\SubjectUtils;
+use Mallto\Tool\Exception\PermissionDeniedException;
 use Mallto\Tool\Utils\ResponseUtils;
+use Mallto\Tool\Utils\UrlUtils;
 use Overtrue\LaravelWeChat\WechatUtils;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -39,20 +41,34 @@ class WechatOAuthController extends \Illuminate\Routing\Controller
      */
     public function oauth(Request $request)
     {
-
         $uuid = SubjectUtils::getUUID($request);
         $redirectUrl = $request->redirect_url;
+
+
+        //检查回调域名
+        $callbackDomain = env("OAUTH_CALLBACK_DOMAIN");
+        $domians = explode(",", $callbackDomain);
+        $domian = UrlUtils::getDomain($redirectUrl);
+        if (!in_array($domian, $domians)) {
+            throw new PermissionDeniedException("回调域名不可信:".$domian);
+        }
+
         $sessionKey = \sprintf('wechat.oauth_user.%s.%s', 'default', $uuid);
         $wechatUser = session($sessionKey);
 
-        $openid=$wechatUser->id.'|||'.time();
+        $openid = $wechatUser->id.'|||'.time();
         $cryptOpenId = encrypt($openid);
+
+
+
 
         return ResponseUtils::responseBasicByRedirect($redirectUrl, [
             "openid" => $cryptOpenId,
 
         ]);
     }
+
+
 
 //    /**
 //     * 重定向携带微信用户信息
