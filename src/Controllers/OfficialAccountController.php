@@ -4,8 +4,10 @@ namespace Overtrue\LaravelWeChat\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
+use Mallto\Tool\Exception\PermissionDeniedException;
 use Mallto\Tool\Exception\ResourceException;
 use Mallto\Tool\Utils\ResponseUtils;
+use Mallto\Tool\Utils\UrlUtils;
 use Overtrue\LaravelWeChat\WechatUtils;
 
 /**
@@ -31,7 +33,6 @@ class OfficialAccountController extends \Illuminate\Routing\Controller
         $this->wechatUtils = $wechatUtils;
     }
 
-
     /**
      * 获得用户微信的授权信息,授权中转站
      *
@@ -39,8 +40,15 @@ class OfficialAccountController extends \Illuminate\Routing\Controller
      */
     public function oauth(Request $request)
     {
-
         $redirectUrl = $request->redirect_url;
+
+        //检查回调域名
+        $callbackDomain = env("OAUTH_CALLBACK_DOMAIN");
+        $domians = explode(",", $callbackDomain);
+        $domian = UrlUtils::getDomain($redirectUrl);
+        if (!in_array($domian, $domians)) {
+            throw new PermissionDeniedException("回调域名不可信");
+        }
 
         $account = 'default';
         $sessionKey = \sprintf('wechat.oauth_user.%s', $account);
