@@ -46,7 +46,7 @@ class WechatOAuthController extends \Illuminate\Routing\Controller
 
 
         //检查回调域名
-        $callbackDomain = env("OAUTH_CALLBACK_DOMAIN");
+        $callbackDomain = config("app.oauth_callback_domain");
         $domians = explode(",", $callbackDomain);
         $domian = UrlUtils::getDomain($redirectUrl);
         if (!in_array($domian, $domians)) {
@@ -58,8 +58,6 @@ class WechatOAuthController extends \Illuminate\Routing\Controller
 
         $openid = $wechatUser->id.'|||'.time();
         $cryptOpenId = encrypt($openid);
-
-
 
 
         return ResponseUtils::responseBasicByRedirect($redirectUrl, [

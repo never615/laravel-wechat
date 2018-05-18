@@ -43,11 +43,11 @@ class OfficialAccountController extends \Illuminate\Routing\Controller
         $redirectUrl = $request->redirect_url;
 
         //检查回调域名
-        $callbackDomain = env("OAUTH_CALLBACK_DOMAIN");
+        $callbackDomain = config("app.oauth_callback_domain");
         $domians = explode(",", $callbackDomain);
         $domian = UrlUtils::getDomain($redirectUrl);
         if (!in_array($domian, $domians)) {
-            throw new PermissionDeniedException("回调域名不可信");
+            throw new PermissionDeniedException("回调域名不可信:".$domian);
         }
 
         $account = 'default';
