@@ -46,12 +46,12 @@ class WechatOAuthController extends \Illuminate\Routing\Controller
 
 
         //检查回调域名
-        $callbackDomain = env("OAUTH_CALLBACK_DOMAIN");
-        $domians = explode(",", $callbackDomain);
-        $domian = UrlUtils::getDomain($redirectUrl);
-        if (!in_array($domian, $domians)) {
-            throw new PermissionDeniedException("回调域名不可信:".$domian);
-        }
+//        $callbackDomain = env("OAUTH_CALLBACK_DOMAIN");
+//        $domians = explode(",", $callbackDomain);
+//        $domian = UrlUtils::getDomain($redirectUrl);
+//        if (!in_array($domian, $domians)) {
+//            throw new PermissionDeniedException("回调域名不可信:".$domian);
+//        }
 
         $sessionKey = \sprintf('wechat.oauth_user.%s.%s', 'default', $uuid);
         $wechatUser = session($sessionKey);
