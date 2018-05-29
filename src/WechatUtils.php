@@ -86,6 +86,40 @@ class WechatUtils
         }
     }
 
+
+    /**
+     * 从开放平台创建代公众号实现业务的app
+     *
+     * @param null $uuid
+     * @return array|bool
+     */
+    public function createAppFromOpenPlatform2( $uuid = null)
+    {
+        $openPlatform = \EasyWeChat::openPlatform(); // 开放平台
+
+        if (!$uuid) {
+            $uuid = SubjectUtils::getUUID();
+        }
+
+        if ($uuid) {
+            $wechatAuthInfo = WechatAuthInfo::where("uuid", $uuid)->first();
+            if ($wechatAuthInfo) {
+                $appId = $wechatAuthInfo->authorizer_appid;
+                $officialAccount = $openPlatform->officialAccount($appId, $wechatAuthInfo->authorizer_refresh_token);
+                return $officialAccount;
+            } else {
+                return false;
+            }
+
+        } else {
+            throw new InvalidParamException("无效的uuid,无法得知微信主体");
+        }
+    }
+
+
+
+
+
     /**
      * 获取createAuthorizerApplication的参数
      *

@@ -28,12 +28,22 @@ Route::group($attributes, function ($router) {
      */
     Route::group(['middleware' => ['requestCheck']], function () {
 
-
         /**
          * 需要经过签名校验
          */
-        Route::group(['middleware' => ['authSign']], function () {
+        Route::group(['middleware' => ['authSign2']], function () {
+            //模板消息
             Route::post("template_msg", 'TemplateMsgController@send');
+
+            //摇周边
+            Route::post("share_around/group", 'ShareAroundController@createGroup');
+            Route::get("share_around/group/{groupId}", 'ShareAroundController@groupDetail');
+            Route::post("share_around/group/{groupId}/device", 'ShareAroundController@addDevices');
+            Route::delete("share_around/group/{groupId}/device", 'ShareAroundController@removeDevices');
+
+            //短网址转换
+            Route::post("url", 'OtherController@url');
+
         });
 
         /**
