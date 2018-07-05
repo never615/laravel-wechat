@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Mallto\Admin\SubjectUtils;
 use Mallto\Tool\Exception\ResourceException;
-use Mallto\Tool\Utils\SignUtils;
 use Overtrue\LaravelWeChat\WechatUtils;
 
 
@@ -32,7 +31,9 @@ class ShareAroundController extends Controller
         $uuid = SubjectUtils::getUUID();
 
         $officalAccount = $wechatUtils->createAppFromOpenPlatform2($uuid);
-        $this->shakearound = $officalAccount->shake_around;
+        if ($officalAccount) {
+            $this->shakearound = $officalAccount->shake_around;
+        }
     }
 
     public function createGroup(Request $request)
