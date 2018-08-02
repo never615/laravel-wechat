@@ -74,10 +74,13 @@ class PublicPlatformOAuthAuthenticate
 
         if (!$session || $this->needReauth($scopes, $sessionKey)) {
             if ($request->has('code')) {
+                //code可能被用过,用户在微信中进行页面回退操作的时候
                 $user = $officialAccount->oauth->user();
 
                 if (!$user || is_null($user->id)) {
-                    \Log::error("微信授权失败,没有正确获取用户信息");
+                    //这里最常出现的错误就是access_token不可用了
+                    //目前的处理是让用户重新请求微信授权,过程中就重新获取新的token了
+                    \Log::warning("微信授权失败,没有正确获取用户信息");
                     \Log::warning(\Qiniu\json_decode(\GuzzleHttp\json_encode($user), true));
                     session()->forget($sessionKey);
 
