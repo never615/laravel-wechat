@@ -44,10 +44,11 @@ class WeChatUserAuthorizedNotification
 //        $event->officialAccount; // 当前中间件对应的公众号id,开放平台则是授权的第三方公众号的id
 
 
+//        \Log::info(\GuzzleHttp\json_encode($event));
 
-        if ($event->isNewSession) {
+//        if ($event->isNewSession) {
             $this->wechatUserInfoRepository->createOrUpdate($event->user, $event->officialAccount);
-        }
+//        }
 
     }
 }

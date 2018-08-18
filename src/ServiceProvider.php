@@ -38,6 +38,7 @@ class ServiceProvider extends LaravelServiceProvider
         'Overtrue\LaravelWeChat\Commands\InstallCommand',
         'Overtrue\LaravelWeChat\Commands\UpdateCommand',
         'Overtrue\LaravelWeChat\Commands\RefreshAccessTokenCommand',
+        'Overtrue\LaravelWeChat\Commands\WechatUserStatisticsCommand',
     ];
 
     /**
@@ -47,7 +48,7 @@ class ServiceProvider extends LaravelServiceProvider
      */
     protected $routeMiddleware = [
         "wechat.open_platform_oauth" => \Overtrue\LaravelWeChat\Middleware\PublicPlatformOAuthAuthenticate::class,
-        'wechat.oauth' => \Overtrue\LaravelWeChat\Middleware\OAuthAuthenticate::class,
+        'wechat.oauth'               => \Overtrue\LaravelWeChat\Middleware\OAuthAuthenticate::class,
     ];
 
     /**
@@ -65,6 +66,8 @@ class ServiceProvider extends LaravelServiceProvider
     {
         $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
         $this->loadRoutesFrom(__DIR__.'/../routes/api.php');
+
+        $this->loadMigrationsFrom(__DIR__.'/../migrations');
 
         Event::listen(WeChatUserAuthorized::class, WeChatUserAuthorizedNotification::class);
         Event::subscribe(OpenPlatformSubscriber::class);
