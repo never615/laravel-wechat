@@ -118,7 +118,7 @@ class ServiceProvider extends LaravelServiceProvider
                     $router->any($config['uri'], $config['action']);
                 });
             }
-            if (!empty(config('wechat.'.$name.'.app_id'))) {
+            if (!empty(config('wechat.'.$name.'.app_id')) || !empty(config('wechat.'.$name.'.corp_id'))) {
                 $accounts = [
                     'default' => config('wechat.'.$name),
                 ];

@@ -10,6 +10,7 @@
 namespace Overtrue\LaravelWeChat\Middleware;
 use Closure;
 use Event;
+use http\Env\Request;
 use Overtrue\LaravelWeChat\Events\WeChatUserAuthorized;
 /**
  * Class OAuthAuthenticate.
