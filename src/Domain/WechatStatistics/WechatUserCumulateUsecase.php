@@ -9,6 +9,7 @@
 namespace Overtrue\LaravelWeChat\Domain\WechatStatistics;
 
 use Carbon\Carbon;
+use Mallto\Tool\Exception\ResourceException;
 use Overtrue\LaravelWeChat\Model\WechatAuthInfo;
 use Overtrue\LaravelWeChat\Model\WechatUserCumulate;
 use Overtrue\LaravelWeChat\WechatUtils;
@@ -57,9 +58,10 @@ class WechatUserCumulateUsecase
                     //$to     示例： `2014-02-18` 获取数据的结束日期，`$to`允许设置的最大值为昨日
 
                     //`$from` 和 `$to` 的差值需小于 “最大时间跨度”（比如最大时间跨度为 1 时，`$from` 和 `$to` 的差值只能为 0，才能小于 1 ），否则会报错
-                    $from = '2017-01-01';
+                    $from = '2015-12-01';
 //                    $from = '2018-08-01';
                     $to = Carbon::yesterday()->toDateString();
+//                    $to = '2015-01-01';
 
                     //1. 获取当前已有统计数据统计到了那一天
                     $lastWechatUserCumulate = WechatUserCumulate::orderBy("ref_date", 'desc')
@@ -120,20 +122,24 @@ class WechatUserCumulateUsecase
     private function getData($authInfo, $app, $from, $to, $lastCumulate)
     {
         $userCumulate = $app->data_cube->userCumulate($from, $to);
-        $userCumulate = $userCumulate['list'];
+        if (isset($userCumulate['list'])) {
+            $userCumulate = $userCumulate['list'];
 
 
-        foreach ($userCumulate as $item) {
-            $newUser = null;
-            if ($lastCumulate) {
-                $newUser = $item['cumulate_user'] - $lastCumulate;
+            foreach ($userCumulate as $item) {
+                $newUser = null;
+                if ($lastCumulate) {
+                    $newUser = $item['cumulate_user'] - $lastCumulate;
+                }
+                $lastCumulate = $item['cumulate_user'];
+
+                $this->createCumulate($authInfo, $item, $newUser);
             }
-            $lastCumulate = $item['cumulate_user'];
 
-            $this->createCumulate($authInfo, $item, $newUser);
+            return $lastCumulate;
+        }else{
+            throw new ResourceException("请求微信数据失败");
         }
-
-        return $lastCumulate;
     }
 
 
@@ -158,6 +164,19 @@ class WechatUserCumulateUsecase
         $date = Carbon::createFromFormat("Y-m-d", $item["ref_date"]);
         //如果ref_date是月度的最后一天,则创建一条月度统计数据
         if ($date->isLastOfMonth()) {
+            //计算相比上月新增了多少用户
+            $lastMonthData = WechatUserCumulate::where('type', 'month')
+                ->where("uuid", $authInfo->uuid)
+                ->where('ref_date', $date->copy()->addMonths(-1)
+                    ->endOfMonth()
+                    ->format("Y-m"))
+                ->first();
+            if ($lastMonthData) {
+                $newUser = $item['cumulate_user'] - $lastMonthData->cumulate_user;
+            } else {
+                $newUser = null;
+            }
+
             WechatUserCumulate::create([
                 "uuid"          => $authInfo->uuid,
                 "appid"         => $authInfo->authorizer_appid,
@@ -170,7 +189,20 @@ class WechatUserCumulateUsecase
 
 
         //如果ref_date是年度的最后一天,则创建一条年度统计数据
-        if ($date->format("Y-m-d") == (Carbon::now()->lastOfYear()->format("Y-m-d"))) {
+        if ($date->format("Y-m-d") == ($date->lastOfYear()->format("Y-m-d"))) {
+            //计算相比上年新增了多少用户
+            $lastYearData = WechatUserCumulate::where('type', 'year')
+                ->where("uuid", $authInfo->uuid)
+                ->where('ref_date', $date->copy()
+                    ->addYears(-1)
+                    ->lastOfYear()
+                    ->format("Y"))
+                ->first();
+            if ($lastYearData) {
+                $newUser = $item['cumulate_user'] - $lastYearData->cumulate_user;
+            } else {
+                $newUser = $item['cumulate_user'];
+            }
             WechatUserCumulate::create([
                 "uuid"          => $authInfo->uuid,
                 "appid"         => $authInfo->authorizer_appid,

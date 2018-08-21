@@ -68,7 +68,7 @@ class WechatUserStatisticsCommand extends Command
      */
     public function handle()
     {
-        $this->wechatUserStatisticsUsecase->handle();
+//        $this->wechatUserStatisticsUsecase->handle();
         $this->wechatUserCumulateUsecase->handle();
     }
 

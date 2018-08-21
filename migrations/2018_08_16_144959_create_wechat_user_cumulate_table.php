@@ -28,11 +28,6 @@ class CreateWechatUserCumulateTable extends Migration
             $table->string("type")
                 ->default("day")
                 ->comment("累计数据统计的时间范围:day/month/year");
-
-            $table->string("status")
-                ->default("finish")
-                ->comment("记录这一条数据是否统计完成,年度和月度统计的时候使用");
-
             $table->timestamps();
         });
     }

@@ -84,6 +84,10 @@ Route::group($attributes, function ($router) {
 
         $router->resource("wechat_auth_infos", 'Admin\AuthInfoController');
         $router->resource("wechat_user_infos", 'Admin\UserInfoController');
+
+        $router->post('wechat/user/cumulates', 'Admin\WechatUserController@cumulateUserData');
+        $router->post('wechat/user/new', 'Admin\WechatUserController@newUserData');
+
     });
 
 //----------------------------------------  管理端结束  -----------------------------------------------
