@@ -67,8 +67,6 @@ class ServiceProvider extends LaravelServiceProvider
         $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
         $this->loadRoutesFrom(__DIR__.'/../routes/api.php');
 
-        $this->loadMigrationsFrom(__DIR__.'/../migrations');
-
         Event::listen(WeChatUserAuthorized::class, WeChatUserAuthorizedNotification::class);
         Event::subscribe(OpenPlatformSubscriber::class);
 
@@ -82,6 +80,7 @@ class ServiceProvider extends LaravelServiceProvider
         $source = realpath(__DIR__.'/config.php');
         if ($this->app instanceof LaravelApplication && $this->app->runningInConsole()) {
             $this->publishes([$source => config_path('wechat.php')], 'laravel-wechat');
+            $this->publishes([__DIR__.'/../migrations' => database_path('migrations')], 'laravel-wechat');
         } elseif ($this->app instanceof LumenApplication) {
             $this->app->configure('wechat');
         }

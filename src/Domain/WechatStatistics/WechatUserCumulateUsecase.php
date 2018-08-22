@@ -138,6 +138,7 @@ class WechatUserCumulateUsecase
 
             return $lastCumulate;
         }else{
+            \Log::error("请求微信统计数据失败");
             throw new ResourceException("请求微信数据失败");
         }
     }

@@ -46,9 +46,6 @@ class WechatUserStatisticsCommand extends Command
 
     /**
      *
-     * /**
-     * ParkRecordCheckCommand constructor.
-     *
      * @param WechatUserSummaryUsecase  $wechatUserStatisticsUsecase
      * @param WechatUserCumulateUsecase $wechatUserCumulateUsecase
      */
