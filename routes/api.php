@@ -13,6 +13,7 @@
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+
 use Illuminate\Support\Facades\Route;
 
 $attributes = [
@@ -44,6 +45,9 @@ Route::group($attributes, function ($router) {
             //短网址转换
             Route::post("url", 'OtherController@url');
 
+            //微信统计数据
+            //累计用户及新增用户
+            Route::post('statistics/user/cumulate_data', 'WechatUserStatisticController@cumulate');
         });
 
         /**
