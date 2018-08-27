@@ -33,6 +33,9 @@ Route::group($attributes, function ($router) {
          * 需要经过签名校验
          */
         Route::group(['middleware' => ['authSign2']], function () {
+            //查询微信用户信息
+            Route::get('wechat/user', 'UserInfoController@info');
+
             //模板消息
             Route::post("template_msg", 'TemplateMsgController@send');
 
