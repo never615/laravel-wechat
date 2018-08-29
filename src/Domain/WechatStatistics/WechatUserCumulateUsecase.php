@@ -9,7 +9,6 @@
 namespace Overtrue\LaravelWeChat\Domain\WechatStatistics;
 
 use Carbon\Carbon;
-use Mallto\Tool\Exception\ResourceException;
 use Overtrue\LaravelWeChat\Model\WechatAuthInfo;
 use Overtrue\LaravelWeChat\Model\WechatUserCumulate;
 use Overtrue\LaravelWeChat\WechatUtils;
@@ -98,11 +97,9 @@ class WechatUserCumulateUsecase
                         $from = Carbon::createFromFormat('Y-m-d', $tempTo)->addDay(1)->toDateString();
                     }
 
-                    $this->getData($authInfo, $app, $from, $to, $lastCumulate);
-
-
-                    //处理年度和月度累计用户数据
-
+                    if ($lastCumulate) {
+                        $this->getData($authInfo, $app, $from, $to, $lastCumulate);
+                    }
                 }
             });
 
@@ -137,12 +134,14 @@ class WechatUserCumulateUsecase
             }
 
             return $lastCumulate;
-        }else{
+        } else {
             \Log::error("请求微信统计数据失败");
             \Log::warning($authInfo);
             \Log::warning($from);
             \Log::warning($to);
-            throw new ResourceException("请求微信数据失败");
+
+//            throw new ResourceException("请求微信数据失败");
+            return null;
         }
     }
 
