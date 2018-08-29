@@ -76,7 +76,7 @@ class WechatUserCumulateUsecase
                         $lastStatisticsRefDate = $lastWechatUserCumulate->ref_date;
                         //如果上一次统计的时间是昨天,则不继续进行获取统计数据
                         if ($lastStatisticsRefDate == $to) {
-                            return;
+                            continue;
                         } else {
                             //如果最近一天的统计数据不是昨天,则从最新一天的统计数据的第二天开始继续获取统计数据
                             $from = Carbon::createFromFormat('Y-m-d', $lastStatisticsRefDate)
@@ -97,7 +97,7 @@ class WechatUserCumulateUsecase
                         $from = Carbon::createFromFormat('Y-m-d', $tempTo)->addDay(1)->toDateString();
                     }
 
-                    if ($lastCumulate) {
+                    if ($lastCumulate !== false) {
                         $this->getData($authInfo, $app, $from, $to, $lastCumulate);
                     }
                 }
@@ -141,7 +141,7 @@ class WechatUserCumulateUsecase
             \Log::warning($to);
 
 //            throw new ResourceException("请求微信数据失败");
-            return null;
+            return false;
         }
     }
 
