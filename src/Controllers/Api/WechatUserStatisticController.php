@@ -5,6 +5,7 @@ namespace Overtrue\LaravelWeChat\Controllers\Api;
 
 use Illuminate\Http\Request;
 use Mallto\Admin\SubjectUtils;
+use Mallto\Tool\Exception\ResourceException;
 use Overtrue\LaravelWeChat\Model\WechatUserCumulate;
 
 class WechatUserStatisticController extends \Illuminate\Routing\Controller
@@ -15,6 +16,13 @@ class WechatUserStatisticController extends \Illuminate\Routing\Controller
 
 
         $uuid = SubjectUtils::getUUID();
+
+
+        $count = WechatUserCumulate::where('uuid', $uuid)
+            ->count();
+        if ($count === 0) {
+            throw new ResourceException("该uuid下没有记录");
+        }
 
         $result = WechatUserCumulate::where('uuid', $uuid)
             ->where('ref_date', ">=", $request->from)
