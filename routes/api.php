@@ -38,6 +38,8 @@ Route::group($attributes, function ($router) {
 
             //模板消息
             Route::post("template_msg", 'TemplateMsgController@send');
+            //获取模板id
+            Route::post("add_template_id", 'TemplateMsgController@addTemplate');
 
             //摇周边
             Route::post("share_around/group", 'ShareAroundController@createGroup');

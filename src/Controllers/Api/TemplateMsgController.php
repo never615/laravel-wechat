@@ -2,10 +2,12 @@
 
 namespace Overtrue\LaravelWeChat\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use EasyWeChat\Kernel\Exceptions\HttpException;
 use GuzzleHttp\Exception\ConnectException;
 use Illuminate\Http\Request;
 use Mallto\Admin\SubjectUtils;
+use Mallto\Tool\Exception\ResourceException;
 use Mockery\Exception;
 use Overtrue\LaravelWeChat\WechatUtils;
 
@@ -16,7 +18,7 @@ use Overtrue\LaravelWeChat\WechatUtils;
  * Date: 19/04/2017
  * Time: 7:01 PM
  */
-class TemplateMsgController extends \Illuminate\Routing\Controller
+class TemplateMsgController extends Controller
 {
 
     /**
@@ -58,7 +60,6 @@ class TemplateMsgController extends \Illuminate\Routing\Controller
                 );
             }
         } catch (HttpException $exception) {
-
             \Log::error("模板消息发送失败1:".$exception->getMessage());
             \Log::warning($exception->getTraceAsString());
 
@@ -84,5 +85,41 @@ class TemplateMsgController extends \Illuminate\Routing\Controller
                 ]
             );
         }
+    }
+
+
+    /**
+     * 获取模板id
+     *
+     * @param Request     $request
+     * @param WechatUtils $wechatUtils
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function addTemplate(Request $request, WechatUtils $wechatUtils)
+    {
+
+        $this->validate($request, [
+            "short_id" => "required",
+        ]);
+
+        $openPlatform = \EasyWeChat::openPlatform(); // 开放平台
+
+        $uuid = SubjectUtils::getUUID();
+
+        $officalAccount = $wechatUtils->createAppFromOpenPlatform($openPlatform, $uuid);
+        $template_message = $officalAccount->template_message;
+
+        $content = $template_message->addTemplate($request->short_id);
+
+        if ($content['errcode'] == 0) {
+            return response()->json([
+                    "template_id" => $content["template_id"],
+                ]
+            );
+        } else {
+            throw new ResourceException($content['errmsg']);
+        }
+
+
     }
 }
