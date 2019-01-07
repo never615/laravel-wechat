@@ -38,6 +38,7 @@ class ServiceProvider extends LaravelServiceProvider
         'Overtrue\LaravelWeChat\Commands\InstallCommand',
         'Overtrue\LaravelWeChat\Commands\UpdateCommand',
         'Overtrue\LaravelWeChat\Commands\RefreshAccessTokenCommand',
+        'Overtrue\LaravelWeChat\Commands\WechatUserStatisticsCommand',
     ];
 
     /**
@@ -47,7 +48,7 @@ class ServiceProvider extends LaravelServiceProvider
      */
     protected $routeMiddleware = [
         "wechat.open_platform_oauth" => \Overtrue\LaravelWeChat\Middleware\PublicPlatformOAuthAuthenticate::class,
-        'wechat.oauth' => \Overtrue\LaravelWeChat\Middleware\OAuthAuthenticate::class,
+        'wechat.oauth'               => \Overtrue\LaravelWeChat\Middleware\OAuthAuthenticate::class,
     ];
 
     /**
@@ -79,6 +80,7 @@ class ServiceProvider extends LaravelServiceProvider
         $source = realpath(__DIR__.'/config.php');
         if ($this->app instanceof LaravelApplication && $this->app->runningInConsole()) {
             $this->publishes([$source => config_path('wechat.php')], 'laravel-wechat');
+            $this->publishes([__DIR__.'/../migrations' => database_path('migrations')], 'laravel-wechat');
         } elseif ($this->app instanceof LumenApplication) {
             $this->app->configure('wechat');
         }
@@ -115,7 +117,7 @@ class ServiceProvider extends LaravelServiceProvider
                     $router->any($config['uri'], $config['action']);
                 });
             }
-            if (!empty(config('wechat.'.$name.'.app_id'))) {
+            if (!empty(config('wechat.'.$name.'.app_id')) || !empty(config('wechat.'.$name.'.corp_id'))) {
                 $accounts = [
                     'default' => config('wechat.'.$name),
                 ];

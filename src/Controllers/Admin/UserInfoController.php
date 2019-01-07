@@ -51,7 +51,7 @@ class UserInfoController extends AdminCommonController
             $appId = $this->app_id;
             $info = WechatAuthInfo::where("authorizer_appid", $appId)->first();
 
-            return $info->nick_name;
+            return $info?$info->nick_name:"";
         })->sortable();
 
         $grid->filter(function ($filter) {

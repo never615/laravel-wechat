@@ -17,7 +17,7 @@ class UpdateWechatPlatformConfigsTable extends Migration
     public function up()
     {
         Schema::table('wechat_platform_configs', function (Blueprint $table) {
-            $table->json("suite_ticket");
+            $table->json("suite_ticket")->nullable();
         });
     }
 
