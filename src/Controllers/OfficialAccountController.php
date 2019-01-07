@@ -119,6 +119,7 @@ class OfficialAccountController extends \Illuminate\Routing\Controller
             'onMenuShareWeibo',
             'onMenuShareQZone',
             'openLocation',
+            'scanQRCode',
         ], $debug = false, $beta = false, $json = true);
 
         return response($result);
