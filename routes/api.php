@@ -24,6 +24,14 @@ $attributes = [
 
 Route::group($attributes, function ($router) {
 
+
+    /**
+     * 需要经过签名校验
+     */
+    Route::group(['middleware' => ['authSign2','owner_api']], function () {
+        Route::get("app_secret","AppSecretController@get");
+    });
+
     /**
      * 需要经过验证
      */
@@ -32,7 +40,7 @@ Route::group($attributes, function ($router) {
         /**
          * 需要经过签名校验
          */
-        Route::group(['middleware' => ['authSign2']], function () {
+        Route::group(['middleware' => ['authSign2','owner_api']], function () {
             //查询微信用户信息
             Route::get('wechat/user', 'UserInfoController@info');
 
