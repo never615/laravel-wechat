@@ -61,6 +61,23 @@ class ShareAroundController extends Controller
         return $result['data'];
     }
 
+
+    public function groups(Request $request)
+    {
+        $page = $request->get("page", 1);
+        $count = 20;
+        $begin = ($page - 1) * $count;
+
+
+        $result = $this->shakearound->group->list($begin, $count);
+        $result = $this->responseHandler($result);
+
+        return $result;
+
+//        return $result["data"];
+    }
+
+
     public function groupDetail($groupId, Request $request)
     {
 //        $this->validate($request, [
@@ -168,6 +185,7 @@ class ShareAroundController extends Controller
      * 从分组中移除设备信息
      *
      * @param $request
+     * @return
      */
     public function removeDevices($groupId, Request $request)
     {

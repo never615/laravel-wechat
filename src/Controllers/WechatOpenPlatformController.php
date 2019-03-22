@@ -171,6 +171,7 @@ class WechatOpenPlatformController extends Controller
             throw new ResourceException("url is null");
         }
         $js->setUrl($url);
+
         $result = $js->buildConfig([
             'menuItem:copyUr',
             'hideOptionMenu',

@@ -50,6 +50,7 @@ Route::group($attributes, function ($router) {
             Route::post("add_template_id", 'TemplateMsgController@addTemplate');
 
             //摇周边
+            Route::get("share_around/group", 'ShareAroundController@groups');
             Route::post("share_around/group", 'ShareAroundController@createGroup');
             Route::get("share_around/group/{groupId}", 'ShareAroundController@groupDetail');
             Route::post("share_around/group/{groupId}/device", 'ShareAroundController@addDevices');
