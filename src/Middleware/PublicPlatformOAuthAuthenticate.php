@@ -50,7 +50,6 @@ class PublicPlatformOAuthAuthenticate
      */
     public function handle($request, Closure $next, $account = 'default', $scopes = null)
     {
-
         // $account 与 $scopes 写反的情况
         if (is_array($scopes) || (\is_string($account) && str_is('snsapi_*', $account))) {
             list($account, $scopes) = [$scopes, $account];
@@ -60,11 +59,20 @@ class PublicPlatformOAuthAuthenticate
 
         $isNewSession = false;
         $sessionKey = \sprintf('wechat.oauth_user.%s.%s', $account, $uuid);
+        //从这个config中获取公众号对应授权模式:静默授权还是请求用户信息
         $config = config(\sprintf('wechat.official_account.%s', $account), []);
         $openPlatform = \EasyWeChat::openPlatform(); // 开放平台
         list($appId, $refreshToken) = $this->wechatUtils->createAuthorizerApplicationParams($request);
         $officialAccount = $openPlatform->officialAccount($appId, $refreshToken);
-        $scopes = $scopes ?: array_get($config, 'oauth.scopes', ['snsapi_base']);
+
+        $requestScopes = $request->scopes;
+        if ($requestScopes && in_array($requestScopes, ['snsapi_base', 'snsapi_userinfo'])) {
+            $scopes = $requestScopes ?: ($scopes ?: array_get($config, 'oauth.scopes', ['snsapi_base']));
+        } else {
+            $scopes = $scopes ?: array_get($config, 'oauth.scopes', ['snsapi_base']);
+        }
+
+
         if (is_string($scopes)) {
             $scopes = array_map('trim', explode(',', $scopes));
         }
