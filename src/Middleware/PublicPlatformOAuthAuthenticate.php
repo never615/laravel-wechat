@@ -79,6 +79,8 @@ class PublicPlatformOAuthAuthenticate
 
         $session = session($sessionKey, []);
 
+        \Log::warning($request->fullUrl());
+
 
         if (!$session || $this->needReauth($scopes, $sessionKey)) {
             if ($request->has('code')) {
@@ -90,7 +92,6 @@ class PublicPlatformOAuthAuthenticate
                     //目前的处理是让用户重新请求微信授权,过程中就重新获取新的token了
                     \Log::warning("微信授权失败,没有正确获取用户信息");
                     \Log::warning(json_decode(json_encode($user), true));
-                    \Log::warning($request->fullUrl());
 
                     session()->forget($sessionKey);
 
@@ -108,7 +109,7 @@ class PublicPlatformOAuthAuthenticate
             return $officialAccount->oauth->scopes($scopes)->redirect($request->fullUrl());
         }
 
-        \Log::warning(session($sessionKey));
+        \Log::warning(json_encode(session($sessionKey)));
 
 
         Event::fire(new WeChatUserAuthorized(session($sessionKey), $isNewSession, $account, $appId));
