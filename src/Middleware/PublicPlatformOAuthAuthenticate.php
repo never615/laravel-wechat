@@ -91,7 +91,7 @@ class PublicPlatformOAuthAuthenticate
                     \Log::warning("微信授权失败,没有正确获取用户信息");
                     \Log::warning(json_decode(json_encode($user), true));
                     \Log::warning($request->fullUrl());
-                    
+
                     session()->forget($sessionKey);
 
                     return $officialAccount->oauth->scopes($scopes)->redirect($request->fullUrl());
@@ -107,6 +107,10 @@ class PublicPlatformOAuthAuthenticate
 
             return $officialAccount->oauth->scopes($scopes)->redirect($request->fullUrl());
         }
+
+        \Log::warning(session($sessionKey));
+
+
         Event::fire(new WeChatUserAuthorized(session($sessionKey), $isNewSession, $account, $appId));
 
         return $next($request);
