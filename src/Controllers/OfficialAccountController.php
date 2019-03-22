@@ -45,6 +45,9 @@ class OfficialAccountController extends \Illuminate\Routing\Controller
         //检查回调域名
         $callbackDomain = config("app.oauth_callback_domain");
         $domains = explode(",", $callbackDomain);
+
+
+
         $requestDomain = UrlUtils::getDomain($redirectUrl);
         $isAuth = false;
 
@@ -60,13 +63,15 @@ class OfficialAccountController extends \Illuminate\Routing\Controller
         }
 
         if ($isAuth & in_array($requestDomain, $domains)) {
-//            throw new PermissionDeniedException("回调域名不可信:".$requestDomain);
             $isAuth = true;
         }
 
         if (!$isAuth) {
             throw new PermissionDeniedException("回调域名不可信:".$requestDomain);
         }
+
+
+
         $account = 'default';
         $sessionKey = \sprintf('wechat.oauth_user.%s', $account);
 
