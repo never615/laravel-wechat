@@ -83,10 +83,10 @@ class PublicPlatformOAuthAuthenticate
 
 
         if (!$session || $this->needReauth($scopes, $sessionKey)) {
-            \Log::warning(1111);
+//            \Log::warning(1111);
 
             if ($request->has('code')) {
-                \Log::warning(2222);
+//                \Log::warning(2222);
 
                 //code可能被用过,用户在微信中进行页面回退操作的时候
                 $user = $officialAccount->oauth->user();
