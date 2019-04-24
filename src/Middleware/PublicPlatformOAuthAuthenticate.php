@@ -79,7 +79,7 @@ class PublicPlatformOAuthAuthenticate
 
         $session = session($sessionKey, []);
 
-        \Log::warning($request->fullUrl());
+//        \Log::warning($request->fullUrl());
 
 
         if (!$session || $this->needReauth($scopes, $sessionKey)) {
@@ -113,7 +113,7 @@ class PublicPlatformOAuthAuthenticate
             return $officialAccount->oauth->scopes($scopes)->redirect($request->fullUrl());
         }
 
-        \Log::warning(json_encode(session($sessionKey)));
+//        \Log::warning(json_encode(session($sessionKey)));
 
 
         Event::fire(new WeChatUserAuthorized(session($sessionKey), $isNewSession, $account, $appId));

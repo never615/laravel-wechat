@@ -11,16 +11,38 @@
 
 namespace Overtrue\LaravelWeChat\Events;
 
+use Overtrue\LaravelWeChat\Domain\OpenPlatformAuthUsecase;
+
 class OpenPlatformSubscriber
 {
+    /**
+     * @var OpenPlatformAuthUsecase
+     */
+    private $openPlatformAuthUsecase;
+
+
+    /**
+     * WechatOpenPlatformController constructor.
+     *
+     * @param OpenPlatformAuthUsecase $openPlatformAuthUsecase
+     */
+    public function __construct(OpenPlatformAuthUsecase $openPlatformAuthUsecase)
+    {
+        $this->openPlatformAuthUsecase = $openPlatformAuthUsecase;
+    }
+
     /**
      * 授权方成功授权
      */
     public function Authorized($event)
     {
         $playload = $event->payload;
-        \Log::info("authorized和updateauthorized");
+        \Log::info("authorized");
         \Log::info($playload);
+
+        $this->openPlatformAuthUsecase->createOrUpdateAuthInfo($playload["AuthorizationCode"]);
+
+
     }
 
     /**
@@ -29,8 +51,11 @@ class OpenPlatformSubscriber
     public function UpdateAuthorized($event)
     {
         $playload = $event->payload;
-        \Log::info("authorized和updateauthorized");
+        \Log::info("updateauthorized");
         \Log::info($playload);
+
+        $this->openPlatformAuthUsecase->createOrUpdateAuthInfo($playload["AuthorizationCode"]);
+
 //        array (
 //            'AppId' => 'wxc40ca2518c77b327',
 //            'CreateTime' => '1519373459',
@@ -39,7 +64,7 @@ class OpenPlatformSubscriber
 //            'AuthorizationCode' => 'queryauthcode@@@jKz5tqlqNWMyQwPtsdOFhEtGlsJSCaLcAhdnmQB0q6k5Hv81K1vw0ZvUE7O6eVRfCMZ7X0JUtJTWF_IhNCqGRA',
 //            'AuthorizationCodeExpiredTime' => '1519377059',
 //            'PreAuthCode' => 'preauthcode@@@rlRmD-f3bX1oZOOzVZNL_irlFCqPqQdLixsx5To1lhKBRkhcyutGCvWsU59b9OXp',
-//        )
+//        ) 
     }
 
     /**
@@ -47,8 +72,12 @@ class OpenPlatformSubscriber
      */
     public function Unauthorized($event)
     {
+        $playload = $event->payload;
+
         \Log::info("unauthorized");
-//        \Log::info($event);
+        \Log::info($playload);
+
+        $this->openPlatformAuthUsecase->unAuth($playload["AuthorizerAppid"]);
     }
 
     /**

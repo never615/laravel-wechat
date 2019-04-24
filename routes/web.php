@@ -32,14 +32,14 @@ Route::group($attributes, function ($router) {
 
 //        开放平台回调,接收component_ticket等
 //        Route::any('/platform/callback', 'WechatOpenPlatformController@serve');
-
+//            Route::any('/platform/callback', 'OpenPlatformController@serve');
 
             //第三方公众号请求授权
             Route::get('/platform/auth', 'WechatOpenPlatformController@auth');
-            //第三方公众号请求授权回调
+            //第三方公众号请求授权回调,二维码扫码授权完成后的页面跳转
             Route::get('/platform/auth/callback', 'WechatOpenPlatformController@authCallback');
 
-
+            //授权后实现业务,消息与事件接收URL
             Route::post('{appid}/callback', 'WechatOpenPlatformController@wechatCallback');
 
             //jsconfig

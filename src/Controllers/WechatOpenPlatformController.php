@@ -7,6 +7,7 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Request;
 use Mallto\Tool\Exception\ResourceException;
+use Overtrue\LaravelWeChat\Domain\OpenPlatformAuthUsecase;
 use Overtrue\LaravelWeChat\Model\WechatAuthInfo;
 use Overtrue\LaravelWeChat\WechatUtils;
 
@@ -25,16 +26,22 @@ class WechatOpenPlatformController extends Controller
      * @var WechatUtils
      */
     private $wechatUtils;
+    /**
+     * @var OpenPlatformAuthUsecase
+     */
+    private $openPlatformAuthUsecase;
 
     /**
      * WechatOpenPlatformController constructor.
      *
-     * @param WechatUtils $wechatUtils
+     * @param WechatUtils             $wechatUtils
+     * @param OpenPlatformAuthUsecase $openPlatformAuthUsecase
      */
-    public function __construct(WechatUtils $wechatUtils)
+    public function __construct(WechatUtils $wechatUtils, OpenPlatformAuthUsecase $openPlatformAuthUsecase)
     {
         $this->openPlatform = \EasyWeChat::openPlatform(); // 开放平台
         $this->wechatUtils = $wechatUtils;
+        $this->openPlatformAuthUsecase = $openPlatformAuthUsecase;
     }
 
 //
@@ -100,6 +107,10 @@ class WechatOpenPlatformController extends Controller
     public function authCallback()
     {
 //        \Log::info('authCallback');
+        $authorizerInfo = $this->openPlatformAuthUsecase->createOrUpdateAuthInfo();
+        echo $authorizerInfo["authorizer_info"]["nick_name"]."授权给微信开放平台服务商深圳墨兔成功";
+
+        return;
 
         // 使用授权码换取公众号的接口调用凭据和授权信息
         // Optional: $authorizationCode 不传值时会自动获取 URL 中 auth_code 值
@@ -149,6 +160,8 @@ class WechatOpenPlatformController extends Controller
     {
 //        \Log::info($appid);
 //        \Log::info(Input::all());
+//        \Log::debug(file_get_contents("php://input"));
+
     }
 
 
