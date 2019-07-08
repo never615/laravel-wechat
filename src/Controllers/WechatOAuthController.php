@@ -4,7 +4,6 @@ namespace Overtrue\LaravelWeChat\Controllers;
 
 use Illuminate\Support\Facades\Log;
 use Mallto\Admin\SubjectUtils;
-use Mallto\Tool\Exception\PermissionDeniedException;
 use Mallto\Tool\Utils\ResponseUtils;
 use Mallto\Tool\Utils\UrlUtils;
 use Overtrue\LaravelWeChat\WechatUtils;
@@ -44,34 +43,7 @@ class WechatOAuthController extends \Illuminate\Routing\Controller
         $uuid = SubjectUtils::getUUID($request);
         $redirectUrl = $request->redirect_url;
 
-
-        //检查回调域名
-        $callbackDomain = config("app.oauth_callback_domain");
-        $domains = explode(",", $callbackDomain);
-        $requestDomain = UrlUtils::getDomain($redirectUrl);
-
-        $isAuth = false;
-
-        //先检查有没有*号开头的域名
-        foreach ($domains as $domain) {
-            if (starts_with($domain, "*.")) {
-                $domain = str_replace("*.", "", $domain);
-                if (ends_with($requestDomain, $domain)) {
-                    $isAuth = true;
-                    break;
-                }
-            }
-        }
-
-        if ($isAuth & in_array($requestDomain, $domains)) {
-//            throw new PermissionDeniedException("回调域名不可信:".$requestDomain);
-            $isAuth = true;
-        }
-
-        if (!$isAuth) {
-            throw new PermissionDeniedException("回调域名不可信:".$requestDomain);
-        }
-
+        UrlUtils::checkDomainOAuth($redirectUrl);
 
         $sessionKey = \sprintf('wechat.oauth_user.%s.%s', 'default', $uuid);
         $wechatUser = session($sessionKey);
@@ -82,7 +54,6 @@ class WechatOAuthController extends \Illuminate\Routing\Controller
 
         return ResponseUtils::responseBasicByRedirect($redirectUrl, [
             "openid" => $cryptOpenId,
-
         ]);
     }
 
