@@ -189,7 +189,7 @@ class WechatUtils
 //        $app = $wechat->open_platform->createAuthorizerApplication($appId, $refreshToken);
 //        // 调用方式与普通调用一致。
 //        $js = $app->js;
-//        $url = Input::get("url");
+//        $url = \Request::input("url");
 //        if (is_null($url)) {
 //            throw new ResourceException("url is null");
 //        }

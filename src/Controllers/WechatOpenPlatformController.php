@@ -46,7 +46,7 @@ class WechatOpenPlatformController extends Controller
 //    public function serve()
 //    {
 ////        \Log::info('request arrived.'); # 注意：Log 为 Laravel 组件，所以它记的日志去 Laravel 日志看，而不是 EasyWeChat 日志
-////        \Log::info(Input::all());
+////        \Log::info(\Request::all());
 ////
 //        // 自定义处理
 //        $this->openPlatform->server->setMessageHandler(function ($event) {
@@ -148,7 +148,7 @@ class WechatOpenPlatformController extends Controller
     public function wechatCallback($appid)
     {
 //        \Log::info($appid);
-//        \Log::info(Input::all());
+//        \Log::info(\Request::all());
     }
 
 
@@ -166,7 +166,7 @@ class WechatOpenPlatformController extends Controller
 
         // 调用方式与普通调用一致。
         $js = $officialAccount->jssdk;
-        $url = Input::get("url");
+        $url = \Request::input("url");
         if (is_null($url)) {
             throw new ResourceException("url is null");
         }

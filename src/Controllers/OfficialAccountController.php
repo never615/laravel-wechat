@@ -77,7 +77,7 @@ class OfficialAccountController extends \Illuminate\Routing\Controller
         $officialAccount = \EasyWeChat::officialAccount(); // 公众号
 
         $js = $officialAccount->jssdk;
-        $url = Input::get("url");
+        $url = \Request::input("url");
         if (is_null($url)) {
             throw new ResourceException("url is null");
         }
